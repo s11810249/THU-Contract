@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習合約書製作系統 (V1.0.0)</title>
+    <title>東海大學學生校外實習合約書產生系統 (V1.0.0)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,7 +22,7 @@
                         thuGold: '#C6A87C',
                     },
                     fontFamily: {
-                        sans: ['"Noto Sans TC"', 'sans-serif'], // 網頁介面使用黑體
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
                     }
                 }
             }
@@ -33,10 +33,9 @@
         body {
             background-color: #f3f4f6;
             font-family: 'Noto Sans TC', sans-serif;
-            padding-bottom: 100px; /* 減少下方留白 */
+            padding-bottom: 100px; 
         }
         
-        /* 輸入框樣式 */
         .input-field {
             background-color: white;
             border: 1px solid #d1d5db;
@@ -52,20 +51,59 @@
             box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1);
         }
 
+        /* 民國日期專用樣式 & 移除上下箭頭 */
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+        }
+        .date-group:focus-within {
+            border-color: #002E5D;
+            box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1);
+        }
+        .date-input {
+            border: none;
+            text-align: center;
+            width: 100%;
+            outline: none;
+            font-size: 1rem;
+            color: #374151;
+            /* 移除背景色以融入 group */
+            background: transparent; 
+        }
+        /* 移除 Chrome, Safari, Edge, Opera 的上下箭頭 */
+        .date-input::-webkit-outer-spin-button,
+        .date-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* 移除 Firefox 的上下箭頭 */
+        .date-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .date-sep {
+            color: #9ca3af;
+            font-weight: bold;
+            user-select: none;
+        }
+
         .card { background: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 1.5rem; }
         .card-header { padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; color: #002E5D; font-weight: 700; font-size: 1.125rem; display: flex; align-items: center; }
         .border-top-blue { border-top: 4px solid #002E5D; }
         .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
         
-        /* 狀態列與錯誤視窗 */
         #status-bar { display: none; position: fixed; bottom: 80px; right: 20px; background: #333; color: white; padding: 8px 16px; border-radius: 6px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 0.9rem; }
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
         #error-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
         #error-content { background: white; padding: 20px; border-radius: 8px; max-width: 80%; max-height: 80%; overflow-y: auto; }
         pre { white-space: pre-wrap; word-break: break-word; }
 
-        /* === 精簡版頁尾 === */
         footer {
             position: fixed;
             bottom: 0;
@@ -74,8 +112,8 @@
             background-color: #1f2937;
             color: #9ca3af;
             text-align: center;
-            padding: 0.8rem 0; /* 減少高度 */
-            font-size: 0.75rem; /* 字體縮小 */
+            padding: 0.8rem 0;
+            font-size: 0.75rem;
             z-index: 50;
             border-top: 3px solid #C6A87C;
             box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -101,15 +139,14 @@
     </div>
 
     <!-- Header -->
-    <div class="fixed top-0 left-0 w-full h-auto md:h-[70px] bg-thuBlue text-white z-50 flex flex-col md:flex-row items-center justify-between px-4 md:px-8 shadow-md py-2 md:py-0">
+    <div class="fixed top-0 left-0 w-full h-auto md:h-[80px] bg-thuBlue text-white z-50 flex flex-col md:flex-row items-center justify-between px-4 md:px-8 shadow-md py-2 md:py-0">
         <div class="flex items-center gap-3 mb-2 md:mb-0">
-            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-thuBlue font-bold text-xl shrink-0">
+            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-thuBlue font-bold text-2xl shrink-0">
                 <i class="fa-solid fa-university"></i>
             </div>
             <div class="flex flex-col justify-center">
-                <!-- 標題更新 -->
                 <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">東海大學 | 實習與學生成就中心</div>
-                <div class="text-xs text-thuGold opacity-90 font-sans leading-tight">學生校外實習合約書製作系統</div>
+                <div class="text-xs text-thuGold opacity-90 font-sans leading-tight">學生校外實習合約書產生系統</div>
             </div>
         </div>
         
@@ -136,16 +173,15 @@
     <!-- 主要表單 -->
     <main class="max-w-5xl mx-auto px-4">
         
-        <!-- 使用須知 (內容留白) -->
+        <!-- 使用須知 -->
         <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded shadow-sm">
             <div class="flex">
                 <div class="ml-1 w-full">
                     <p class="text-sm text-blue-700 font-bold text-lg mb-1">
                         📋 使用須知
                     </p>
-                    <!-- 內容區域，目前留白供日後填寫 -->
                     <div class="text-sm text-blue-800 pl-2 border-l-2 border-blue-200 min-h-[20px]">
-                        <!-- 可在此輸入須知內容 -->
+                        <!-- 內容留白 -->
                     </div>
                 </div>
             </div>
@@ -170,12 +206,13 @@
                     </div>
                     <div>
                         <label class="text-sm font-medium text-gray-700 mb-1 block">代表人職稱</label>
-                        <input type="text" id="company_title" class="input-field" value="負責人">
+                        <!-- 移除 value="負責人" -->
+                        <input type="text" id="company_title" class="input-field" placeholder="">
                     </div>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700 mb-1 block">公司登記地址</label>
-                    <input type="text" id="reg_address" class="input-field">
+                    <label class="text-sm font-medium text-gray-700 mb-1 block">公司登記地址 (總公司)</label>
+                    <input type="text" id="reg_address" class="input-field" placeholder="例：臺北市信義區松仁路7號1樓">
                 </div>
                 
                 <!-- 分公司 -->
@@ -185,8 +222,14 @@
                         <span>實習地點與登記地址不同 (如派駐分公司)</span>
                     </label>
                     <div id="branch_area" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 hidden bg-gray-50 p-4 rounded border border-gray-200">
-                        <input type="text" id="branch_name" class="input-field" placeholder="分公司名稱">
-                        <input type="text" id="branch_addr" class="input-field" placeholder="實際實習地址">
+                        <div>
+                            <label class="text-sm text-gray-500 mb-1 block">實習單位/分公司名稱</label>
+                            <input type="text" id="branch_name" class="input-field" placeholder="例：淡水分公司">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500 mb-1 block">實際實習地址</label>
+                            <input type="text" id="branch_addr" class="input-field" placeholder="例：新北市淡水區中山路106號">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -224,12 +267,34 @@
                     </div>
                 </div>
 
-                <!-- 日期 -->
+                <!-- 日期 (改為民國年拆分輸入 + 自動跳轉) -->
                 <div>
                     <label class="block text-lg font-bold text-thuBlue mb-3">2. 實習期間</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><span class="text-sm text-gray-500 mb-1 block">開始日期</span><input type="date" id="start_date" class="input-field"></div>
-                        <div><span class="text-sm text-gray-500 mb-1 block">結束日期</span><input type="date" id="end_date" class="input-field"></div>
+                        <!-- 開始時間 -->
+                        <div>
+                            <span class="text-sm text-gray-500 mb-1 block">實習開始時間 (民國年/月/日)</span>
+                            <div class="date-group">
+                                <!-- 添加 oninput 事件處理自動跳轉 -->
+                                <input type="number" id="start_y" class="date-input w-20" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
+                                <span class="date-sep">/</span>
+                                <input type="number" id="start_m" class="date-input w-16" placeholder="07" oninput="autoJump(this, 2, 'start_d')">
+                                <span class="date-sep">/</span>
+                                <input type="number" id="start_d" class="date-input w-16" placeholder="01" oninput="autoJump(this, 2, 'end_y')"> 
+                                <!-- 跳到結束年份 -->
+                            </div>
+                        </div>
+                        <!-- 結束時間 -->
+                        <div>
+                            <span class="text-sm text-gray-500 mb-1 block">實習結束時間 (民國年/月/日)</span>
+                            <div class="date-group">
+                                <input type="number" id="end_y" class="date-input w-20" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
+                                <span class="date-sep">/</span>
+                                <input type="number" id="end_m" class="date-input w-16" placeholder="06" oninput="autoJump(this, 2, 'end_d')">
+                                <span class="date-sep">/</span>
+                                <input type="number" id="end_d" class="date-input w-16" placeholder="30">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -237,9 +302,9 @@
                 <div>
                     <label class="block text-lg font-bold text-thuBlue mb-3">3. 每日實習時間</label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div><span class="text-sm text-gray-500 mb-1 block">每日開始</span><input type="time" id="daily_start" value="09:00" class="input-field"></div>
-                        <div><span class="text-sm text-gray-500 mb-1 block">每日結束</span><input type="time" id="daily_end" value="18:00" class="input-field"></div>
-                        <div><span class="text-sm text-gray-500 mb-1 block">共計(小時)</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field"></div>
+                        <div><span class="text-sm text-gray-500 mb-1 block">每日開始</span><input type="time" id="daily_start" value="09:00" class="input-field font-sans"></div>
+                        <div><span class="text-sm text-gray-500 mb-1 block">每日結束</span><input type="time" id="daily_end" value="18:00" class="input-field font-sans"></div>
+                        <div><span class="text-sm text-gray-500 mb-1 block">共計(小時)</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field font-sans"></div>
                     </div>
                 </div>
 
@@ -306,7 +371,7 @@
             </div>
         </div>
 
-        <!-- 底部操作區 (已移除 STEP 1 提示文字) -->
+        <!-- 底部操作區 -->
         <div class="pb-8 flex justify-center md:justify-end items-center gap-4">
             <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-400 text-white px-10 py-4 rounded-lg font-bold shadow-lg transition hover:bg-blue-900 hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 text-lg">
                 <i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)
@@ -314,7 +379,7 @@
         </div>
     </main>
 
-    <!-- 頁尾版權宣告 (高度精簡) -->
+    <!-- 頁尾版權宣告 -->
     <footer>
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center justify-center">
@@ -328,6 +393,16 @@
 
     <!-- JS 邏輯 -->
     <script>
+        // 自動跳轉函式
+        function autoJump(current, maxLen, nextId) {
+            if (current.value.length >= maxLen) {
+                const next = document.getElementById(nextId);
+                if (next) {
+                    next.focus();
+                }
+            }
+        }
+
         // UI Helper Functions
         function showMsg(msg) {
             const el = document.getElementById('status-bar');
@@ -415,7 +490,7 @@
                 xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
                 // 修復 %%%
                 xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
-                // 修復 {{ }} (以防萬一)
+                // 修復 {{ }}
                 xmlStr = xmlStr.replace(/{\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*{/g, "{{");
                 xmlStr = xmlStr.replace(/}\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*}/g, "}}");
                 return xmlStr;
@@ -440,16 +515,31 @@
                 // 收集資料
                 const data = {};
                 try {
+                    // 公司基本資料
                     data.company_name = (document.getElementById('company_name')?.value || "未填寫");
                     data.company_tax_id = (document.getElementById('company_tax_id')?.value || "");
                     data.company_rep = (document.getElementById('company_rep')?.value || "");
                     data.company_title = (document.getElementById('company_title')?.value || "");
+                    
+                    // 地址邏輯修正:
                     const regAddr = document.getElementById('reg_address')?.value || "";
+                    data.company_address = regAddr;
+
+                    // 設定第七條實習地點
                     if (document.getElementById('is_branch')?.checked) {
                         const bname = document.getElementById('branch_name')?.value || "";
                         const baddr = document.getElementById('branch_addr')?.value || "";
-                        data.company_address = `${regAddr} (實習地點：${bname} - ${baddr})`;
-                    } else data.company_address = regAddr;
+                        // 格式：分公司名稱（分公司地址）
+                        if (bname && baddr) {
+                            data.intern_location = `${bname}（${baddr}）`;
+                        } else if (baddr) {
+                            data.intern_location = baddr;
+                        } else {
+                            data.intern_location = regAddr; 
+                        }
+                    } else {
+                        data.intern_location = regAddr;
+                    }
 
                     // students
                     const sCount = Number(document.getElementById('student_count')?.value || 1);
@@ -466,13 +556,14 @@
                     data.s3_name = sList[2].name; data.s3_id = sList[2].id;
                     data.student_name = sList[0].name + (sCount > 1 ? " 等" : "");
 
-                    // dates (轉民國年)
-                    const sDateStr = document.getElementById('start_date')?.value;
-                    const eDateStr = document.getElementById('end_date')?.value;
-                    const sDate = sDateStr ? new Date(sDateStr) : null;
-                    const eDate = eDateStr ? new Date(eDateStr) : null;
-                    if (sDate && !isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); } else { data.s_y="";data.s_m="";data.s_d=""; }
-                    if (eDate && !isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); } else { data.e_y="";data.e_m="";data.e_d=""; }
+                    // dates (改為直接讀取民國年欄位)
+                    data.s_y = document.getElementById('start_y')?.value || "";
+                    data.s_m = document.getElementById('start_m')?.value || "";
+                    data.s_d = document.getElementById('start_d')?.value || "";
+                    
+                    data.e_y = document.getElementById('end_y')?.value || "";
+                    data.e_m = document.getElementById('end_m')?.value || "";
+                    data.e_d = document.getElementById('end_d')?.value || "";
 
                     data.daily_start = document.getElementById('daily_start')?.value || "";
                     data.daily_end = document.getElementById('daily_end')?.value || "";
@@ -500,7 +591,7 @@
                         data.pay_work_amount = wam ? wam.toLocaleString() : "";
                     }
 
-                    // 福利：dorm / food / trans
+                    // 福利
                     function setWelfare(prefix) {
                         const opt = document.getElementById(prefix + '_opt')?.value || 'none';
                         data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
@@ -527,8 +618,6 @@
                 // 自動讀取 github 上的 template.docx
                 let arrayBuffer;
                 try {
-                    // 嘗試 fetch 同目錄下的 template.docx
-                    // 注意：這需要 template.docx 與 index.html 在同一層目錄
                     const resp = await fetch('./template.docx');
                     if (!resp.ok) throw new Error('無法讀取內建範本 (template.docx)，請確認檔案是否存在。');
                     arrayBuffer = await resp.arrayBuffer();
@@ -544,7 +633,7 @@
                 try {
                     zip = new PizZip(arrayBuffer);
                 } catch (e) {
-                    showError("範本無法解析為 zip：" + e.message);
+                    showError("範本無法解析為 zip（template.docx 可能不是有效的 docx 檔）：" + e.message);
                     btn.disabled = false;
                     btn.classList.add('bg-thuBlue');
                     return;
@@ -617,6 +706,7 @@
             if (missing.length > 0) {
                 document.getElementById('lib-error').style.display = 'block';
                 document.getElementById('missing-lib').innerText = missing.join(', ');
+                // 保留按鈕 disabled，以免觸發錯誤；但也允許手動載入範本
             } else {
                 const btn = document.getElementById('genBtn');
                 btn.disabled = false;
