@@ -33,7 +33,7 @@
         body {
             background-color: #f3f4f6;
             font-family: 'Noto Sans TC', sans-serif;
-            padding-bottom: 100px; 
+            padding-bottom: 120px; /* 增加底部留白給頁尾 */
             color: #374151;
             scroll-behavior: smooth;
         }
@@ -66,14 +66,15 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 日期群組 */
+        /* 日期群組 (民國年樣式) - 置中優化 */
         .date-group {
             display: flex;
             align-items: center;
+            justify-content: center; /* 內容置中 */
             background: white;
             border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.4rem;
+            border-radius: 0.375rem;
+            padding: 0.5rem; /* 稍微增加內距 */
             transition: all 0.2s ease;
         }
         .date-group:focus-within {
@@ -82,14 +83,26 @@
         }
         .date-input {
             border: none;
-            text-align: center;
+            text-align: center; /* 文字置中 */
             width: 100%;
             outline: none;
-            font-size: 1rem;
+            font-size: 1.1rem; /* 字體加大 */
             color: #374151;
             background: transparent;
+            padding: 0;
+            font-weight: 500; /* 字體加粗 */
         }
-        .date-sep { color: #9ca3af; font-weight: bold; padding: 0 0.2rem; user-select: none; }
+        .date-input::placeholder {
+            color: #d1d5db;
+            font-weight: normal;
+        }
+        .date-sep { 
+            color: #9ca3af; 
+            font-weight: bold; 
+            padding: 0 0.5rem; /* 增加分隔線間距 */
+            user-select: none; 
+            font-size: 1.2rem;
+        }
 
         /* 卡片樣式 */
         .card { 
@@ -142,7 +155,7 @@
             background-color: #1f2937;
             color: #9ca3af;
             text-align: center;
-            padding: 1rem 0;
+            padding: 1.5rem 0;
             font-size: 0.75rem;
             z-index: 50;
             border-top: 3px solid #C6A87C;
@@ -203,27 +216,23 @@
         </div>
     </div>
 
-    <!-- 主要表單 (移除步驟條，直接顯示內容) -->
+    <!-- 主要表單 -->
     <main class="max-w-4xl mx-auto px-4 mb-20 pt-28">
         
-        <!-- 使用須知 -->
+        <!-- 使用須知 (內容更新) -->
         <div class="bg-white border border-blue-100 rounded-xl p-6 mb-8 shadow-sm">
             <div class="flex items-start gap-4">
                 <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                     <i class="fa-solid fa-circle-info text-xl"></i>
                 </div>
                 <div class="flex-1">
-                    <h3 class="text-base font-bold text-gray-800 mb-1">使用須知</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        1.本系統將協助您快速產出符合規範的實習合約書。請依序填寫下方資料，系統將自動帶入公版 Word 範本中。所有運算皆在您的瀏覽器完成，不會上傳任何個資。</p>
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        2.本系統於上線初期僅提供中文版本，適用範圍限於國內實習；後續將推出外語版本並擴大適用於國外實習。
-                    <p class="text-sm text-gray-500 leading-relaxed">                   
-                        3.因實習計畫書樣態多元，故目前版本不包含實習計畫書，合約用印前請務必完成實習計畫書填寫。
-                    <p class="text-sm text-gray-500 leading-relaxed">                   
-                        4.如有任何系統反饋，歡迎寄信至 s11810249@thu.edu.tw！
-
-                    </p>
+                    <h3 class="text-base font-bold text-gray-800 mb-2">使用須知</h3>
+                    <ol class="text-sm text-gray-600 leading-relaxed list-decimal list-outside ml-4 space-y-1">
+                        <li>本系統將協助您快速產出符合規範的實習合約書。請依序填寫下方資料，系統將自動帶入公版 Word 範本中。所有運算皆在您的瀏覽器完成，不會上傳任何個資。</li>
+                        <li>本系統於上線初期僅提供中文版本，適用範圍限於國內實習；後續將推出外語版本並擴大適用於國外實習。</li>
+                        <li>因實習計畫書樣態多元，故目前版本不包含實習計畫書，合約用印前請務必完成實習計畫書填寫。</li>
+                        <li>如有任何系統反饋，歡迎寄信至 <a href="mailto:s11810249@thu.edu.tw" class="text-blue-600 hover:underline">s11810249@thu.edu.tw</a>！</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -307,13 +316,13 @@
                 <span class="card-header-title">實習期間與時間</span>
             </div>
             <div class="p-8 space-y-8">
-                <!-- 日期 -->
+                <!-- 日期 (置中樣式) -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-3">1. 實習期間</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- 開始時間 -->
                         <div>
-                            <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide">實習開始 (民國年/月/日)</span>
+                            <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習開始 (民國年/月/日)</span>
                             <div class="date-group">
                                 <input type="number" id="start_y" class="date-input w-16 font-bold text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
                                 <span class="date-sep">/</span>
@@ -324,7 +333,7 @@
                         </div>
                         <!-- 結束時間 -->
                         <div>
-                            <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide">實習結束 (民國年/月/日)</span>
+                            <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習結束 (民國年/月/日)</span>
                             <div class="date-group">
                                 <input type="number" id="end_y" class="date-input w-16 font-bold text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
                                 <span class="date-sep">/</span>
@@ -382,7 +391,7 @@
                 <div id="pay-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
                     <label class="block text-lg font-bold text-thuBlue mb-3">2. 實習待遇與給付 <span class="text-red-500 text-sm">*必填</span></label>
                     
-                    <!-- 未選擇類型的提醒方塊 -->
+                    <!-- 未選擇類型的提醒方塊 (預設顯示) -->
                     <div id="panel_initial" class="flex items-center justify-center p-8 bg-yellow-50 rounded-xl border-2 border-dashed border-yellow-200 text-yellow-700 font-bold shadow-sm">
                         <i class="fa-solid fa-arrow-up mr-2 animate-bounce"></i> 請先選擇上方「實習類型」以解鎖此區塊
                     </div>
@@ -395,10 +404,11 @@
                             <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> <span class="font-bold text-gray-700">實習津貼</span></label>
                         </div>
                         <div id="learn_amt_box" class="hidden transition-all">
+                            <label class="block text-xs font-bold text-green-800 mb-2 uppercase">每月給付總額</label>
                             <div class="relative w-full md:w-64">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">NT$</div>
-                                <input type="number" id="learn_amount" placeholder="0" class="input-field pl-12 pr-8 text-right border-green-300 focus:border-green-600 focus:ring-green-600">
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">元</div>
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
+                                <input type="number" id="learn_amount" placeholder="0" class="input-field pl-12 pr-8 text-right border-green-300 focus:border-green-600 focus:ring-green-600 font-mono text-lg">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div>
                             </div>
                         </div>
                     </div>
@@ -409,9 +419,9 @@
                         <div>
                             <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額</label>
                             <div class="relative w-full md:w-64">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">NT$</div>
-                                <input type="number" id="work_amount" placeholder="27470" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 focus:ring-orange-500">
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">元</div>
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
+                                <input type="number" id="work_amount" placeholder="27470" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 focus:ring-orange-500 font-mono text-lg">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div>
                             </div>
                         </div>
                         
@@ -441,8 +451,8 @@
                                 <option value="paid">付費提供</option>
                             </select>
                             <div id="dorm_cost_wrapper" class="hidden relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm">NT$</div>
-                                <input id="dorm_cost" type="number" placeholder="金額" class="input-field pl-10 pr-8 text-right mt-1">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm font-bold">NT$</div>
+                                <input id="dorm_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/月</div>
                             </div>
                         </div>
@@ -455,8 +465,8 @@
                                 <option value="paid">付費提供</option>
                             </select>
                             <div id="food_cost_wrapper" class="hidden relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm">NT$</div>
-                                <input id="food_cost" type="number" placeholder="金額" class="input-field pl-10 pr-8 text-right mt-1">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm font-bold">NT$</div>
+                                <input id="food_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/餐</div>
                             </div>
                         </div>
@@ -470,8 +480,8 @@
                                 <option value="subsidy">交通津貼</option>
                             </select>
                             <div id="trans_cost_wrapper" class="hidden relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm">NT$</div>
-                                <input id="trans_cost" type="number" placeholder="金額" class="input-field pl-10 pr-8 text-right mt-1">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm font-bold">NT$</div>
+                                <input id="trans_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/月</div>
                             </div>
                         </div>
@@ -493,8 +503,8 @@
     <footer>
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center justify-center gap-2">
-                <p class="font-bold text-white mb-1 tracking-wide text-sm">Copyright © 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
-                <p class="text-xs text-gray-400">
+                <p class="font-bold text-white mb-1 tracking-wide text-sm">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
+                <p class="text-xs text-gray-500">
                     系統版本 V1.0.0 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
@@ -578,16 +588,22 @@
             const tEl = document.querySelector('input[name="contract_type"]:checked');
             const t = tEl ? tEl.value : null;
             
-            document.getElementById('panel_initial').classList.add('hidden');
+            const panelInit = document.getElementById('panel_initial');
             const panelLearn = document.getElementById('panel_learn');
             const panelWork = document.getElementById('panel_work');
             
             if (t === 'learn') {
+                panelInit.classList.add('hidden');
                 panelLearn.classList.remove('hidden');
                 panelWork.classList.add('hidden');
             } else if (t === 'work') {
+                panelInit.classList.add('hidden');
                 panelLearn.classList.add('hidden');
                 panelWork.classList.remove('hidden');
+            } else {
+                panelInit.classList.remove('hidden');
+                panelLearn.classList.add('hidden');
+                panelWork.classList.add('hidden');
             }
             togglePayInputs();
         }
@@ -877,7 +893,8 @@
                 btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
 
-            toggleType();
+            // 初始觸發狀態檢查
+            toggleType(); // 確保載入時檢查類型
             togglePayInputs();
             toggleCost('dorm');
             toggleCost('food');
