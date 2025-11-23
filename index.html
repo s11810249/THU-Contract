@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>東海大學學生校外實習合約產生系統</title>
+    <title>東海大學學生校外實習合約產生系統 (V8)</title>
     
-    <!-- 1. 核心函式庫 (使用穩定版 Unpkg) -->
+    <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
@@ -15,9 +15,7 @@
     <!-- 東海配色 -->
     <script>
         tailwind.config = {
-            theme: {
-                extend: { colors: { thuBlue: '#002E5D', thuGold: '#C6A87C' } }
-            }
+            theme: { extend: { colors: { thuBlue: '#002E5D', thuGold: '#C6A87C' } } }
         }
     </script>
     <style>
@@ -29,15 +27,9 @@
         .border-top-blue { border-top: 4px solid #002E5D; }
         .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
-        #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div id="lib-error">
-        ⚠️ 系統偵測到核心元件未載入成功！可能是網路阻擋了 CDN。<br>
-        請嘗試使用手機網路或更換瀏覽器。錯誤元件：<span id="missing-lib"></span>
-    </div>
 
     <!-- Header -->
     <div class="fixed top-0 left-0 w-full h-[70px] bg-thuBlue text-white z-50 flex items-center justify-between px-4 md:px-8 shadow-md">
@@ -194,7 +186,6 @@
                 <!-- 待遇 -->
                 <div class="border-t pt-4">
                     <label class="block text-lg font-bold text-thuBlue mb-2">4. 實習待遇與給付</label>
-                    
                     <div id="panel_learn" class="bg-green-50 p-4 rounded border border-green-200">
                         <span class="text-xs bg-green-600 text-white px-2 py-1 rounded">學習型適用</span>
                         <div class="mt-2 flex flex-wrap gap-4">
@@ -206,7 +197,6 @@
                             <input type="number" id="learn_amount" placeholder="金額 (元)" class="input-field w-48">
                         </div>
                     </div>
-
                     <div id="panel_work" class="bg-orange-50 p-4 rounded border border-orange-200 hidden">
                         <span class="text-xs bg-orange-600 text-white px-2 py-1 rounded">勞資型適用</span>
                         <div class="mt-2">
@@ -250,11 +240,10 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <!-- 產生按鈕與測試區 -->
+        <!-- 按鈕區 -->
         <div class="pb-10">
             <div class="flex flex-col md:flex-row justify-end items-center gap-4">
                 <div class="text-sm text-gray-500 bg-gray-200 p-2 rounded flex items-center gap-2">
@@ -268,23 +257,11 @@
             </div>
             <p id="statusMsg" class="text-right text-sm mt-2 font-bold text-red-600 hidden whitespace-pre-wrap"></p>
         </div>
-
     </main>
 
     <!-- JS 邏輯區 -->
     <script>
-        window.onload = function() {
-            renderStudents(); 
-            const missing = [];
-            if (typeof PizZip === 'undefined') missing.push('PizZip');
-            if (typeof window.docxtemplater === 'undefined') missing.push('Docxtemplater');
-            if (missing.length > 0) {
-                document.getElementById('lib-error').style.display = 'block';
-                document.getElementById('missing-lib').innerText = missing.join(', ');
-                document.getElementById('genBtn').disabled = true;
-                document.getElementById('genBtn').classList.add('bg-gray-400', 'cursor-not-allowed');
-            }
-        };
+        window.onload = function() { renderStudents(); };
 
         function renderStudents() {
             const count = document.getElementById('student_count').value;
@@ -298,11 +275,9 @@
                             <input type="text" id="s_name_${i}" placeholder="姓名" class="input-field">
                             <input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field">
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
         }
-
         function toggleBranch() { document.getElementById('branch_area').classList.toggle('hidden', !document.getElementById('is_branch').checked); }
         function toggleType() {
             const type = document.querySelector('input[name="contract_type"]:checked').value;
@@ -318,7 +293,6 @@
             const input = document.getElementById(prefix + '_cost');
             if (val === 'paid' || val === 'subsidy') input.classList.remove('hidden'); else input.classList.add('hidden');
         }
-
         function showStatus(msg, isError=false) {
             const el = document.getElementById('statusMsg');
             el.innerText = msg;
@@ -327,12 +301,14 @@
             if(isError) alert(msg); 
         }
 
+        // --- 核心：產生 Word 檔案 (含 V8 智慧修復) ---
         function generateDoc() {
-            if (typeof PizZip === 'undefined') { alert("錯誤：PizZip 元件未載入"); return; }
+            if (typeof PizZip === 'undefined') { alert("核心元件未載入"); return; }
             showStatus("處理中...", false);
             const btn = document.getElementById('genBtn');
             btn.disabled = true;
 
+            // 1. 收集資料
             const data = {};
             try {
                 data.company_name = document.getElementById('company_name').value || "未填寫機構";
@@ -365,12 +341,8 @@
 
                 const sDate = new Date(document.getElementById('start_date').value);
                 const eDate = new Date(document.getElementById('end_date').value);
-                
-                if(!isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); }
-                else { data.s_y = ""; data.s_m = ""; data.s_d = ""; }
-
-                if(!isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); }
-                else { data.e_y = ""; data.e_m = ""; data.e_d = ""; }
+                if(!isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); } else { data.s_y="";data.s_m="";data.s_d=""; }
+                if(!isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); } else { data.e_y="";data.e_m="";data.e_d=""; }
 
                 data.daily_start = document.getElementById('daily_start').value;
                 data.daily_end = document.getElementById('daily_end').value;
@@ -407,9 +379,7 @@
                 setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
 
             } catch(e) {
-                showStatus("資料收集錯誤：" + e.message, true);
-                btn.disabled = false; btn.innerText = "產生合約文件 (Word)";
-                return;
+                showStatus("資料收集錯誤：" + e.message, true); btn.disabled = false; return;
             }
 
             const manualFile = document.getElementById('manual_template').files[0];
@@ -418,36 +388,39 @@
                 reader.onload = function(evt) { processTemplate(evt.target.result, data, btn); };
                 reader.readAsBinaryString(manualFile);
             } else {
-                fetch('./template.docx')
-                    .then(r => {
-                        if (!r.ok) throw new Error("找不到 template.docx (請確認檔名小寫)");
-                        return r.arrayBuffer();
-                    })
-                    .then(c => processTemplate(c, data, btn))
-                    .catch(e => {
-                        showStatus("讀取範本錯誤：" + e.message, true);
-                        btn.disabled = false; btn.innerText = "產生合約文件 (Word)";
-                    });
+                fetch('./template.docx').then(r => { if(!r.ok) throw new Error("找不到 template.docx"); return r.arrayBuffer(); })
+                .then(c => processTemplate(c, data, btn))
+                .catch(e => { showStatus("讀取範本錯誤：" + e.message, true); btn.disabled = false; });
             }
         }
 
+        // V8 智慧修復與產生邏輯
         function processTemplate(content, data, btn) {
             try {
                 const zip = new PizZip(content);
+                
+                // --- V8 智慧修復區塊 ---
+                // 嘗試讀取 document.xml 並修復 Word 弄碎的標籤
+                const docXml = zip.file("word/document.xml").asText();
+                // 1. 修復 Split Open Tags: <w:t>{</w:t>...<w:t>{</w:t> -> <w:t>{{</w:t>
+                let fixedXml = docXml.replace(/<w:t>({)<\/w:t>(\s*<[^>]+>\s*)*<w:t>({)<\/w:t>/g, "<w:t>{{</w:t>");
+                // 2. 修復 Split Close Tags: <w:t>}</w:t>...<w:t>}</w:t> -> <w:t>}}</w:t>
+                fixedXml = fixedXml.replace(/<w:t>(})<\/w:t>(\s*<[^>]+>\s*)*<w:t>(})<\/w:t>/g, "<w:t>}}</w:t>");
+                
+                zip.file("word/document.xml", fixedXml);
+                // ---------------------
+
                 const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 doc.render(data);
                 const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                 saveAs(out, `東海大學實習合約_${data.s1_name}.docx`);
                 showStatus("下載成功！", false);
             } catch (error) {
-                // Multi Error 診斷邏輯
                 if (error.properties && error.properties.errors) {
-                    const errorMessages = error.properties.errors.map(function(e) {
-                        return e.properties.explanation;
-                    }).join("\n");
-                    showStatus("Word 範本標籤錯誤 (Multi Error)：\n" + errorMessages + "\n\n請檢查 Word 檔內的 {{ }} 是否有打錯字。", true);
+                    const msgs = error.properties.errors.map(e => e.properties.explanation).join("\n");
+                    showStatus("標籤錯誤 (Multi Error)：\n" + msgs + "\n\n建議：請嘗試在 Word 中將 {{ }} 刪除並重新手動輸入。", true);
                 } else {
-                    showStatus("產生 Word 錯誤：" + error.message, true);
+                    showStatus("錯誤：" + error.message, true);
                 }
                 console.error(error);
             } finally {
