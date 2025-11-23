@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>東海大學學生校外實習合約產生系統</title>
+    <title>東海大學學生校外實習合約產生系統 (V11.5)</title>
     
-    <!-- 1. 核心函式庫 (使用穩定版 Unpkg) -->
+    <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PizZip: 負責解壓縮 Word 檔 -->
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
-    <!-- Docxtemplater: 負責變數替換 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
-    <!-- FileSaver: 負責下載檔案 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-    <!-- FontAwesome: 圖示 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- 東海配色 -->
@@ -31,7 +27,6 @@
         .border-top-blue { border-top: 4px solid #002E5D; }
         .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
-        /* 錯誤訊息與 Loading */
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
         #status-bar { display: none; position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     </style>
@@ -83,197 +78,59 @@
 
     <!-- 主要表單 -->
     <main class="max-w-5xl mx-auto px-4">
-        
-        <!-- 卡片 1: 機構資料 -->
+        <!-- 卡片 1: 機構 -->
         <div class="card border-top-blue">
             <div class="card-header bg-gray-50"><i class="fa-regular fa-building mr-2"></i> 乙方：實習機構資料</div>
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2">
-                    <label class="block text-sm text-gray-500 mb-1">機構全銜 (法定名稱) *</label>
-                    <input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司">
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-500 mb-1">統一編號</label>
-                    <input type="text" id="company_tax_id" class="input-field">
-                </div>
+                <div class="md:col-span-2"><label class="text-sm text-gray-500">機構全銜 (法定名稱)</label><input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司"></div>
+                <div><label class="text-sm text-gray-500">統一編號</label><input type="text" id="company_tax_id" class="input-field"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-500 mb-1">代表人姓名</label>
-                        <input type="text" id="company_rep" class="input-field">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-500 mb-1">代表人職稱</label>
-                        <input type="text" id="company_title" class="input-field" value="負責人">
-                    </div>
+                    <div><label class="text-sm text-gray-500">代表人</label><input type="text" id="company_rep" class="input-field"></div>
+                    <div><label class="text-sm text-gray-500">職稱</label><input type="text" id="company_title" class="input-field" value="負責人"></div>
                 </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm text-gray-500 mb-1">公司登記地址</label>
-                    <input type="text" id="reg_address" class="input-field">
-                </div>
-                
-                <!-- 分公司 -->
-                <div class="md:col-span-2 border-t pt-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="checkbox" id="is_branch" onchange="toggleBranch()" class="w-4 h-4">
-                        <label for="is_branch" class="text-sm font-bold text-gray-600">實習地點與登記地址不同 (如派駐分公司)</label>
-                    </div>
-                    <div id="branch_area" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
-                        <div>
-                            <input type="text" id="branch_name" class="input-field" placeholder="分公司名稱">
-                        </div>
-                        <div class="md:col-span-2">
-                            <input type="text" id="branch_addr" class="input-field" placeholder="實際實習地址">
-                        </div>
-                    </div>
-                </div>
+                <div class="md:col-span-2"><label class="text-sm text-gray-500">地址</label><input type="text" id="reg_address" class="input-field"></div>
+                <div class="md:col-span-2 pt-2"><label class="flex items-center gap-2 text-sm font-bold text-gray-600"><input type="checkbox" id="is_branch" onchange="toggleBranch()"> 實習地點不同 (如分公司)</label><div id="branch_area" class="grid grid-cols-2 gap-4 mt-2 hidden"><input type="text" id="branch_name" class="input-field" placeholder="分公司名稱"><input type="text" id="branch_addr" class="input-field" placeholder="實際地址"></div></div>
             </div>
         </div>
 
-        <!-- 卡片 2: 學生資料 -->
+        <!-- 卡片 2: 學生 -->
         <div class="card border-top-blue">
-            <div class="card-header bg-gray-50 flex justify-between">
-                <div><i class="fa-solid fa-user-graduate mr-2"></i> 甲方：實習學生資料</div>
-                <select id="student_count" onchange="renderStudents()" class="text-sm border rounded px-2 py-1">
-                    <option value="1">1 位學生</option>
-                    <option value="2">2 位學生</option>
-                    <option value="3">3 位學生</option>
-                </select>
-            </div>
-            <div id="student_container" class="p-6 space-y-4">
-            </div>
+            <div class="card-header flex justify-between"><div><i class="fa-solid fa-user-graduate mr-2"></i> 甲方：學生資料</div><select id="student_count" onchange="renderStudents()" class="border rounded px-2 py-1 text-sm"><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option></select></div>
+            <div id="student_container" class="p-6 space-y-4"></div>
         </div>
 
-        <!-- 卡片 3: 實習條件 -->
+        <!-- 卡片 3: 條件 -->
         <div class="card border-top-gold">
-            <div class="card-header bg-gray-50"><i class="fa-solid fa-briefcase mr-2"></i> 實習條件設定</div>
+            <div class="card-header"><i class="fa-solid fa-briefcase mr-2"></i> 條件與待遇</div>
             <div class="p-6 space-y-6">
-                
-                <!-- 類型 -->
-                <div>
-                    <label class="block text-lg font-bold text-thuBlue mb-2">1. 請選擇實習類型</label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-2 cursor-pointer p-3 border rounded-lg hover:bg-blue-50 bg-white shadow-sm w-full md:w-auto">
-                            <input type="radio" name="contract_type" value="learn" checked onchange="toggleType()" class="w-5 h-5 text-thuBlue">
-                            <span class="font-bold">一般型 (學習型)</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer p-3 border rounded-lg hover:bg-orange-50 bg-white shadow-sm w-full md:w-auto">
-                            <input type="radio" name="contract_type" value="work" onchange="toggleType()" class="w-5 h-5 text-orange-600">
-                            <span class="font-bold">工作型 (勞資型)</span>
-                        </label>
-                    </div>
+                <div class="flex gap-4">
+                    <label class="flex items-center gap-2 p-3 border rounded hover:bg-blue-50 cursor-pointer w-full"><input type="radio" name="contract_type" value="learn" checked onchange="toggleType()"> 一般型 (學習型)</label>
+                    <label class="flex items-center gap-2 p-3 border rounded hover:bg-orange-50 cursor-pointer w-full"><input type="radio" name="contract_type" value="work" onchange="toggleType()"> 工作型 (勞資型)</label>
                 </div>
-
-                <!-- 日期 -->
-                <div>
-                    <label class="block text-lg font-bold text-thuBlue mb-2">2. 實習期間</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <span class="text-sm text-gray-500">開始日期</span>
-                            <input type="date" id="start_date" class="input-field">
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">結束日期</span>
-                            <input type="date" id="end_date" class="input-field">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 時間 -->
-                <div>
-                    <label class="block text-lg font-bold text-thuBlue mb-2">3. 每日實習時間</label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-3 rounded">
-                        <div>
-                            <span class="text-sm text-gray-500">開始</span>
-                            <input type="time" id="daily_start" value="09:00" class="input-field">
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">結束</span>
-                            <input type="time" id="daily_end" value="18:00" class="input-field">
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">共計(小時)</span>
-                            <input type="number" id="daily_hours" value="8" step="0.5" class="input-field">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 待遇 -->
+                <div class="grid grid-cols-2 gap-4"><div><span class="text-sm text-gray-500">開始</span><input type="date" id="start_date" class="input-field"></div><div><span class="text-sm text-gray-500">結束</span><input type="date" id="end_date" class="input-field"></div></div>
+                <div class="grid grid-cols-3 gap-4"><div><span class="text-sm text-gray-500">開始</span><input type="time" id="daily_start" value="09:00" class="input-field"></div><div><span class="text-sm text-gray-500">結束</span><input type="time" id="daily_end" value="18:00" class="input-field"></div><div><span class="text-sm text-gray-500">時數</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field"></div></div>
                 <div class="border-t pt-4">
-                    <label class="block text-lg font-bold text-thuBlue mb-2">4. 實習待遇與給付</label>
-                    <div id="panel_learn" class="bg-green-50 p-4 rounded border border-green-200">
-                        <span class="text-xs bg-green-600 text-white px-2 py-1 rounded">學習型適用</span>
-                        <div class="mt-2 flex flex-wrap gap-4">
-                            <label><input type="radio" name="pay_opt_learn" value="none" checked onchange="togglePayInputs()"> 無</label>
-                            <label><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()"> 獎學金</label>
-                            <label><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()"> 實習津貼</label>
-                        </div>
-                        <div id="learn_amt_box" class="mt-2 hidden">
-                            <input type="number" id="learn_amount" placeholder="金額 (元)" class="input-field w-48">
-                        </div>
-                    </div>
-                    <div id="panel_work" class="bg-orange-50 p-4 rounded border border-orange-200 hidden">
-                        <span class="text-xs bg-orange-600 text-white px-2 py-1 rounded">勞資型適用</span>
-                        <div class="mt-2">
-                            <label class="block text-sm text-orange-800 font-bold mb-1">薪資金額 (不得低於基本工資)</label>
-                            <input type="number" id="work_amount" placeholder="27470" class="input-field w-48">
-                        </div>
-                    </div>
+                    <div id="panel_learn" class="bg-green-50 p-4 rounded border border-green-200"><div class="text-sm font-bold text-green-800 mb-2">學習型給付</div><div class="flex gap-4 mb-2"><label><input type="radio" name="pay_opt_learn" value="none" checked onchange="togglePayInputs()"> 無</label><label><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()"> 獎學金</label><label><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()"> 津貼</label></div><input type="number" id="learn_amount" placeholder="金額" class="input-field w-48 hidden"></div>
+                    <div id="panel_work" class="bg-orange-50 p-4 rounded border border-orange-200 hidden"><div class="text-sm font-bold text-orange-800 mb-2">勞資型薪資</div><input type="number" id="work_amount" placeholder="27470" class="input-field w-48"></div>
                 </div>
-
-                <!-- 福利 -->
-                <div class="border-t pt-4">
-                    <label class="block text-lg font-bold text-thuBlue mb-2">5. 福利項目</label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="text-sm font-bold">住宿</label>
-                            <select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field mb-2">
-                                <option value="none">無</option>
-                                <option value="free">免費提供</option>
-                                <option value="paid">付費提供</option>
-                            </select>
-                            <input type="number" id="dorm_cost" placeholder="元/月" class="input-field hidden">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold">膳食</label>
-                            <select id="food_opt" onchange="toggleCost('food')" class="input-field mb-2">
-                                <option value="none">無</option>
-                                <option value="free">免費提供</option>
-                                <option value="paid">付費提供</option>
-                            </select>
-                            <input type="number" id="food_cost" placeholder="元/餐" class="input-field hidden">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold">交通</label>
-                            <select id="trans_opt" onchange="toggleCost('trans')" class="input-field mb-2">
-                                <option value="none">無</option>
-                                <option value="free">免費提供</option>
-                                <option value="paid">付費提供</option>
-                                <option value="subsidy">交通津貼</option>
-                            </select>
-                            <input type="number" id="trans_cost" placeholder="元/月" class="input-field hidden">
-                        </div>
-                    </div>
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t">
+                    <div><label class="text-sm font-bold">住宿</label><select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field"><option value="none">無</option><option value="free">免費</option><option value="paid">付費</option></select><input id="dorm_cost" type="number" placeholder="金額" class="input-field mt-1 hidden"></div>
+                    <div><label class="text-sm font-bold">膳食</label><select id="food_opt" onchange="toggleCost('food')" class="input-field"><option value="none">無</option><option value="free">免費</option><option value="paid">付費</option></select><input id="food_cost" type="number" placeholder="金額" class="input-field mt-1 hidden"></div>
+                    <div><label class="text-sm font-bold">交通</label><select id="trans_opt" onchange="toggleCost('trans')" class="input-field"><option value="none">無</option><option value="free">免費</option><option value="paid">付費</option><option value="subsidy">交通津貼</option></select><input id="trans_cost" type="number" placeholder="金額" class="input-field mt-1 hidden"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 按鈕區 -->
-        <div class="pb-10">
-            <div class="flex flex-col md:flex-row justify-end items-center gap-4">
-                <!-- Debug 模式: 手動上傳 -->
-                <div class="text-sm text-gray-500 bg-gray-200 p-2 rounded flex items-center gap-2">
-                    <span class="font-bold text-xs bg-gray-500 text-white px-1 rounded">DEBUG</span>
-                    <span>測試用 (手動選 Word)：</span>
-                    <input type="file" id="manual_template" accept=".docx" class="text-xs">
-                </div>
-                <button onclick="generateDoc()" id="genBtn" class="bg-thuBlue text-white px-8 py-3 rounded-md font-bold shadow-lg hover:bg-blue-900 transition flex items-center gap-2 text-lg w-full md:w-auto justify-center">
-                    <i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)
-                </button>
-            </div>
+        <!-- 按鈕 -->
+        <div class="pb-10 flex flex-col md:flex-row justify-end items-center gap-4">
+            <div class="text-sm text-gray-500 bg-gray-200 p-2 rounded flex items-center gap-2"><span class="font-bold text-xs bg-gray-500 text-white px-1 rounded">DEBUG</span><span>若無反應，手動選取：</span><input type="file" id="manual_template" accept=".docx" class="text-xs"></div>
+            <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-400 text-white px-8 py-3 rounded-md font-bold shadow-lg transition flex items-center gap-2 text-lg w-full md:w-auto justify-center cursor-not-allowed">
+                <i class="fa-regular fa-file-word"></i> 系統載入中...
+            </button>
         </div>
     </main>
 
-    <!-- JS 邏輯區 (含 V11 強力清洗引擎) -->
+    <!-- JS -->
     <script>
         window.onload = function() { 
             renderStudents(); 
@@ -284,82 +141,75 @@
             if (missing.length > 0) {
                 document.getElementById('lib-error').style.display = 'block';
                 document.getElementById('missing-lib').innerText = missing.join(', ');
-                document.getElementById('genBtn').disabled = true;
-                document.getElementById('genBtn').classList.add('bg-gray-400', 'cursor-not-allowed');
+            } else {
+                // 啟用按鈕
+                const btn = document.getElementById('genBtn');
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.add('bg-thuBlue', 'hover:bg-blue-900');
+                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
         };
 
-        function renderStudents() {
-            const count = document.getElementById('student_count').value;
-            const container = document.getElementById('student_container');
-            container.innerHTML = '';
-            for(let i=0; i<count; i++) {
-                container.innerHTML += `
-                    <div class="p-3 bg-blue-50 border border-blue-100 rounded">
-                        <div class="text-sm font-bold text-blue-800 mb-2">學生 ${i+1}</div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="s_name_${i}" placeholder="姓名" class="input-field">
-                            <input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field">
-                        </div>
-                    </div>`;
-            }
-        }
+        function renderStudents() { const count = document.getElementById('student_count').value; const c = document.getElementById('student_container'); c.innerHTML=''; for(let i=0;i<count;i++){ c.innerHTML += `<div class="p-3 bg-blue-50 border border-blue-100 rounded"><div class="text-sm font-bold text-blue-800 mb-2">學生 ${i+1}</div><div class="grid grid-cols-2 gap-4"><input type="text" id="s_name_${i}" placeholder="姓名" class="input-field"><input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field"></div></div>`; } }
         function toggleBranch() { document.getElementById('branch_area').classList.toggle('hidden', !document.getElementById('is_branch').checked); }
-        function toggleType() {
-            const type = document.querySelector('input[name="contract_type"]:checked').value;
-            document.getElementById('panel_learn').classList.toggle('hidden', type !== 'learn');
-            document.getElementById('panel_work').classList.toggle('hidden', type === 'learn');
-        }
-        function togglePayInputs() {
-            const val = document.querySelector('input[name="pay_opt_learn"]:checked').value;
-            document.getElementById('learn_amt_box').classList.toggle('hidden', val === 'none');
-        }
-        function toggleCost(prefix) {
-            const val = document.getElementById(prefix + '_opt').value;
-            const input = document.getElementById(prefix + '_cost');
-            if (val === 'paid' || val === 'subsidy') input.classList.remove('hidden'); else input.classList.add('hidden');
-        }
-        function showMsg(msg) {
-            const el = document.getElementById('status-bar');
-            el.innerText = msg;
-            el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 5000);
-        }
+        function toggleType() { const t = document.querySelector('input[name="contract_type"]:checked').value; document.getElementById('panel_learn').classList.toggle('hidden', t !== 'learn'); document.getElementById('panel_work').classList.toggle('hidden', t === 'learn'); }
+        function togglePayInputs() { document.getElementById('learn_amt_box').classList.toggle('hidden', document.querySelector('input[name="pay_opt_learn"]:checked').value === 'none'); }
+        function toggleCost(p) { const v = document.getElementById(p+'_opt').value; const i = document.getElementById(p+'_cost'); if(v==='paid'||v==='subsidy') i.classList.remove('hidden'); else i.classList.add('hidden'); }
+        function showMsg(msg) { const el = document.getElementById('status-bar'); el.innerText = msg; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 5000); }
 
-        // --- 核心：V11 JavaScript 版強力清洗引擎 ---
+        // --- V11.5 強力清洗引擎 (Regex 增強版) ---
         function cleanXML(xmlStr) {
-            console.log("開始清洗 Word XML...");
-            // 1. 移除 Spell Check / Grammar Check (拼字/文法紅線)
-            xmlStr = xmlStr.replace(/<w:proofErr[^>]*\/?>/g, "");
-            xmlStr = xmlStr.replace(/<w:gramE[^>]*\/?>/g, "");
-            xmlStr = xmlStr.replace(/<w:lang[^>]*\/?>/g, "");
+            console.log("開始清洗 Word XML (V11.5)...");
+            
+            // 1. 移除所有拼字/文法檢查、書籤、修訂ID (這些是最常見的斷裂原因)
+            // w:proofErr, w:gramE, w:lang, w:bookmarkStart, w:bookmarkEnd, w:rsidR, w:rsidRPr
+            xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
             
             // 2. 移除 Track Changes (追蹤修訂)
-            // 移除刪除的文字
-            xmlStr = xmlStr.replace(/<w:del[^>]*>.*?<\/w:del>/g, "");
-            // 移除插入標記的殼，但保留內容
+            // 移除刪除的內容: <w:del ...> ... </w:del>
+            xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
+            // 移除插入的殼: <w:ins ...> ... </w:ins> -> 保留內容
             xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
 
-            // 3. 修復斷裂的標籤 (最關鍵)
-            // <w:t>{</w:t> ... <w:t>{</w:t>  =>  <w:t>{{</w:t>
-            // 使用更寬鬆的 Regex 來捕捉被 Word 標籤隔開的括號
-            xmlStr = xmlStr.replace(/<w:t>({)<\/w:t>(\s*<[^>]+>\s*)*<w:t>({)<\/w:t>/g, "<w:t>{{</w:t>");
-            xmlStr = xmlStr.replace(/<w:t>(})<\/w:t>(\s*<[^>]+>\s*)*<w:t>(})<\/w:t>/g, "<w:t>}}</w:t>");
+            // 3. 處理空標籤 (Empty Runs) - 這些也會切斷變數
+            // <w:r><w:t/></w:r> 或 <w:r><w:t></w:t></w:r>
+            xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t\/>\s*<\/w:r>/g, "");
+            xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t>\s*<\/w:t>\s*<\/w:r>/g, "");
+
+            // 4. 終極合併：修復斷裂的 {{ 和 }}
+            // 原理：找到 { 開頭，忽略中間所有的 XML tags，直到找到 {，把它們變成 {{
+            // 這邊使用一個簡單但強大的邏輯：
+            // 將 <w:t>{</w:t> ... <w:t>{</w:t> 替換為 <w:t>{{</w:t>
+            // 注意：JS 正則不支援跨多行的複雜配對如果不用 dotAll，但在 XML 中通常是一整行
             
+            // 修復分開的 { {
+            // 匹配模式：<w:t>{ ...任意標籤或空白... <w:t>{
+            // 替換為：<w:t>{{
+            xmlStr = xmlStr.replace(/(<w:t>)\s*{\s*(<\/w:t>[\s\S]*?<w:t>)\s*{\s*(<\/w:t>)/g, "$1{{$3");
+            
+            // 修復分開的 } }
+            xmlStr = xmlStr.replace(/(<w:t>)\s*}\s*(<\/w:t>[\s\S]*?<w:t>)\s*}\s*(<\/w:t>)/g, "$1}}$3");
+
+            // 5. 修復更極端的情況：變數名稱被切斷
+            // 例如: <w:t>{{</w:t> ... <w:t>student</w:t> ... <w:t>_name}}</w:t>
+            // 這部分 docxtemplater 其實可以容忍一定程度的 XML 標籤在中間，
+            // 只要 {{ 和 }} 完整即可。我們主要修復的是 {{ 本身被切斷的問題。
+
             console.log("XML 清洗完成");
             return xmlStr;
         }
 
-        function generateDoc() {
+        async function generateDoc() {
             if (typeof PizZip === 'undefined') { alert("核心元件未載入"); return; }
             showMsg("處理中...");
             const btn = document.getElementById('genBtn');
             btn.disabled = true;
 
-            // 1. 收集資料
             const data = {};
             try {
-                data.company_name = document.getElementById('company_name').value || "未填寫機構";
+                // 資料收集...
+                data.company_name = document.getElementById('company_name').value || "未填寫";
                 data.company_tax_id = document.getElementById('company_tax_id').value;
                 data.company_rep = document.getElementById('company_rep').value;
                 data.company_title = document.getElementById('company_title').value;
@@ -380,30 +230,43 @@
                 const eDate = new Date(document.getElementById('end_date').value);
                 if(!isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); } else { data.s_y="";data.s_m="";data.s_d=""; }
                 if(!isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); } else { data.e_y="";data.e_m="";data.e_d=""; }
+                
                 data.daily_start = document.getElementById('daily_start').value;
                 data.daily_end = document.getElementById('daily_end').value;
                 data.daily_hours = document.getElementById('daily_hours').value;
 
                 const type = document.querySelector('input[name="contract_type"]:checked').value;
-                data.type_learn_check = '□'; data.type_work_check = '□'; data.chk_pay_none = '□'; data.chk_pay_scholar = '□'; data.chk_pay_allowance = '□';
+                data.type_learn_check = '□'; data.type_work_check = '□';
+                data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□';
                 data.pay_learn_amount = ""; data.pay_work_amount = "";
+
                 if (type === 'learn') {
                     data.type_learn_check = '☑';
                     const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked').value;
                     if(pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
-                    else { data[pOpt === 'scholar' ? 'chk_pay_scholar' : 'chk_pay_allowance'] = '☑'; data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString(); }
-                } else { data.type_work_check = '☑'; data.pay_work_amount = Number(document.getElementById('work_amount').value).toLocaleString(); }
+                    else {
+                        data[pOpt === 'scholar' ? 'chk_pay_scholar' : 'chk_pay_allowance'] = '☑';
+                        data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString();
+                    }
+                } else {
+                    data.type_work_check = '☑';
+                    data.pay_work_amount = Number(document.getElementById('work_amount').value).toLocaleString();
+                }
 
                 function setWelfare(prefix) {
                     const opt = document.getElementById(prefix + '_opt').value;
                     data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
                     if(opt === 'none') data[`chk_${prefix}_none`] = '☑'; else if(opt === 'free') data[`chk_${prefix}_free`] = '☑';
-                    else { data[`chk_${prefix}_paid`] = '☑'; data[`${prefix}_cost`] = Number(document.getElementById(prefix + '_cost').value).toLocaleString(); }
+                    else {
+                        data[`chk_${prefix}_paid`] = '☑';
+                        data[`${prefix}_cost`] = Number(document.getElementById(prefix + '_cost').value).toLocaleString();
+                    }
                 }
                 setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
 
             } catch(e) { showMsg("資料收集錯誤：" + e.message); btn.disabled = false; return; }
 
+            // 讀取與清洗流程
             const manualFile = document.getElementById('manual_template').files[0];
             const loadPromise = manualFile ? 
                 new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve(e.target.result); r.readAsBinaryString(manualFile); }) :
@@ -412,11 +275,11 @@
             loadPromise.then(content => {
                 const zip = new PizZip(content);
                 
-                // === 呼叫 JavaScript 清洗引擎 ===
+                // === 核心：執行清洗 ===
                 const docXml = zip.file("word/document.xml").asText();
-                const cleanXml = cleanXML(docXml); // 清洗!
-                zip.file("word/document.xml", cleanXml); // 寫回 Zip
-                // =============================
+                const cleanDocXml = cleanXML(docXml);
+                zip.file("word/document.xml", cleanDocXml);
+                // ===================
 
                 const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 doc.render(data);
@@ -426,7 +289,7 @@
             }).catch(error => {
                 if (error.properties && error.properties.errors) {
                     const msgs = error.properties.errors.map(e => e.properties.explanation).join("\n");
-                    alert("標籤錯誤 (Multi Error)：\n" + msgs);
+                    alert("仍有標籤錯誤 (可能需手動重打)：\n" + msgs);
                 } else { alert("錯誤：" + error.message); }
                 console.error(error);
             }).finally(() => { btn.disabled = false; });
