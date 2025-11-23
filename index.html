@@ -34,32 +34,49 @@
             background-color: #f3f4f6;
             font-family: 'Noto Sans TC', sans-serif;
             padding-bottom: 100px; 
+            color: #374151;
         }
         
+        /* 通用輸入框樣式 */
         .input-field {
             background-color: white;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
-            padding: 0.5rem;
+            padding: 0.6rem 0.8rem;
             width: 100%;
             font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
         }
         .input-field:focus {
             outline: none;
             border-color: #002E5D;
             box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1);
         }
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
 
-        /* 民國日期專用樣式 & 移除上下箭頭 */
+        /* 去除數字輸入框的上下箭頭 (Chrome, Safari, Edge, Opera) */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        /* 去除數字輸入框的上下箭頭 (Firefox) */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* 日期群組 */
         .date-group {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
             background: white;
             border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            padding: 0.5rem;
+            border-radius: 0.5rem;
+            padding: 0.4rem;
+            transition: all 0.2s ease;
         }
         .date-group:focus-within {
             border-color: #002E5D;
@@ -72,36 +89,50 @@
             outline: none;
             font-size: 1rem;
             color: #374151;
-            /* 移除背景色以融入 group */
-            background: transparent; 
+            background: transparent;
         }
-        /* 移除 Chrome, Safari, Edge, Opera 的上下箭頭 */
-        .date-input::-webkit-outer-spin-button,
-        .date-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .date-sep { color: #9ca3af; font-weight: bold; padding: 0 0.2rem; user-select: none; }
+
+        /* 卡片樣式 */
+        .card { 
+            background: white; 
+            border-radius: 0.75rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+            border: 1px solid #e5e7eb;
+            overflow: hidden; 
+            margin-bottom: 2rem; 
         }
-        /* 移除 Firefox 的上下箭頭 */
-        .date-input[type=number] {
-            -moz-appearance: textfield;
+        .card-header { 
+            padding: 1.25rem 2rem; 
+            background-color: #ffffff;
+            border-bottom: 1px solid #f3f4f6; 
+            color: #002E5D; 
+            font-weight: 700; 
+            font-size: 1.125rem; 
+            display: flex; 
+            align-items: center;
+            justify-content: space-between; 
+        }
+        .card-header-title {
+            display: flex;
+            align-items: center;
+        }
+        .card-header-title::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 1.2rem;
+            background-color: #C6A87C;
+            margin-right: 0.75rem;
+            border-radius: 2px;
         }
 
-        .date-sep {
-            color: #9ca3af;
-            font-weight: bold;
-            user-select: none;
-        }
-
-        .card { background: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 1.5rem; }
-        .card-header { padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; color: #002E5D; font-weight: 700; font-size: 1.125rem; display: flex; align-items: center; }
-        .border-top-blue { border-top: 4px solid #002E5D; }
-        .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
         
         #status-bar { display: none; position: fixed; bottom: 80px; right: 20px; background: #333; color: white; padding: 8px 16px; border-radius: 6px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 0.9rem; }
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
         #error-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
-        #error-content { background: white; padding: 20px; border-radius: 8px; max-width: 80%; max-height: 80%; overflow-y: auto; }
+        #error-content { background: white; padding: 2rem; border-radius: 1rem; max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto; }
         pre { white-space: pre-wrap; word-break: break-word; }
 
         footer {
@@ -112,12 +143,17 @@
             background-color: #1f2937;
             color: #9ca3af;
             text-align: center;
-            padding: 0.8rem 0;
+            padding: 1rem 0;
             font-size: 0.75rem;
             z-index: 50;
             border-top: 3px solid #C6A87C;
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
+        /* 進度條動態樣式 */
+        .step-active .step-circle { background-color: #002E5D; color: white; ring-color: #e5e7eb; }
+        .step-active .step-text { color: #002E5D; font-weight: bold; }
+        .step-inactive .step-circle { background-color: white; border: 2px solid #d1d5db; color: #9ca3af; }
+        .step-inactive .step-text { color: #9ca3af; }
     </style>
 </head>
 <body>
@@ -132,102 +168,129 @@
     <!-- 錯誤訊息彈窗 -->
     <div id="error-modal">
         <div id="error-content">
-            <h3 class="text-lg font-bold text-red-600 mb-2">發生錯誤</h3>
-            <pre id="error-details" class="text-sm bg-gray-100 p-2 rounded"></pre>
-            <button id="err-close" class="mt-4 bg-thuBlue text-white px-4 py-2 rounded hover:bg-blue-800 transition">關閉</button>
+            <h3 class="text-xl font-bold text-red-600 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> 發生錯誤
+            </h3>
+            <div class="bg-gray-50 p-4 rounded border border-gray-200 mb-6">
+                <pre id="error-details" class="text-sm text-gray-800 font-mono"></pre>
+            </div>
+            <div class="flex justify-end">
+                <button id="err-close" class="bg-gray-200 text-gray-700 px-6 py-2 rounded font-bold hover:bg-gray-300 transition">關閉</button>
+            </div>
         </div>
     </div>
 
-    <!-- Header -->
-    <div class="fixed top-0 left-0 w-full h-auto md:h-[80px] bg-thuBlue text-white z-50 flex flex-col md:flex-row items-center justify-between px-4 md:px-8 shadow-md py-2 md:py-0">
-        <div class="flex items-center gap-3 mb-2 md:mb-0">
-            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-thuBlue font-bold text-2xl shrink-0">
-                <i class="fa-solid fa-university"></i>
+    <!-- Header (深色背景) -->
+    <div class="fixed top-0 left-0 w-full bg-thuBlue z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-[80px] flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-thuBlue font-bold text-2xl shrink-0">
+                    <i class="fa-solid fa-university"></i>
+                </div>
+                <div class="flex flex-col justify-center text-white">
+                    <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">東海大學 | 實習與學生成就中心</div>
+                    <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">學生校外實習合約書產生系統</div>
+                </div>
             </div>
-            <div class="flex flex-col justify-center">
-                <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">東海大學 | 實習與學生成就中心</div>
-                <div class="text-xs text-thuGold opacity-90 font-sans leading-tight">學生校外實習合約書產生系統</div>
+            
+            <!-- 右上角連結區 -->
+            <div class="hidden md:flex gap-3 text-sm">
+                <a href="https://aca.thu.edu.tw/web/isac/page.php?scid=112&sid=103" target="_blank" class="flex items-center gap-2 px-4 py-2 border border-thuGold text-thuGold rounded-full hover:bg-thuGold hover:text-thuBlue transition-all duration-200 font-medium">
+                    <i class="fa-solid fa-link"></i> 實習中心網頁
+                </a>
+                <a href="https://www.thu.edu.tw/" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-white text-thuBlue rounded-full hover:bg-gray-100 shadow-sm transition-all duration-200 font-medium">
+                    <i class="fa-solid fa-house"></i> 東海大學首頁
+                </a>
             </div>
-        </div>
-        
-        <!-- 右上角連結區 -->
-        <div class="flex gap-3 text-sm">
-            <a href="https://aca.thu.edu.tw/web/isac/page.php?scid=112&sid=103" target="_blank" class="flex items-center gap-1 px-3 py-1.5 border border-thuGold text-thuGold rounded hover:bg-thuGold hover:text-thuBlue transition-colors duration-200 text-xs md:text-sm">
-                <i class="fa-solid fa-link"></i> 實習中心網頁
-            </a>
-            <a href="https://www.thu.edu.tw/" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-thuGold text-thuBlue font-bold rounded hover:bg-yellow-500 transition-colors duration-200 text-xs md:text-sm">
-                <i class="fa-solid fa-house"></i> 東海大學首頁
-            </a>
         </div>
     </div>
 
-    <!-- 步驟條 -->
-    <div class="mt-36 md:mt-28 mb-6 px-4 md:px-8 max-w-5xl mx-auto flex justify-between items-center relative">
-        <div class="flex flex-col items-center z-10"><div class="w-8 h-8 bg-thuBlue text-white rounded-full flex items-center justify-center font-bold mb-1 shadow-md">1</div><span class="text-xs md:text-sm font-medium text-gray-600">機構資料</span></div>
-        <div class="flex-1 h-1 bg-gray-300 mx-2 md:mx-4 rounded"></div>
-        <div class="flex flex-col items-center z-10"><div class="w-8 h-8 bg-thuBlue text-white rounded-full flex items-center justify-center font-bold mb-1 shadow-md">2</div><span class="text-xs md:text-sm font-medium text-gray-600">學生資料</span></div>
-        <div class="flex-1 h-1 bg-gray-300 mx-2 md:mx-4 rounded"></div>
-        <div class="flex flex-col items-center z-10"><div class="w-8 h-8 bg-thuBlue text-white rounded-full flex items-center justify-center font-bold mb-1 shadow-md">3</div><span class="text-xs md:text-sm font-medium text-gray-600">條件設定</span></div>
+    <!-- 步驟條 (動態) -->
+    <div class="mt-32 mb-10 px-4 md:px-8 max-w-4xl mx-auto">
+        <div class="flex justify-between items-center relative">
+            <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -z-10 transform -translate-y-1/2"></div>
+            
+            <!-- 步驟 1 -->
+            <div class="flex flex-col items-center bg-[#f3f4f6] px-4 step-active" id="step-1">
+                <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ring-4 ring-[#f3f4f6]">1</div>
+                <span class="step-text text-xs mt-2">機構資料</span>
+            </div>
+            <!-- 步驟 2 -->
+            <div class="flex flex-col items-center bg-[#f3f4f6] px-4 step-inactive" id="step-2">
+                <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ring-4 ring-[#f3f4f6]">2</div>
+                <span class="step-text text-xs mt-2">學生資料</span>
+            </div>
+            <!-- 步驟 3 -->
+            <div class="flex flex-col items-center bg-[#f3f4f6] px-4 step-inactive" id="step-3">
+                <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ring-4 ring-[#f3f4f6]">3</div>
+                <span class="step-text text-xs mt-2">條件設定</span>
+            </div>
+        </div>
     </div>
 
     <!-- 主要表單 -->
-    <main class="max-w-5xl mx-auto px-4">
+    <main class="max-w-4xl mx-auto px-4 mb-20" onscroll="updateProgress()">
         
         <!-- 使用須知 -->
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded shadow-sm">
-            <div class="flex">
-                <div class="ml-1 w-full">
-                    <p class="text-sm text-blue-700 font-bold text-lg mb-1">
-                        📋 使用須知
+        <div class="bg-white border border-blue-100 rounded-xl p-6 mb-8 shadow-sm">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                    <i class="fa-solid fa-circle-info text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-base font-bold text-gray-800 mb-1">使用須知</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        本系統將協助您快速產出符合規範的實習合約書。請依序填寫下方資料，系統將自動帶入公版 Word 範本中。所有運算皆在您的瀏覽器完成，不會上傳任何個資。
                     </p>
-                    <div class="text-sm text-blue-800 pl-2 border-l-2 border-blue-200 min-h-[20px]">
-                        <!-- 內容留白 -->
-                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 卡片 1: 機構資料 -->
-        <div class="card border-top-blue">
-            <div class="card-header bg-gray-50"><i class="fa-regular fa-building mr-2"></i> 乙方：實習機構資料</div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="card section" id="sec-1">
+            <div class="card-header">
+                <span class="card-header-title">乙方：實習機構資料</span>
+            </div>
+            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700 mb-1 block">機構全銜 (法定名稱)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">機構全銜 (法定名稱)</label>
                     <input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司">
                 </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-700 mb-1 block">統一編號</label>
-                    <input type="text" id="company_tax_id" class="input-field">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
+                
+                <!-- 統一編號、代表人姓名、職稱 改為等寬 -->
+                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label class="text-sm font-medium text-gray-700 mb-1 block">代表人姓名</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">統一編號</label>
+                        <input type="text" id="company_tax_id" class="input-field" placeholder="8碼統編">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">代表人姓名</label>
                         <input type="text" id="company_rep" class="input-field">
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-700 mb-1 block">代表人職稱</label>
-                        <!-- 移除 value="負責人" -->
+                        <label class="block text-sm font-bold text-gray-700 mb-2">代表人職稱</label>
                         <input type="text" id="company_title" class="input-field" placeholder="">
                     </div>
                 </div>
+
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700 mb-1 block">公司登記地址 (總公司)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">公司登記地址 (總公司)</label>
                     <input type="text" id="reg_address" class="input-field" placeholder="例：臺北市信義區松仁路7號1樓">
                 </div>
                 
-                <!-- 分公司 -->
-                <div class="md:col-span-2 pt-2">
-                    <label class="flex items-center gap-2 text-sm font-bold text-gray-600 cursor-pointer select-none">
-                        <input type="checkbox" id="is_branch" onchange="toggleBranch()" class="w-4 h-4 text-thuBlue rounded focus:ring-thuBlue cursor-pointer"> 
-                        <span>實習地點與登記地址不同 (如派駐分公司)</span>
-                    </label>
-                    <div id="branch_area" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 hidden bg-gray-50 p-4 rounded border border-gray-200">
+                <!-- 分公司 (固定欄位) -->
+                <div class="md:col-span-2 pt-6 border-t border-gray-200 mt-2">
+                    <div class="text-sm font-bold text-thuBlue mb-4 flex items-center gap-2 bg-blue-50 p-2 rounded">
+                        <i class="fa-solid fa-location-dot"></i> 
+                        實習地點 (若與登記地址不同，請填寫以下欄位)
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="text-sm text-gray-500 mb-1 block">實習單位/分公司名稱</label>
+                            <label class="block text-xs font-bold text-gray-500 mb-2">實習單位/分公司名稱</label>
                             <input type="text" id="branch_name" class="input-field" placeholder="例：淡水分公司">
                         </div>
                         <div>
-                            <label class="text-sm text-gray-500 mb-1 block">實際實習地址</label>
+                            <label class="block text-xs font-bold text-gray-500 mb-2">實際實習地址</label>
                             <input type="text" id="branch_addr" class="input-field" placeholder="例：新北市淡水區中山路106號">
                         </div>
                     </div>
@@ -235,64 +298,57 @@
             </div>
         </div>
 
-        <!-- 卡片 2: 學生資料 -->
-        <div class="card border-top-blue">
-            <div class="card-header bg-gray-50 flex justify-between">
-                <div><i class="fa-solid fa-user-graduate mr-2"></i> 甲方：實習學生資料</div>
-                <select id="student_count" onchange="renderStudents()" class="border border-gray-300 rounded px-3 py-1 text-sm bg-white hover:border-thuBlue focus:ring-2 focus:ring-thuBlue focus:outline-none transition-colors cursor-pointer">
-                    <option value="1">1 位學生</option>
-                    <option value="2">2 位學生</option>
-                    <option value="3">3 位學生</option>
-                </select>
+        <!-- 卡片 2: 學生資料 (人數增減按鈕 + 標題靠左) -->
+        <div class="card section" id="sec-2">
+            <div class="card-header">
+                <span class="card-header-title mr-4">甲方：實習學生資料</span>
+                <!-- 人數控制直接放這裡 -->
+                <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                    <button type="button" onclick="changeStudentCount(-1)" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm hover:text-thuBlue transition-all">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <div class="w-16 text-center text-sm font-bold text-thuBlue" id="student_count_display">1 人</div>
+                    <button type="button" onclick="changeStudentCount(1)" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm hover:text-thuBlue transition-all">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <input type="hidden" id="student_count" value="1">
             </div>
-            <div id="student_container" class="p-6 space-y-4"></div>
+            <div class="p-8">
+                <div id="student_container" class="space-y-6"></div>
+            </div>
         </div>
 
-        <!-- 卡片 3: 實習條件 -->
-        <div class="card border-top-gold">
-            <div class="card-header bg-gray-50"><i class="fa-solid fa-briefcase mr-2"></i> 實習條件設定</div>
-            <div class="p-6 space-y-6">
-                <!-- 類型 -->
+        <!-- 卡片 3: 實習期間與時間 -->
+        <div class="card section" id="sec-3">
+            <div class="card-header">
+                <span class="card-header-title">實習期間與時間</span>
+            </div>
+            <div class="p-8 space-y-8">
+                <!-- 日期 -->
                 <div>
-                    <label class="block text-lg font-bold text-thuBlue mb-3">1. 請選擇實習類型</label>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <label class="flex items-center gap-2 p-4 border-2 rounded-lg hover:bg-blue-50 cursor-pointer w-full transition-colors has-[:checked]:border-thuBlue has-[:checked]:bg-blue-50">
-                            <input type="radio" name="contract_type" value="learn" checked onchange="toggleType()" class="w-5 h-5 text-thuBlue focus:ring-thuBlue">
-                            <span class="font-bold text-gray-700">一般型 (學習型)</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-4 border-2 rounded-lg hover:bg-orange-50 cursor-pointer w-full transition-colors has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50">
-                            <input type="radio" name="contract_type" value="work" onchange="toggleType()" class="w-5 h-5 text-orange-600 focus:ring-orange-500">
-                            <span class="font-bold text-gray-700">工作型 (勞資型)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 日期 (改為民國年拆分輸入 + 自動跳轉) -->
-                <div>
-                    <label class="block text-lg font-bold text-thuBlue mb-3">2. 實習期間</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-3">1. 實習期間</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- 開始時間 -->
                         <div>
-                            <span class="text-sm text-gray-500 mb-1 block">實習開始時間 (民國年/月/日)</span>
+                            <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide">實習開始 (民國年/月/日)</span>
                             <div class="date-group">
-                                <!-- 添加 oninput 事件處理自動跳轉 -->
-                                <input type="number" id="start_y" class="date-input w-20" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
+                                <input type="number" id="start_y" class="date-input w-16 font-bold text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
                                 <span class="date-sep">/</span>
-                                <input type="number" id="start_m" class="date-input w-16" placeholder="07" oninput="autoJump(this, 2, 'start_d')">
+                                <input type="number" id="start_m" class="date-input w-12" placeholder="07" oninput="autoJump(this, 2, 'start_d')">
                                 <span class="date-sep">/</span>
-                                <input type="number" id="start_d" class="date-input w-16" placeholder="01" oninput="autoJump(this, 2, 'end_y')"> 
-                                <!-- 跳到結束年份 -->
+                                <input type="number" id="start_d" class="date-input w-12" placeholder="01" oninput="autoJump(this, 2, 'end_y')"> 
                             </div>
                         </div>
                         <!-- 結束時間 -->
                         <div>
-                            <span class="text-sm text-gray-500 mb-1 block">實習結束時間 (民國年/月/日)</span>
+                            <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide">實習結束 (民國年/月/日)</span>
                             <div class="date-group">
-                                <input type="number" id="end_y" class="date-input w-20" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
+                                <input type="number" id="end_y" class="date-input w-16 font-bold text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
                                 <span class="date-sep">/</span>
-                                <input type="number" id="end_m" class="date-input w-16" placeholder="06" oninput="autoJump(this, 2, 'end_d')">
+                                <input type="number" id="end_m" class="date-input w-12" placeholder="06" oninput="autoJump(this, 2, 'end_d')">
                                 <span class="date-sep">/</span>
-                                <input type="number" id="end_d" class="date-input w-16" placeholder="30">
+                                <input type="number" id="end_d" class="date-input w-12" placeholder="30">
                             </div>
                         </div>
                     </div>
@@ -300,46 +356,90 @@
 
                 <!-- 時間 -->
                 <div>
-                    <label class="block text-lg font-bold text-thuBlue mb-3">3. 每日實習時間</label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div><span class="text-sm text-gray-500 mb-1 block">每日開始</span><input type="time" id="daily_start" value="09:00" class="input-field font-sans"></div>
-                        <div><span class="text-sm text-gray-500 mb-1 block">每日結束</span><input type="time" id="daily_end" value="18:00" class="input-field font-sans"></div>
-                        <div><span class="text-sm text-gray-500 mb-1 block">共計(小時)</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field font-sans"></div>
+                    <label class="block text-sm font-bold text-gray-700 mb-3">2. 每日實習時間</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">每日開始</span><input type="time" id="daily_start" value="09:00" class="input-field bg-white border-gray-300"></div>
+                        <div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">每日結束</span><input type="time" id="daily_end" value="18:00" class="input-field bg-white border-gray-300"></div>
+                        <div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">共計(小時)</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field bg-white border-gray-300"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片 4: 類型、待遇與福利 -->
+        <div class="card" id="card-conditions">
+            <div class="card-header">
+                <span class="card-header-title">實習類型與待遇福利</span>
+            </div>
+            <div class="p-8 space-y-8">
+                
+                <!-- 類型 (必填 - 等寬切分) -->
+                <div id="type-section" class="p-4 rounded-lg border border-transparent transition-all">
+                    <label class="block text-lg font-bold text-thuBlue mb-3">1. 請選擇實習類型 <span class="text-red-500 text-sm">*必填</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="relative flex items-center p-4 border rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-thuBlue has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-thuBlue h-full">
+                            <input type="radio" name="contract_type" value="learn" onchange="toggleType()" class="w-4 h-4 text-thuBlue border-gray-300 focus:ring-thuBlue">
+                            <div class="ml-3">
+                                <span class="block text-sm font-bold text-gray-900">一般型 (學習型)</span>
+                                <span class="block text-xs text-gray-500 mt-0.5">單純學習訓練，無僱傭關係</span>
+                            </div>
+                        </label>
+                        <label class="relative flex items-center p-4 border rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50/50 has-[:checked]:ring-1 has-[:checked]:ring-orange-500 h-full">
+                            <input type="radio" name="contract_type" value="work" onchange="toggleType()" class="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500">
+                            <div class="ml-3">
+                                <span class="block text-sm font-bold text-gray-900">工作型 (勞資型)</span>
+                                <span class="block text-xs text-gray-500 mt-0.5">具僱傭關係，適用勞基法</span>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
-                <!-- 待遇 -->
-                <div class="border-t border-gray-200 pt-6">
-                    <label class="block text-lg font-bold text-thuBlue mb-3">4. 實習待遇與給付</label>
+                <!-- 待遇 (必填) -->
+                <div id="pay-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
+                    <label class="block text-lg font-bold text-thuBlue mb-3">2. 實習待遇與給付 <span class="text-red-500 text-sm">*必填</span></label>
                     
-                    <div id="panel_learn" class="bg-green-50 p-5 rounded-lg border border-green-200">
-                        <span class="text-xs font-bold text-white bg-green-600 px-2 py-1 rounded mb-3 inline-block shadow-sm">學習型適用</span>
-                        <div class="flex flex-wrap gap-6 mb-3">
-                            <label class="flex items-center gap-2 cursor-pointer hover:text-green-700"><input type="radio" name="pay_opt_learn" value="none" checked onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> 無</label>
-                            <label class="flex items-center gap-2 cursor-pointer hover:text-green-700"><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> 獎學金</label>
-                            <label class="flex items-center gap-2 cursor-pointer hover:text-green-700"><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> 實習津貼</label>
+                    <!-- 未選擇類型的提醒方塊 -->
+                    <div id="panel_initial" class="flex items-center justify-center p-8 bg-yellow-50 rounded-xl border-2 border-dashed border-yellow-200 text-yellow-700 font-bold shadow-sm">
+                        <i class="fa-solid fa-arrow-up mr-2 animate-bounce"></i> 請先選擇上方「實習類型」以解鎖此區塊
+                    </div>
+
+                    <div id="panel_learn" class="bg-green-50 p-6 rounded-xl border border-green-200 hidden">
+                        <span class="text-[10px] font-black text-green-700 bg-green-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">學習型</span>
+                        <div class="flex flex-wrap gap-6 mb-4">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="pay_opt_learn" value="none" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> <span class="font-bold text-gray-700">無</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> <span class="font-bold text-gray-700">獎學金</span></label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> <span class="font-bold text-gray-700">實習津貼</span></label>
                         </div>
                         <div id="learn_amt_box" class="hidden transition-all">
-                            <input type="number" id="learn_amount" placeholder="請輸入每月金額 (新台幣)" class="input-field w-full md:w-64">
+                            <input type="number" id="learn_amount" placeholder="請輸入每月金額 (新台幣)" class="input-field w-full md:w-64 border-green-300 focus:border-green-600 focus:ring-green-600">
                         </div>
                     </div>
 
-                    <div id="panel_work" class="bg-orange-50 p-5 rounded-lg border border-orange-200 hidden">
-                        <span class="text-xs font-bold text-white bg-orange-600 px-2 py-1 rounded mb-3 inline-block shadow-sm">勞資型適用</span>
-                        <div class="mt-2">
-                            <label class="block text-sm text-orange-800 font-bold mb-1">薪資金額 (不得低於基本工資)</label>
-                            <input type="number" id="work_amount" placeholder="27470" class="input-field w-full md:w-64">
+                    <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">勞資型</span>
+                            <div>
+                                <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額</label>
+                                <input type="number" id="work_amount" placeholder="請輸入每月金額 (新台幣)" class="input-field w-full border-orange-300 focus:border-orange-500 focus:ring-orange-500">
+                            </div>
+                        </div>
+                        <!-- 勞資型法規提示 -->
+                        <div class="flex-1 bg-white/60 p-4 rounded-lg border border-orange-100 text-xs text-orange-800 leading-relaxed">
+                            <div class="font-bold mb-1 flex items-center gap-1"><i class="fa-solid fa-circle-info"></i> 最低工資法規提示：</div>
+                            <p class="mb-2">依據勞動部114年10月21日勞動條2字第1140148807號公告，自115年1月1日起，每月最低工資調整為29,500元，每小時最低工資調整為196元。</p>
+                            <p>依據勞動部113年9月19日勞動條2字第1130148668號公告，自114年1月1日起，每月最低工資調整為28,590元，每小時最低工資調整為190元。</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 福利 -->
-                <div class="border-t border-gray-200 pt-6">
-                    <label class="block text-lg font-bold text-thuBlue mb-3">5. 福利項目</label>
+                <!-- 福利 (必填) -->
+                <div id="welfare-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
+                    <label class="block text-lg font-bold text-thuBlue mb-3">3. 福利項目 <span class="text-red-500 text-sm">*必填</span></label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label class="text-sm font-medium text-gray-700 mb-1 block">住宿</label>
+                            <label class="text-sm font-bold text-gray-600 mb-1 block">住宿</label>
                             <select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field mb-2">
+                                <option value="" disabled selected>請選擇</option>
                                 <option value="none">無</option>
                                 <option value="free">免費提供</option>
                                 <option value="paid">付費提供</option>
@@ -347,8 +447,9 @@
                             <input id="dorm_cost" type="number" placeholder="金額 (元/月)" class="input-field mt-1 hidden">
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-gray-700 mb-1 block">膳食</label>
+                            <label class="text-sm font-bold text-gray-600 mb-1 block">膳食</label>
                             <select id="food_opt" onchange="toggleCost('food')" class="input-field mb-2">
+                                <option value="" disabled selected>請選擇</option>
                                 <option value="none">無</option>
                                 <option value="free">免費提供</option>
                                 <option value="paid">付費提供</option>
@@ -356,8 +457,9 @@
                             <input id="food_cost" type="number" placeholder="金額 (元/餐)" class="input-field mt-1 hidden">
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-gray-700 mb-1 block">交通</label>
+                            <label class="text-sm font-bold text-gray-600 mb-1 block">交通</label>
                             <select id="trans_opt" onchange="toggleCost('trans')" class="input-field mb-2">
+                                <option value="" disabled selected>請選擇</option>
                                 <option value="none">無</option>
                                 <option value="free">免費提供</option>
                                 <option value="paid">付費提供</option>
@@ -371,10 +473,10 @@
             </div>
         </div>
 
-        <!-- 底部操作區 -->
-        <div class="pb-8 flex justify-center md:justify-end items-center gap-4">
-            <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-400 text-white px-10 py-4 rounded-lg font-bold shadow-lg transition hover:bg-blue-900 hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 text-lg">
-                <i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)
+        <!-- 底部操作區 (僅按鈕) -->
+        <div class="flex justify-center md:justify-end items-center gap-4 mt-8">
+            <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-300 text-white px-10 py-3.5 rounded-lg font-bold shadow-none transition-all duration-300 flex items-center gap-3 text-lg cursor-not-allowed opacity-75">
+                <span class="animate-pulse">系統載入中...</span>
             </button>
         </div>
     </main>
@@ -382,7 +484,7 @@
     <!-- 頁尾版權宣告 -->
     <footer>
         <div class="container mx-auto px-4">
-            <div class="flex flex-col items-center justify-center">
+            <div class="flex flex-col items-center justify-center gap-2">
                 <p class="font-bold text-white mb-1 tracking-wide text-sm">&copy; 2025 東海大學 Tunghai University. All Rights Reserved. | 系統版本 V1.0.0</p>
                 <p class="text-xs text-gray-500">
                     本系統僅供產出本校學生校外實習合約目的使用。合約內容為公版格式，請依實際情況修正。本工具不會儲存或保留任何個人資料。
@@ -393,17 +495,13 @@
 
     <!-- JS 邏輯 -->
     <script>
-        // 自動跳轉函式
         function autoJump(current, maxLen, nextId) {
             if (current.value.length >= maxLen) {
                 const next = document.getElementById(nextId);
-                if (next) {
-                    next.focus();
-                }
+                if (next) next.focus();
             }
         }
 
-        // UI Helper Functions
         function showMsg(msg) {
             const el = document.getElementById('status-bar');
             el.innerText = msg;
@@ -420,44 +518,94 @@
             document.getElementById('error-modal').style.display = 'none';
         });
 
+        // 學生人數控制 (無上限)
+        function changeStudentCount(delta) {
+            const input = document.getElementById('student_count');
+            let val = parseInt(input.value) || 1;
+            val += delta;
+            if (val < 1) val = 1;
+            // 移除 max=10 的限制
+            input.value = val;
+            document.getElementById('student_count_display').innerText = val + " 人";
+            renderStudents();
+        }
+
         // 渲染學生欄位
         function renderStudents() {
             const count = Number(document.getElementById('student_count').value) || 1;
             const c = document.getElementById('student_container');
-            c.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const wrapper = document.createElement('div');
-                wrapper.className = "p-4 bg-blue-50 border border-blue-100 rounded-lg mb-3";
-                wrapper.innerHTML = `
-                    <div class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-user text-blue-400"></i> 學生 ${i+1}
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <input type="text" id="s_name_${i}" placeholder="姓名" class="input-field">
+            
+            const currentChildren = c.children.length;
+            if (count > currentChildren) {
+                // 增加
+                for (let i = currentChildren; i < count; i++) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-enter";
+                    wrapper.innerHTML = `
+                        <div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">
+                            學生 ${i+1}
                         </div>
-                        <div>
-                            <input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">姓名</label>
+                                <input type="text" id="s_name_${i}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">系級 / 學號</label>
+                                <input type="text" id="s_id_${i}" class="input-field">
+                            </div>
                         </div>
-                    </div>
-                `;
-                c.appendChild(wrapper);
+                    `;
+                    c.appendChild(wrapper);
+                }
+            } else if (count < currentChildren) {
+                // 減少
+                while (c.children.length > count) {
+                    c.removeChild(c.lastChild);
+                }
             }
+            
+            // 簡易進度條更新 (當學生人數變動時觸發)
+            updateProgressBar();
         }
 
-        function toggleBranch() {
-            const checked = document.getElementById('is_branch').checked;
-            const area = document.getElementById('branch_area');
-            if (area) area.classList.toggle('hidden', !checked);
+        // 簡易進度條邏輯 (基於捲動位置或焦點)
+        // 這裡使用簡單的點擊觸發 active 狀態
+        document.querySelectorAll('.card').forEach((card, idx) => {
+            card.addEventListener('click', () => {
+                // 移除所有 active
+                document.querySelectorAll('.step-circle').forEach(el => {
+                    el.parentElement.classList.remove('bg-white', 'ring-4');
+                    el.parentElement.classList.add('bg-[#f3f4f6]');
+                });
+                // 點亮對應步驟 (概略對應)
+                let stepId = 'step-1';
+                if(idx === 1) stepId = 'step-2';
+                if(idx >= 2) stepId = 'step-3';
+                
+                // 這裡只是簡單視覺回饋，不影響功能
+            });
+        });
+
+        function updateProgressBar() {
+            // 留空，保留介面結構
         }
 
         function toggleType() {
             const tEl = document.querySelector('input[name="contract_type"]:checked');
-            const t = tEl ? tEl.value : 'learn';
+            const t = tEl ? tEl.value : null;
+            
+            document.getElementById('panel_initial').classList.add('hidden');
             const panelLearn = document.getElementById('panel_learn');
             const panelWork = document.getElementById('panel_work');
-            if (panelLearn) panelLearn.classList.toggle('hidden', t !== 'learn');
-            if (panelWork) panelWork.classList.toggle('hidden', t === 'learn');
+            
+            if (t === 'learn') {
+                panelLearn.classList.remove('hidden');
+                panelWork.classList.add('hidden');
+            } else if (t === 'work') {
+                panelLearn.classList.add('hidden');
+                panelWork.classList.remove('hidden');
+            }
             togglePayInputs();
         }
 
@@ -481,6 +629,63 @@
             } catch (e) { console.warn(e); }
         }
 
+        // 驗證表單 (必填檢查)
+        function validateForm() {
+            let isValid = true;
+            let errorMsg = "";
+            
+            // 清除所有錯誤樣式
+            document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200'));
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+            // 1. 檢查實習類型
+            const contractType = document.querySelector('input[name="contract_type"]:checked');
+            if (!contractType) {
+                document.getElementById('type-section').classList.add('bg-red-50', 'border-red-200');
+                isValid = false;
+                errorMsg += "• 請選擇實習類型\n";
+            } else {
+                // 2. 檢查待遇
+                if (contractType.value === 'learn') {
+                    const payOpt = document.querySelector('input[name="pay_opt_learn"]:checked');
+                    if (!payOpt) {
+                        document.getElementById('pay-section').classList.add('bg-red-50', 'border-red-200');
+                        isValid = false;
+                        errorMsg += "• 請選擇學習型給付項目\n";
+                    } else if (payOpt.value !== 'none') {
+                        const amt = document.getElementById('learn_amount');
+                        if (!amt.value) {
+                            amt.classList.add('input-error');
+                            isValid = false;
+                            errorMsg += "• 請輸入獎學金/津貼金額\n";
+                        }
+                    }
+                } else if (contractType.value === 'work') {
+                    const amt = document.getElementById('work_amount');
+                    if (!amt.value) {
+                        amt.classList.add('input-error');
+                        isValid = false;
+                        errorMsg += "• 請輸入薪資金額\n";
+                    }
+                }
+            }
+
+            // 3. 檢查福利
+            ['dorm', 'food', 'trans'].forEach(p => {
+                const val = document.getElementById(p + '_opt').value;
+                if (!val) {
+                    document.getElementById('welfare-section').classList.add('bg-red-50', 'border-red-200');
+                    isValid = false;
+                    errorMsg += `• 請選擇${p==='dorm'?'住宿':p==='food'?'膳食':'交通'}福利\n`;
+                }
+            });
+
+            if (!isValid) {
+                alert("請填寫所有必填欄位：\n" + errorMsg);
+            }
+            return isValid;
+        }
+
         // XML 清洗引擎
         function cleanXML(xmlStr) {
             try {
@@ -488,61 +693,46 @@
                 xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
                 xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
                 xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
-                // 修復 %%%
                 xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
-                // 修復 {{ }}
                 xmlStr = xmlStr.replace(/{\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*{/g, "{{");
                 xmlStr = xmlStr.replace(/}\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*}/g, "}}");
                 return xmlStr;
-            } catch (e) {
-                console.warn('cleanXML failed', e);
-                return xmlStr;
-            }
+            } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
         }
 
         // 產生文件主流程
         async function generateDoc() {
+            if (!validateForm()) return;
+
             const btn = document.getElementById('genBtn');
             try {
                 if (typeof PizZip === 'undefined') {
-                    alert("核心元件未載入 (PizZip)。請確認 CDN 可用或改用其他網路。");
+                    alert("核心元件未載入。");
                     return;
                 }
                 showMsg("處理中...");
                 btn.disabled = true;
-                btn.classList.remove('bg-thuBlue'); btn.classList.add('bg-gray-400');
+                btn.classList.remove('bg-thuBlue', 'hover:shadow-lg'); 
+                btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
 
-                // 收集資料
                 const data = {};
                 try {
-                    // 公司基本資料
                     data.company_name = (document.getElementById('company_name')?.value || "未填寫");
                     data.company_tax_id = (document.getElementById('company_tax_id')?.value || "");
                     data.company_rep = (document.getElementById('company_rep')?.value || "");
                     data.company_title = (document.getElementById('company_title')?.value || "");
-                    
-                    // 地址邏輯修正:
                     const regAddr = document.getElementById('reg_address')?.value || "";
                     data.company_address = regAddr;
 
-                    // 設定第七條實習地點
-                    if (document.getElementById('is_branch')?.checked) {
-                        const bname = document.getElementById('branch_name')?.value || "";
-                        const baddr = document.getElementById('branch_addr')?.value || "";
-                        // 格式：分公司名稱（分公司地址）
-                        if (bname && baddr) {
-                            data.intern_location = `${bname}（${baddr}）`;
-                        } else if (baddr) {
-                            data.intern_location = baddr;
-                        } else {
-                            data.intern_location = regAddr; 
-                        }
-                    } else {
-                        data.intern_location = regAddr;
-                    }
+                    // 固定欄位直接取值
+                    const bname = document.getElementById('branch_name')?.value || "";
+                    const baddr = document.getElementById('branch_addr')?.value || "";
+                    if (bname && baddr) data.intern_location = `${bname}（${baddr}）`;
+                    else if (baddr) data.intern_location = baddr;
+                    else data.intern_location = regAddr;
 
-                    // students
-                    const sCount = Number(document.getElementById('student_count')?.value || 1);
+                    const sCount = Number(document.getElementById('student_count').value) || 1;
                     const sList = [];
                     for (let i = 0; i < sCount; i++) {
                         sList.push({
@@ -556,34 +746,31 @@
                     data.s3_name = sList[2].name; data.s3_id = sList[2].id;
                     data.student_name = sList[0].name + (sCount > 1 ? " 等" : "");
 
-                    // dates (改為直接讀取民國年欄位)
-                    data.s_y = document.getElementById('start_y')?.value || "";
-                    data.s_m = document.getElementById('start_m')?.value || "";
-                    data.s_d = document.getElementById('start_d')?.value || "";
-                    
-                    data.e_y = document.getElementById('end_y')?.value || "";
-                    data.e_m = document.getElementById('end_m')?.value || "";
-                    data.e_d = document.getElementById('end_d')?.value || "";
+                    data.s_y = document.getElementById('start_y')?.value || "   ";
+                    data.s_m = document.getElementById('start_m')?.value || "   ";
+                    data.s_d = document.getElementById('start_d')?.value || "   ";
+                    data.e_y = document.getElementById('end_y')?.value || "   ";
+                    data.e_m = document.getElementById('end_m')?.value || "   ";
+                    data.e_d = document.getElementById('end_d')?.value || "   ";
 
                     data.daily_start = document.getElementById('daily_start')?.value || "";
                     data.daily_end = document.getElementById('daily_end')?.value || "";
                     data.daily_hours = document.getElementById('daily_hours')?.value || "";
 
-                    const type = document.querySelector('input[name="contract_type"]:checked')?.value || 'learn';
+                    const type = document.querySelector('input[name="contract_type"]:checked')?.value;
                     data.type_learn_check='□'; data.type_work_check='□';
                     data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□';
                     data.pay_learn_amount = ""; data.pay_work_amount = "";
 
                     if (type === 'learn') {
                         data.type_learn_check = '☑';
-                        const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value || 'none';
+                        const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
                         if (pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
                         else {
                             if (pOpt === 'scholar') data.chk_pay_scholar = '☑';
                             else data.chk_pay_allowance = '☑';
                             const lam = Number(document.getElementById('learn_amount')?.value || 0);
                             data.pay_learn_amount = lam ? lam.toLocaleString() : "";
-                            data.learn_amount_raw = lam || "";
                         }
                     } else {
                         data.type_work_check = '☑';
@@ -591,7 +778,6 @@
                         data.pay_work_amount = wam ? wam.toLocaleString() : "";
                     }
 
-                    // 福利
                     function setWelfare(prefix) {
                         const opt = document.getElementById(prefix + '_opt')?.value || 'none';
                         data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
@@ -608,23 +794,26 @@
                     setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
 
                 } catch (e) {
-                    showMsg("資料收集發生錯誤：" + (e.message || e));
-                    console.error(e);
+                    alert("資料收集錯誤：" + e);
                     btn.disabled = false;
-                    btn.classList.add('bg-thuBlue');
+                    btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    btn.classList.add('bg-thuBlue', 'hover:shadow-lg');
+                    btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
                     return;
                 }
 
-                // 自動讀取 github 上的 template.docx
+                // 自動讀取 template.docx
                 let arrayBuffer;
                 try {
                     const resp = await fetch('./template.docx');
-                    if (!resp.ok) throw new Error('無法讀取內建範本 (template.docx)，請確認檔案是否存在。');
+                    if (!resp.ok) throw new Error('找不到 template.docx（請確認檔案是否存在）');
                     arrayBuffer = await resp.arrayBuffer();
                 } catch (e) {
                     showError("讀取內建範本失敗：" + e.message);
                     btn.disabled = false;
-                    btn.classList.add('bg-thuBlue');
+                    btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    btn.classList.add('bg-thuBlue', 'hover:shadow-lg');
+                    btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
                     return;
                 }
 
@@ -633,13 +822,15 @@
                 try {
                     zip = new PizZip(arrayBuffer);
                 } catch (e) {
-                    showError("範本無法解析為 zip（template.docx 可能不是有效的 docx 檔）：" + e.message);
+                    showError("範本格式錯誤：" + e.message);
                     btn.disabled = false;
-                    btn.classList.add('bg-thuBlue');
+                    btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    btn.classList.add('bg-thuBlue', 'hover:shadow-lg');
+                    btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
                     return;
                 }
 
-                // 清洗 document.xml
+                // 清洗
                 try {
                     const docFile = zip.file("word/document.xml");
                     if (docFile) {
@@ -647,11 +838,9 @@
                         const cleaned = cleanXML(raw);
                         zip.file("word/document.xml", cleaned);
                     }
-                } catch (e) {
-                    console.warn('document.xml 清洗失敗，將嘗試繼續。', e);
-                }
+                } catch (e) { console.warn(e); }
 
-                // 使用 docxtemplater render
+                // Render
                 try {
                     const Docxtemplater = window.docxtemplater || docxtemplater;
                     const doc = new Docxtemplater(zip, {
@@ -672,46 +861,35 @@
                     showMsg("下載成功！");
                 } catch (error) {
                     if (error && error.properties && error.properties.errors) {
-                        const msgs = error.properties.errors.map(e => {
-                            const errId = e.properties?.id || "unknown";
-                            const errExpl = e.properties?.explanation || JSON.stringify(e);
-                            return `錯誤類型: ${errId}\n說明: ${errExpl}`;
-                        }).join("\n\n");
-                        showError("範本標籤錯誤 (Multi Error)：\n" + msgs);
+                        const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n");
+                        showError("標籤錯誤：\n" + msgs);
                     } else {
-                        showError("產生文件時發生錯誤：" + (error.message || error));
+                        showError("產生錯誤：" + (error.message || error));
                     }
-                    console.error(error);
                 }
 
             } catch (outer) {
-                console.error('generateDoc outer error', outer);
-                showError('未預期錯誤：' + (outer.message || outer));
+                console.error(outer);
+                showError('系統錯誤：' + outer);
             } finally {
                 btn.disabled = false;
-                btn.classList.remove('bg-gray-400');
-                btn.classList.add('bg-thuBlue');
+                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.add('bg-thuBlue', 'hover:shadow-lg');
+                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
         }
 
         window.onload = function() {
             renderStudents();
 
-            // 檢查函式庫是否已載入
-            const missing = [];
-            if (typeof PizZip === 'undefined') missing.push('PizZip');
-            if (typeof window.docxtemplater === 'undefined' && typeof docxtemplater === 'undefined') missing.push('Docxtemplater');
-            if (typeof saveAs === 'undefined') missing.push('FileSaver.saveAs');
-
-            if (missing.length > 0) {
+            if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
                 document.getElementById('lib-error').style.display = 'block';
-                document.getElementById('missing-lib').innerText = missing.join(', ');
-                // 保留按鈕 disabled，以免觸發錯誤；但也允許手動載入範本
+                document.getElementById('missing-lib').innerText = "核心元件";
             } else {
                 const btn = document.getElementById('genBtn');
                 btn.disabled = false;
                 btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                btn.classList.add('bg-thuBlue', 'hover:bg-blue-900');
+                btn.classList.add('bg-thuBlue', 'hover:shadow-lg');
                 btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
 
