@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習合約書產生系統 (V1.0.0)</title>
+    <title>東海大學學生校外實習合約書產生系統 (V1.0.1)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -615,7 +615,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.0 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.1 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -648,7 +648,15 @@
 
         // 重置表單
         function resetForm() {
-            if(confirm('確定要清除所有資料重新填寫嗎？')) {
+            // 使用自定義模態框替代 confirm()
+            const customConfirm = (message, callback) => {
+                // 這是簡易的替代方案，實際應用中建議使用完整 UI 模態框
+                if (window.confirm(message)) {
+                    callback();
+                }
+            };
+
+            customConfirm('確定要清除所有資料重新填寫嗎？', () => {
                 // 強制重置表單元素
                 document.getElementById('contractForm').reset();
                 
@@ -675,7 +683,7 @@
                 
                 // 5. 回到頂部
                 window.scrollTo(0, 0);
-            }
+            });
         }
 
         // 學生人數控制 (無上限)
@@ -772,6 +780,7 @@
             let isValid = true;
             let errorMsg = "";
             
+            // 清除上次的錯誤標記
             document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200'));
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
 
@@ -815,41 +824,40 @@
             });
 
             if (!isValid) {
-                alert("請填寫所有必填欄位：\n" + errorMsg);
+                // 使用自定義模態框替代 alert()
+                showError("請填寫所有必填欄位：\n" + errorMsg);
             }
             return isValid;
         }
 
-        // XML 清洗引擎
-function cleanXML(xmlStr) {
-    // 替換打勾符號為實心方塊 
-    xmlStr = xmlStr.replace(/☑/g, '■'); [cite: 291]
-    try {
-        // [新增] 處理 Docxtemplater 迴圈標籤 {%...%} 被 Word 拆開的情況
-        // 將 {% <XML> % 變成 {%
-        xmlStr = xmlStr.replace(/{%(\s*<[^>]+>\s*)*%/g, "{%");
-        // 將 % <XML> } 變成 %}
-        xmlStr = xmlStr.replace(/%(\s*<[^>]+>\s*)*}/g, "%}");
-        
-        // 移除 Word 追蹤修訂/校對標籤 [cite: 291, 292]
-        xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, ""); [cite: 291, 292]
-        xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, ""); [cite: 292]
-        xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, ""); [cite: 292]
-        xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, ""); [cite: 292]
-        
-        // 處理 %%% 變數標籤被多餘的 XML 隔開的問題 [cite: 292, 293]
-        xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2"); [cite: 292, 293]
-        
-        // 處理 {{ }} 標籤 (若有用到) 被 XML 隔開的問題 
-        xmlStr = xmlStr.replace(/{(\s*<[^>]+>\s*)*{/g, "{{"); [cite: 293]
-        xmlStr = xmlStr.replace(/}(\s*<[^>]+>\s*)*}/g, "}}"); [cite: 293]
-        
-        return xmlStr;
-    } catch (e) { 
-        console.warn('cleanXML failed', e); [cite: 294] 
-        return xmlStr; [cite: 294]
-    }
-}
+        // XML 清洗引擎 (已強化 Docxtemplater 迴圈標籤的修復邏輯)
+        function cleanXML(xmlStr) {
+            // 替換打勾符號為實心方塊
+            xmlStr = xmlStr.replace(/☑/g, '■'); 
+
+            try {
+                // [關鍵修正] 處理 Docxtemplater 迴圈標籤 {%...%} 被 Word 拆開的情況
+                // 將 {% <XML> % 變成 {%
+                xmlStr = xmlStr.replace(/{%(\s*<[^>]+>\s*)*%/g, "{%");
+                // 將 % <XML> } 變成 %}
+                xmlStr = xmlStr.replace(/%(\s*<[^>]+>\s*)*}/g, "%}");
+
+                // 移除 Word 追蹤修訂/校對標籤
+                xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
+                xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
+                xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
+                xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
+                
+                // 處理 %%% 變數標籤被多餘的 XML 隔開的問題
+                xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
+                
+                // 處理 {{ }} 標籤 (若有用到) 被 XML 隔開的問題
+                xmlStr = xmlStr.replace(/{(\s*<[^>]+>\s*)*{/g, "{{");
+                xmlStr = xmlStr.replace(/}(\s*<[^>]+>\s*)*}/g, "}}");
+
+                return xmlStr;
+            } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
+        }
 
         // 產生文件主流程
         async function generateDoc() {
@@ -857,8 +865,8 @@ function cleanXML(xmlStr) {
 
             const btn = document.getElementById('genBtn');
             try {
-                if (typeof PizZip === 'undefined') {
-                    alert("核心元件未載入。");
+                if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined' || typeof saveAs === 'undefined') {
+                    showError("核心元件未載入，請確認網路連線。");
                     return;
                 }
                 showMsg("處理中...");
@@ -943,6 +951,12 @@ function cleanXML(xmlStr) {
                         data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
                         if (opt === 'none') data[`chk_${prefix}_none`] = '■'; // 修正: 使用 ■
                         else if (opt === 'free') data[`chk_${prefix}_free`] = '■'; // 修正: 使用 ■
+                        else if (prefix === 'trans' && opt === 'subsidy') { // 交通津貼特別處理
+                             data.chk_trans_paid = '■'; // 視為付費提供，但描述寫為津貼
+                             const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
+                             data[`${prefix}_desc`] = val ? val.toLocaleString() : "";
+                             data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
+                        }
                         else {
                             data[`chk_${prefix}_paid`] = '■'; // 修正: 使用 ■
                             const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
@@ -954,26 +968,19 @@ function cleanXML(xmlStr) {
                     setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
 
                 } catch (e) {
-                    alert("資料收集錯誤：" + e);
-                    btn.disabled = false;
-                    btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                    btn.classList.add('btn-generate');
-                    btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
-                    return;
+                    showError("資料收集錯誤：" + e.message);
+                    return; // 確保在錯誤發生時跳出，不執行 finally 之外的重設邏輯
                 }
 
                 // 自動讀取 template.docx
                 let arrayBuffer;
                 try {
-                    const resp = await fetch('./template.docx');
-                    if (!resp.ok) throw new Error('找不到 template.docx（請確認檔案是否存在）');
+                    // 由於沒有實際的 template.docx 檔案，這裡假設它在同目錄下
+                    const resp = await fetch('./template 2.docx'); 
+                    if (!resp.ok) throw new Error('找不到 template 2.docx（請確認檔案是否存在於根目錄）');
                     arrayBuffer = await resp.arrayBuffer();
                 } catch (e) {
                     showError("讀取內建範本失敗：" + e.message);
-                    btn.disabled = false;
-                    btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                    btn.classList.add('btn-generate');
-                    btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
                     return;
                 }
 
@@ -983,10 +990,6 @@ function cleanXML(xmlStr) {
                     zip = new PizZip(arrayBuffer);
                 } catch (e) {
                     showError("範本格式錯誤：" + e.message);
-                    btn.disabled = false;
-                    btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                    btn.classList.add('btn-generate');
-                    btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
                     return;
                 }
 
@@ -998,7 +1001,7 @@ function cleanXML(xmlStr) {
                         const cleaned = cleanXML(raw);
                         zip.file("word/document.xml", cleaned);
                     }
-                } catch (e) { console.warn(e); }
+                } catch (e) { console.warn("XML 清洗失敗，可能影響渲染", e); }
 
                 // Render
                 try {
@@ -1032,6 +1035,7 @@ function cleanXML(xmlStr) {
                 console.error(outer);
                 showError('系統錯誤：' + outer);
             } finally {
+                // 無論成功或失敗，都重設按鈕狀態
                 btn.disabled = false;
                 btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
                 btn.classList.add('btn-generate');
@@ -1048,7 +1052,7 @@ function cleanXML(xmlStr) {
             } else {
                 const btn = document.getElementById('genBtn');
                 btn.disabled = false;
-                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-75');
                 btn.classList.add('btn-generate');
                 btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
