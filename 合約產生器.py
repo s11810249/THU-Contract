@@ -7,21 +7,22 @@ from datetime import datetime, date
 st.set_page_config(
     page_title="東海大學實習合約產生系統", 
     page_icon="🎓", 
-    layout="wide", # 使用寬版面，更像網頁
+    layout="wide", 
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS 美化 (注入東海配色與卡片風格) ---
+# --- 2. CSS 深度美化 (打造像原生網頁的質感) ---
 st.markdown("""
     <style>
     /* 引入字體 */
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
     
     html, body, [class*="css"] {
         font-family: 'Noto Sans TC', sans-serif;
+        color: #333333;
     }
 
-    /* 頂部導覽列樣式 */
+    /* === 頂部導覽列樣式 === */
     .thu-header {
         position: fixed;
         top: 0;
@@ -29,39 +30,63 @@ st.markdown("""
         width: 100%;
         background-color: #002E5D; /* 東海深藍 */
         color: white;
-        padding: 1rem 2rem;
-        z-index: 99999;
+        padding: 0.8rem 2rem;
+        z-index: 999999; /* 確保在最上層 */
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     
     .thu-header h1 {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         color: white;
         font-weight: 700;
+        letter-spacing: 1px;
     }
     
     .thu-header span {
         color: #C6A87C; /* 東海金 */
         font-size: 0.9rem;
-        margin-left: 10px;
+        margin-left: 12px;
+        font-weight: 500;
     }
+
+    /* 隱藏 Streamlit 預設的漢堡選單與 Footer，讓介面更乾淨 */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;} /* 隱藏原本的頂部白條 */
 
     /* 調整主內容往下，避免被導覽列遮住 */
     .block-container {
-        padding-top: 5rem; 
-        max-width: 1000px; /* 限制最大寬度讓閱讀舒適 */
+        padding-top: 6rem; 
+        padding-bottom: 5rem;
+        max-width: 960px; /* 限制寬度，閱讀體驗更好 */
     }
 
-    /* 步驟條樣式 */
+    /* === 輸入框美化 (關鍵：去灰底，改白底邊框) === */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div, .stNumberInput input, .stDateInput input, .stTimeInput input {
+        background-color: #ffffff !important; /* 強制白底 */
+        border: 1px solid #ced4da !important; /* 灰色細邊框 */
+        border-radius: 6px !important;
+        color: #495057 !important;
+        padding: 0.5rem !important;
+    }
+    
+    /* 輸入框 Focus 狀態 (點擊時變東海藍) */
+    .stTextInput input:focus, .stNumberInput input:focus, .stDateInput input:focus {
+        border-color: #002E5D !important;
+        box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.15) !important;
+    }
+
+    /* 步驟條樣式優化 */
     .step-container {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 2rem;
-        padding: 0 2rem;
+        margin-bottom: 2.5rem;
+        padding: 0 3rem;
+        position: relative;
     }
     .step-item {
         display: flex;
@@ -69,10 +94,11 @@ st.markdown("""
         align-items: center;
         position: relative;
         flex: 1;
+        z-index: 2;
     }
     .step-circle {
-        width: 35px;
-        height: 35px;
+        width: 32px;
+        height: 32px;
         background-color: #002E5D;
         color: white;
         border-radius: 50%;
@@ -81,49 +107,57 @@ st.markdown("""
         justify-content: center;
         font-weight: bold;
         margin-bottom: 0.5rem;
-        z-index: 2;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     .step-label {
-        font-size: 0.9rem;
-        font-weight: bold;
+        font-size: 0.85rem;
+        font-weight: 700;
         color: #555;
     }
-    .step-line {
+    /* 連接線 */
+    .step-line-bg {
         position: absolute;
-        top: 17px;
-        left: 50%;
-        width: 100%;
-        height: 3px;
+        top: 16px;
+        left: 15%;
+        width: 70%;
+        height: 2px;
         background-color: #e0e0e0;
         z-index: 1;
     }
-    .step-item:last-child .step-line {
-        display: none;
-    }
 
-    /* 按鈕樣式 */
+    /* === 按鈕美化 === */
     .stButton>button {
         background-color: #002E5D;
         color: white;
         border-radius: 8px;
         font-weight: bold;
-        padding: 0.5rem 1rem;
-        border: 2px solid #002E5D;
+        padding: 0.6rem 2rem;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 46, 93, 0.3);
+        transition: all 0.3s;
+        width: 100%;
+        font-size: 1.1rem;
     }
     .stButton>button:hover {
-        background-color: white;
-        color: #002E5D;
-        border-color: #002E5D;
+        background-color: #001a35;
+        box-shadow: 0 6px 8px rgba(0, 46, 93, 0.4);
+        transform: translateY(-2px);
     }
     
-    /* 標題裝飾 */
+    /* 卡片標題裝飾 */
     .section-title {
         color: #002E5D;
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-        border-left: 5px solid #C6A87C;
-        padding-left: 10px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        border-left: 6px solid #C6A87C;
+        padding-left: 12px;
+        line-height: 1.2;
+    }
+    
+    /* 調整 Container 邊框顏色 */
+    [data-testid="stVerticalBlock"] > [style*="flex-direction: column;"] > [data-testid="stVerticalBlock"] {
+        background-color: white;
     }
     </style>
     
@@ -133,26 +167,25 @@ st.markdown("""
             <h1>東海大學</h1>
             <span>學生校外實習合約系統</span>
         </div>
-        <div style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem;">
-            👤 承辦人員模式
+        <div style="background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.2);">
+            <span style="color:white; margin:0;">👤 承辦人員模式</span>
         </div>
     </div>
     
     <!-- 步驟條 HTML -->
     <div class="step-container">
+        <div class="step-line-bg"></div>
         <div class="step-item">
             <div class="step-circle">1</div>
             <div class="step-label">機構資料</div>
-            <div class="step-line"></div>
         </div>
         <div class="step-item">
             <div class="step-circle">2</div>
             <div class="step-label">學生資料</div>
-            <div class="step-line"></div>
         </div>
         <div class="step-item">
             <div class="step-circle">3</div>
-            <div class="step-label">條件與預覽</div>
+            <div class="step-label">預覽與下載</div>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -161,14 +194,14 @@ st.markdown("""
 context = {}
 
 # ==========================================
-# 區塊 1：實習機構資料 (使用 Container 模擬卡片)
+# 區塊 1：實習機構資料
 # ==========================================
 with st.container(border=True):
     st.markdown('<div class="section-title">🏢 乙方：實習機構資料</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     with col1:
-        company_name = st.text_input("機構全銜 (法定名稱) *", placeholder="例：國泰世華商業銀行股份有限公司")
+        company_name = st.text_input("機構全銜 (法定名稱) *", placeholder="請輸入完整名稱，例：國泰世華商業銀行股份有限公司")
     with col2:
         company_tax_id = st.text_input("統一編號")
 
@@ -185,7 +218,7 @@ with st.container(border=True):
     # 分公司邏輯
     is_branch = st.checkbox("📍 實習地點與登記地址不同 (如派駐分公司)")
     if is_branch:
-        st.info("請填寫實際派駐地點，系統將自動合併顯示於合約中。")
+        st.info("💡 系統將自動合併顯示：登記地址 (實習地點：分公司 - 地址)")
         b_col1, b_col2 = st.columns([1, 2])
         with b_col1:
             branch_name = st.text_input("實習單位/分公司名稱", placeholder="例：西屯分公司")
@@ -196,19 +229,17 @@ with st.container(border=True):
         final_address = reg_address
 
 # ==========================================
-# 區塊 2：學生資料 (多人簽署)
+# 區塊 2：學生資料
 # ==========================================
 with st.container(border=True):
     st.markdown('<div class="section-title">🧑‍🎓 甲方：實習學生資料</div>', unsafe_allow_html=True)
     
-    # 使用 columns 讓選擇人數不佔太大空間
     sc_col1, sc_col2 = st.columns([1, 3])
     with sc_col1:
         student_count = st.number_input("本合約學生人數", min_value=1, max_value=3, value=1)
     
     student_list = []
     
-    # 動態產生輸入框
     for i in range(student_count):
         st.markdown(f"**第 {i+1} 位學生**")
         s_col1, s_col2 = st.columns(2)
@@ -218,12 +249,12 @@ with st.container(border=True):
             s_id = st.text_input(f"系級 / 學號", key=f"s_id_{i}", placeholder="例：國貿四A / s109...")
         student_list.append({'name': s_name, 'id': s_id})
     
-    # 補足 3 人空位 (防呆)
+    # 補足空位
     while len(student_list) < 3:
         student_list.append({'name': "", 'id': ""})
 
 # ==========================================
-# 區塊 3：實習條件 (核心邏輯)
+# 區塊 3：實習條件
 # ==========================================
 with st.container(border=True):
     st.markdown('<div class="section-title">📝 實習條件與類型</div>', unsafe_allow_html=True)
@@ -236,13 +267,12 @@ with st.container(border=True):
             horizontal=True
         )
 
-    # 實習期間 (民國年)
     st.markdown("**2. 實習期間 (民國年)**")
-    d_col1, d_col2, d_col3, d_col4 = st.columns([0.2, 1, 0.2, 1])
+    # 調整欄位比例讓顯示更緊湊
+    d_col1, d_col2, d_col3, d_col4 = st.columns([0.1, 1.2, 0.1, 1.2])
     with d_col1:
         st.write("自")
     with d_col2:
-        # 預設今年
         curr_year = datetime.now().year - 1911
         c1, c2, c3 = st.columns(3)
         s_y = c1.number_input("年", 113, 120, curr_year, key="sy")
@@ -256,7 +286,6 @@ with st.container(border=True):
         e_m = c5.number_input("月", 1, 12, 6, key="em")
         e_d = c6.number_input("日", 1, 31, 30, key="ed")
 
-    # 每日時間
     st.markdown("**3. 每日實習時間**")
     t_col1, t_col2, t_col3 = st.columns(3)
     with t_col1:
@@ -267,12 +296,11 @@ with st.container(border=True):
         daily_hours = st.number_input("每日共計 (小時)", value=8.0, step=0.5)
 
 # ==========================================
-# 區塊 4：待遇與福利 (動態顯示)
+# 區塊 4：待遇與福利
 # ==========================================
 with st.container(border=True):
     st.markdown('<div class="section-title">💰 待遇與福利</div>', unsafe_allow_html=True)
 
-    # 初始化變數
     context.update({
         'type_learn_check': '□', 'type_work_check': '□',
         'chk_pay_none': '□', 'chk_pay_scholar': '□', 'chk_pay_allowance': '□',
@@ -280,7 +308,7 @@ with st.container(border=True):
     })
 
     if contract_type == "一般型 (學習型)":
-        st.info("✅ **學習型適用**：單純學習訓練，無僱傭關係。每日不得超過 8 小時。")
+        st.success("✅ **學習型適用**：單純學習訓練，無僱傭關係。每日不得超過 8 小時。")
         context['type_learn_check'] = '☑'
         
         st.markdown("**給付項目 (每月給付總額)**")
@@ -298,7 +326,7 @@ with st.container(border=True):
             amt = st.number_input("津貼金額 (元)", min_value=0, step=1000)
             context['pay_learn_amount'] = f"{amt:,}"
             
-    else: # 勞資型
+    else: 
         st.warning("⚠️ **勞資型適用**：具僱傭關係，需投保勞健保。薪資不得低於基本工資。")
         context['type_work_check'] = '☑'
         
@@ -308,17 +336,15 @@ with st.container(border=True):
 
     st.markdown("---")
     
-    # 福利 Helper Function
+    # 福利 Helper
     def welfare_ui(title, key_prefix, unit):
         st.markdown(f"**{title}**")
         opt = st.selectbox(f"{title}選項", ["無", "免費提供", "付費提供"], key=key_prefix, label_visibility="collapsed")
         cost_txt = ""
         checks = {f'chk_{key_prefix}_none': '□', f'chk_{key_prefix}_free': '□', f'chk_{key_prefix}_paid': '□'}
         
-        if opt == "無":
-            checks[f'chk_{key_prefix}_none'] = '☑'
-        elif opt == "免費提供":
-            checks[f'chk_{key_prefix}_free'] = '☑'
+        if opt == "無": checks[f'chk_{key_prefix}_none'] = '☑'
+        elif opt == "免費提供": checks[f'chk_{key_prefix}_free'] = '☑'
         else:
             checks[f'chk_{key_prefix}_paid'] = '☑'
             val = st.number_input(f"費用 ({unit})", min_value=0, step=100, key=f"{key_prefix}_cost")
@@ -327,17 +353,13 @@ with st.container(border=True):
 
     w_col1, w_col2, w_col3 = st.columns(3)
     
-    with w_col1:
-        d_checks, d_cost = welfare_ui("住宿", "dorm", "元/月")
-    with w_col2:
-        f_checks, f_cost = welfare_ui("膳食", "food", "元/餐")
+    with w_col1: d_checks, d_cost = welfare_ui("住宿", "dorm", "元/月")
+    with w_col2: f_checks, f_cost = welfare_ui("膳食", "food", "元/餐")
     with w_col3:
-        # 交通特別處理
         st.markdown("**交通**")
         t_opt = st.selectbox("交通選項", ["無", "免費提供", "付費提供"], key="trans", label_visibility="collapsed")
         t_checks = {'chk_trans_none': '□', 'chk_trans_free': '□', 'chk_trans_paid': '□'}
         t_cost = ""
-        
         if t_opt == "無": t_checks['chk_trans_none'] = '☑'
         elif t_opt == "免費提供": t_checks['chk_trans_free'] = '☑'
         else: 
@@ -345,7 +367,6 @@ with st.container(border=True):
             val = st.number_input("交通費用/津貼 (元/月)", min_value=0, step=100)
             t_cost = f"{val:,}"
 
-    # 寫入 Context
     context.update(d_checks); context.update({'dorm_cost': d_cost})
     context.update(f_checks); context.update({'food_cost': f_cost})
     context.update(t_checks); context.update({'trans_cost': t_cost})
@@ -384,6 +405,7 @@ if generate_btn:
             bio = io.BytesIO()
             doc.save(bio)
             
+            st.balloons()
             st.success("✅ 合約產生成功！請點擊下方按鈕下載。")
             st.download_button(
                 label="📥 點此下載 Word 檔",
