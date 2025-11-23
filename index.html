@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>東海大學學生校外實習合約產生系統 (V11.5)</title>
+    <title>東海大學學生校外實習合約產生系統 (V11.6)</title>
     
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,6 +29,9 @@
         .hidden { display: none; }
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
         #status-bar { display: none; position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        /* 錯誤訊息彈窗 */
+        #error-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
+        #error-content { background: white; padding: 20px; border-radius: 8px; max-width: 80%; max-height: 80%; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -39,6 +42,15 @@
     </div>
 
     <div id="status-bar">準備就緒</div>
+
+    <!-- 錯誤訊息彈窗 -->
+    <div id="error-modal">
+        <div id="error-content">
+            <h3 class="text-lg font-bold text-red-600 mb-2">發生錯誤</h3>
+            <pre id="error-details" class="text-sm bg-gray-100 p-2 rounded whitespace-pre-wrap"></pre>
+            <button onclick="document.getElementById('error-modal').style.display='none'" class="mt-4 bg-thuBlue text-white px-4 py-2 rounded">關閉</button>
+        </div>
+    </div>
 
     <!-- Header -->
     <div class="fixed top-0 left-0 w-full h-[70px] bg-thuBlue text-white z-50 flex items-center justify-between px-4 md:px-8 shadow-md">
@@ -157,44 +169,37 @@
         function togglePayInputs() { document.getElementById('learn_amt_box').classList.toggle('hidden', document.querySelector('input[name="pay_opt_learn"]:checked').value === 'none'); }
         function toggleCost(p) { const v = document.getElementById(p+'_opt').value; const i = document.getElementById(p+'_cost'); if(v==='paid'||v==='subsidy') i.classList.remove('hidden'); else i.classList.add('hidden'); }
         function showMsg(msg) { const el = document.getElementById('status-bar'); el.innerText = msg; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 5000); }
+        function showError(details) {
+            const modal = document.getElementById('error-modal');
+            const content = document.getElementById('error-details');
+            content.textContent = details;
+            modal.style.display = 'flex';
+        }
 
-        // --- V11.5 強力清洗引擎 (Regex 增強版) ---
+        // --- V11.6 強力清洗引擎 (正則表達式增強) ---
         function cleanXML(xmlStr) {
-            console.log("開始清洗 Word XML (V11.5)...");
+            console.log("開始清洗 Word XML (V11.6)...");
             
-            // 1. 移除所有拼字/文法檢查、書籤、修訂ID (這些是最常見的斷裂原因)
-            // w:proofErr, w:gramE, w:lang, w:bookmarkStart, w:bookmarkEnd, w:rsidR, w:rsidRPr
+            // 1. 移除所有拼字/文法檢查、書籤、修訂ID
             xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
             
             // 2. 移除 Track Changes (追蹤修訂)
-            // 移除刪除的內容: <w:del ...> ... </w:del>
             xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
-            // 移除插入的殼: <w:ins ...> ... </w:ins> -> 保留內容
             xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
 
-            // 3. 處理空標籤 (Empty Runs) - 這些也會切斷變數
-            // <w:r><w:t/></w:r> 或 <w:r><w:t></w:t></w:r>
+            // 3. 處理空標籤 (Empty Runs)
             xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t\/>\s*<\/w:r>/g, "");
             xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t>\s*<\/w:t>\s*<\/w:r>/g, "");
 
             // 4. 終極合併：修復斷裂的 {{ 和 }}
-            // 原理：找到 { 開頭，忽略中間所有的 XML tags，直到找到 {，把它們變成 {{
-            // 這邊使用一個簡單但強大的邏輯：
-            // 將 <w:t>{</w:t> ... <w:t>{</w:t> 替換為 <w:t>{{</w:t>
-            // 注意：JS 正則不支援跨多行的複雜配對如果不用 dotAll，但在 XML 中通常是一整行
-            
             // 修復分開的 { {
-            // 匹配模式：<w:t>{ ...任意標籤或空白... <w:t>{
-            // 替換為：<w:t>{{
             xmlStr = xmlStr.replace(/(<w:t>)\s*{\s*(<\/w:t>[\s\S]*?<w:t>)\s*{\s*(<\/w:t>)/g, "$1{{$3");
-            
             // 修復分開的 } }
             xmlStr = xmlStr.replace(/(<w:t>)\s*}\s*(<\/w:t>[\s\S]*?<w:t>)\s*}\s*(<\/w:t>)/g, "$1}}$3");
-
-            // 5. 修復更極端的情況：變數名稱被切斷
-            // 例如: <w:t>{{</w:t> ... <w:t>student</w:t> ... <w:t>_name}}</w:t>
-            // 這部分 docxtemplater 其實可以容忍一定程度的 XML 標籤在中間，
-            // 只要 {{ 和 }} 完整即可。我們主要修復的是 {{ 本身被切斷的問題。
+            
+            // 新增: 修復 { { (中間有空格)
+            xmlStr = xmlStr.replace(/{\s+{/g, "{{");
+            xmlStr = xmlStr.replace(/}\s+}/g, "}}");
 
             console.log("XML 清洗完成");
             return xmlStr;
@@ -281,16 +286,29 @@
                 zip.file("word/document.xml", cleanDocXml);
                 // ===================
 
-                const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+                const doc = new window.docxtemplater(zip, { 
+                    paragraphLoop: true, 
+                    linebreaks: true,
+                    // 新增: 當找不到變數時，回傳空字串而不是報錯
+                    nullGetter: function(part) { return ""; }
+                });
+                
                 doc.render(data);
                 const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                 saveAs(out, `東海大學實習合約_${data.s1_name}.docx`);
                 showMsg("下載成功！");
             }).catch(error => {
                 if (error.properties && error.properties.errors) {
-                    const msgs = error.properties.errors.map(e => e.properties.explanation).join("\n");
-                    alert("仍有標籤錯誤 (可能需手動重打)：\n" + msgs);
-                } else { alert("錯誤：" + error.message); }
+                    const msgs = error.properties.errors.map(e => {
+                        // 嘗試解析錯誤位置
+                        const errId = e.properties.id || "unknown";
+                        const errExpl = e.properties.explanation || "無詳細說明";
+                        return `錯誤類型: ${errId}\n說明: ${errExpl}`;
+                    }).join("\n\n");
+                    showError("範本標籤錯誤 (Multi Error)：\n" + msgs + "\n\n請檢查上述錯誤訊息中提到的標籤，在 Word 中手動刪除並重新輸入。");
+                } else { 
+                    showError("錯誤：" + error.message); 
+                }
                 console.error(error);
             }).finally(() => { btn.disabled = false; });
         }
