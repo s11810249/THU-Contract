@@ -952,9 +952,9 @@
                 // 自動讀取 template.docx
                 let arrayBuffer;
                 try {
-                    // 檔案名稱使用 template 2.docx
-                    const resp = await fetch('./template 2.docx'); 
-                    if (!resp.ok) throw new Error('找不到 template 2.docx（請確認檔案是否存在於根目錄）');
+                    // 檔案名稱使用 template.docx
+                    const resp = await fetch('./template.docx'); 
+                    if (!resp.ok) throw new Error('找不到 template.docx（請確認檔案是否存在於根目錄）');
                     arrayBuffer = await resp.arrayBuffer();
                 } catch (e) {
                     showError("讀取內建範本失敗：" + e.message);
