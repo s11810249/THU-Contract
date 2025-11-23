@@ -623,7 +623,6 @@
 
     <!-- JS 邏輯 -->
     <script>
-        // ... (省略不變的 helper functions)
         function autoJump(current, maxLen, nextId) {
             if (current.value.length >= maxLen) {
                 const next = document.getElementById(nextId);
@@ -650,6 +649,7 @@
         // 重置表單
         function resetForm() {
             if(confirm('確定要清除所有資料重新填寫嗎？')) {
+                // 強制重置表單元素
                 document.getElementById('contractForm').reset();
                 
                 // 1. 重置實習類型 -> 回到初始狀態
