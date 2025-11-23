@@ -84,7 +84,7 @@
         }
         .date-input {
             border: none;
-            text-align: center; /* 文字置中 */
+            text-align: center !important; /* 文字置中 */
             width: 100%;
             min-width: 2.5rem;
             outline: none;
@@ -167,12 +167,13 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            border: 1px solid #e5e7eb; /* 預設細邊框 */
+            border: 1px solid #e5e7eb; /* 修正: 使用 1px 邊框 */
             border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
             background-color: white;
             height: 100%;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
         .pay-option-label:hover {
             background-color: #f9fafb; /* gray-50 */
@@ -821,6 +822,9 @@
 
         // XML 清洗引擎
         function cleanXML(xmlStr) {
+            // 替換打勾符號為實心方塊
+            xmlStr = xmlStr.replace(/☑/g, '■'); 
+
             try {
                 xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
                 xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
@@ -905,17 +909,17 @@
                     data.pay_learn_amount = ""; data.pay_work_amount = "";
 
                     if (type === 'learn') {
-                        data.type_learn_check = '☑';
+                        data.type_learn_check = '■'; // 修正: 使用 ■
                         const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
-                        if (pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
+                        if (pOpt === 'none') { data.chk_pay_none = '■'; data.pay_learn_amount = "0"; }
                         else {
-                            if (pOpt === 'scholar') data.chk_pay_scholar = '☑';
-                            else data.chk_pay_allowance = '☑';
+                            if (pOpt === 'scholar') data.chk_pay_scholar = '■'; // 修正: 使用 ■
+                            else data.chk_pay_allowance = '■'; // 修正: 使用 ■
                             const lam = Number(document.getElementById('learn_amount')?.value || 0);
                             data.pay_learn_amount = lam ? lam.toLocaleString() : "";
                         }
                     } else {
-                        data.type_work_check = '☑';
+                        data.type_work_check = '■'; // 修正: 使用 ■
                         const wam = Number(document.getElementById('work_amount')?.value || 0);
                         data.pay_work_amount = wam ? wam.toLocaleString() : "";
                     }
@@ -923,10 +927,10 @@
                     function setWelfare(prefix) {
                         const opt = document.getElementById(prefix + '_opt')?.value || 'none';
                         data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
-                        if (opt === 'none') data[`chk_${prefix}_none`] = '☑';
-                        else if (opt === 'free') data[`chk_${prefix}_free`] = '☑';
+                        if (opt === 'none') data[`chk_${prefix}_none`] = '■'; // 修正: 使用 ■
+                        else if (opt === 'free') data[`chk_${prefix}_free`] = '■'; // 修正: 使用 ■
                         else {
-                            data[`chk_${prefix}_paid`] = '☑';
+                            data[`chk_${prefix}_paid`] = '■'; // 修正: 使用 ■
                             const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
                             data[`${prefix}_desc`] = val ? val.toLocaleString() : "";
                             data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
