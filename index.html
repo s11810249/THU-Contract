@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>東海大學學生校外實習合約產生系統</title>
-    <!-- 函式庫引入 -->
+    
+    <!-- 1. 核心函式庫 (更換為更穩定的來源) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PizZip (處理 Zip 壓縮核心) -->
+    <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
+    <!-- Docxtemplater (處理 Word 替換核心) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
+    <!-- FileSaver (處理檔案下載) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <!-- FontAwesome (圖示) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- 東海配色 -->
@@ -28,9 +34,17 @@
         .border-top-blue { border-top: 4px solid #002E5D; }
         .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
+        /* 錯誤訊息樣式 */
+        #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
     </style>
 </head>
 <body>
+
+    <!-- 函式庫載入檢查警告 -->
+    <div id="lib-error">
+        ⚠️ 系統偵測到核心元件未載入成功！可能是網路阻擋了 CDN。<br>
+        請嘗試使用手機網路或更換瀏覽器。錯誤元件：<span id="missing-lib"></span>
+    </div>
 
     <!-- Header -->
     <div class="fixed top-0 left-0 w-full h-[70px] bg-thuBlue text-white z-50 flex items-center justify-between px-4 md:px-8 shadow-md">
@@ -275,6 +289,23 @@
 
     <!-- JS 邏輯區 -->
     <script>
+        // 0. 網頁載入時檢查 PizZip 是否存在
+        window.onload = function() {
+            renderStudents(); // 渲染學生欄位
+            
+            const missing = [];
+            if (typeof PizZip === 'undefined') missing.push('PizZip');
+            if (typeof window.docxtemplater === 'undefined') missing.push('Docxtemplater');
+            
+            if (missing.length > 0) {
+                document.getElementById('lib-error').style.display = 'block';
+                document.getElementById('missing-lib').innerText = missing.join(', ');
+                document.getElementById('genBtn').disabled = true;
+                document.getElementById('genBtn').classList.add('bg-gray-400', 'cursor-not-allowed');
+                document.getElementById('genBtn').classList.remove('bg-thuBlue', 'hover:bg-blue-900');
+            }
+        };
+
         // 初始化：渲染學生欄位
         function renderStudents() {
             const count = document.getElementById('student_count').value;
@@ -292,7 +323,6 @@
                 `;
             }
         }
-        renderStudents();
 
         // UI 切換邏輯
         function toggleBranch() {
@@ -326,16 +356,21 @@
 
         // --- 核心：產生 Word 檔案 ---
         
-        // Helper: 顯示狀態訊息
         function showStatus(msg, isError=false) {
             const el = document.getElementById('statusMsg');
             el.innerText = msg;
             el.classList.remove('hidden');
             el.style.color = isError ? 'red' : 'green';
-            if(isError) alert(msg); // 確保使用者看到錯誤
+            if(isError) alert(msg); 
         }
 
         function generateDoc() {
+            // 二次檢查
+            if (typeof PizZip === 'undefined') {
+                alert("錯誤：核心元件 PizZip 未載入，無法產生合約。請檢查網路連線。");
+                return;
+            }
+
             showStatus("正在處理中...請稍候", false);
             const btn = document.getElementById('genBtn');
             btn.disabled = true;
@@ -457,11 +492,10 @@
                 reader.readAsBinaryString(manualFile);
             } else {
                 // B. 自動從 GitHub 讀取 (使用 fetch)
-                // 嘗試讀取當前目錄下的 template.docx
                 fetch('./template.docx')
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error(`找不到範本檔案 (template.docx)！請確認檔案已上傳且檔名完全一致 (小寫)。HTTP 狀態: ${response.status}`);
+                            throw new Error(`找不到範本檔案 (template.docx)！狀態: ${response.status}`);
                         }
                         return response.arrayBuffer();
                     })
@@ -469,7 +503,7 @@
                         processTemplate(content, data, btn);
                     })
                     .catch(error => {
-                        showStatus("讀取範本失敗：" + error.message + "\n\n建議：請嘗試使用按鈕左側的「手動選取 template.docx」功能。", true);
+                        showStatus("讀取範本失敗：" + error.message, true);
                         btn.disabled = false; btn.innerText = "產生合約文件 (Word)";
                     });
             }
