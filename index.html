@@ -821,21 +821,35 @@
         }
 
         // XML 清洗引擎
-        function cleanXML(xmlStr) {
-            // 替換打勾符號為實心方塊
-            xmlStr = xmlStr.replace(/☑/g, '■'); 
-
-            try {
-                xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
-                xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
-                xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
-                xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
-                xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
-                xmlStr = xmlStr.replace(/{(\s*<[^>]+>\s*)*{/g, "{{");
-                xmlStr = xmlStr.replace(/}(\s*<[^>]+>\s*)*}/g, "}}");
-                return xmlStr;
-            } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
-        }
+function cleanXML(xmlStr) {
+    // 替換打勾符號為實心方塊 
+    xmlStr = xmlStr.replace(/☑/g, '■'); [cite: 291]
+    try {
+        // [新增] 處理 Docxtemplater 迴圈標籤 {%...%} 被 Word 拆開的情況
+        // 將 {% <XML> % 變成 {%
+        xmlStr = xmlStr.replace(/{%(\s*<[^>]+>\s*)*%/g, "{%");
+        // 將 % <XML> } 變成 %}
+        xmlStr = xmlStr.replace(/%(\s*<[^>]+>\s*)*}/g, "%}");
+        
+        // 移除 Word 追蹤修訂/校對標籤 [cite: 291, 292]
+        xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, ""); [cite: 291, 292]
+        xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, ""); [cite: 292]
+        xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, ""); [cite: 292]
+        xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, ""); [cite: 292]
+        
+        // 處理 %%% 變數標籤被多餘的 XML 隔開的問題 [cite: 292, 293]
+        xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2"); [cite: 292, 293]
+        
+        // 處理 {{ }} 標籤 (若有用到) 被 XML 隔開的問題 
+        xmlStr = xmlStr.replace(/{(\s*<[^>]+>\s*)*{/g, "{{"); [cite: 293]
+        xmlStr = xmlStr.replace(/}(\s*<[^>]+>\s*)*}/g, "}}"); [cite: 293]
+        
+        return xmlStr;
+    } catch (e) { 
+        console.warn('cleanXML failed', e); [cite: 294] 
+        return xmlStr; [cite: 294]
+    }
+}
 
         // 產生文件主流程
         async function generateDoc() {
