@@ -76,6 +76,7 @@
             border-radius: 0.5rem;
             padding: 0.4rem;
             transition: all 0.2s ease;
+            overflow: hidden;
         }
         .date-group:focus-within {
             border-color: #002E5D;
@@ -85,13 +86,14 @@
             border: none;
             text-align: center; /* 文字置中 */
             width: 100%;
+            min-width: 2.5rem;
             outline: none;
             font-size: 1rem;
             color: #374151;
             background: transparent;
             padding: 0;
         }
-        .date-sep { color: #9ca3af; font-weight: bold; padding: 0 0.2rem; user-select: none; flex-shrink: 0; }
+        .date-sep { color: #9ca3af; font-weight: bold; padding: 0 0.1rem; user-select: none; flex-shrink: 0; }
 
         /* 卡片樣式 */
         .card { 
@@ -186,38 +188,26 @@
             height: 0;
         }
         
-        /* 1. 無 (灰色系) - 選中時邊框不加粗 (維持1px但變色) */
-        .pay-option-none:has(input:checked) {
-            border-color: #475569;
-            background-color: #f1f5f9;
-            box-shadow: 0 0 0 1px #475569; /* 用 shadow 模擬 border */
-        }
+        /* 1. 無 (灰色系) */
+        .pay-option-none:has(input:checked) { border-color: #475569; background-color: #f1f5f9; box-shadow: 0 0 0 1px #475569; }
         .pay-option-none .pay-option-icon { color: #94a3b8; }
         .pay-option-none:has(input:checked) .pay-option-icon { color: #475569; }
         .pay-option-none:has(input:checked) .pay-option-text { color: #0f172a; }
 
         /* 2. 獎學金 (金色系) */
-        .pay-option-scholar:has(input:checked) {
-            border-color: #b45309;
-            background-color: #fffbeb;
-            box-shadow: 0 0 0 1px #b45309;
-        }
+        .pay-option-scholar:has(input:checked) { border-color: #b45309; background-color: #fffbeb; box-shadow: 0 0 0 1px #b45309; }
         .pay-option-scholar .pay-option-icon { color: #d97706; }
         .pay-option-scholar:has(input:checked) .pay-option-icon { color: #b45309; }
         .pay-option-scholar:has(input:checked) .pay-option-text { color: #78350f; }
 
         /* 3. 實習津貼 (綠色系) */
-        .pay-option-allowance:has(input:checked) {
-            border-color: #15803d;
-            background-color: #f0fdf4;
-            box-shadow: 0 0 0 1px #15803d;
-        }
+        .pay-option-allowance:has(input:checked) { border-color: #15803d; background-color: #f0fdf4; box-shadow: 0 0 0 1px #15803d; }
         .pay-option-allowance .pay-option-icon { color: #16a34a; }
         .pay-option-allowance:has(input:checked) .pay-option-icon { color: #15803d; }
         .pay-option-allowance:has(input:checked) .pay-option-text { color: #14532d; }
 
         .pay-option-icon {
-            font-size: 2rem; /* 加大 icon */
+            font-size: 2rem;
             margin-bottom: 0.5rem;
             transition: color 0.2s;
         }
@@ -351,7 +341,7 @@
                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">統一編號</label>
-                            <input type="text" id="company_tax_id" class="input-field" placeholder="04231910">
+                            <input type="text" id="company_tax_id" class="input-field" placeholder="8碼統編">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">代表人姓名</label>
@@ -372,7 +362,7 @@
                     <div class="md:col-span-2 pt-6 border-t border-gray-200 mt-2">
                         <div class="text-sm font-bold text-thuBlue mb-4 flex items-center gap-2 bg-blue-50 p-2 rounded">
                             <i class="fa-solid fa-location-dot"></i> 
-                            實習地點 (若與登記地址不同，如於分公司、百貨專櫃、駐點等，請填寫以下欄位)
+                            實習地點 (若與登記地址不同，如派駐分公司，請填寫以下欄位)
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -381,7 +371,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-2">實際實習地址</label>
-                                <input type="text" id="branch_addr" class="input-field" placeholder="例：新北市淡水區中山路106號1、2樓及地下1樓">
+                                <input type="text" id="branch_addr" class="input-field" placeholder="例：新北市淡水區中山路106號">
                             </div>
                         </div>
                     </div>
@@ -423,7 +413,7 @@
                             <div>
                                 <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習開始 (民國年/月/日)</span>
                                 <div class="date-group">
-                                    <input type="number" id="start_y" class="date-input w-16 text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
+                                    <input type="number" id="start_y" class="date-input w-16 font-bold text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
                                     <span class="date-sep">/</span>
                                     <input type="number" id="start_m" class="date-input w-12" placeholder="07" oninput="autoJump(this, 2, 'start_d')">
                                     <span class="date-sep">/</span>
@@ -434,7 +424,7 @@
                             <div>
                                 <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習結束 (民國年/月/日)</span>
                                 <div class="date-group">
-                                    <input type="number" id="end_y" class="date-input w-16 text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
+                                    <input type="number" id="end_y" class="date-input w-16 font-bold text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
                                     <span class="date-sep">/</span>
                                     <input type="number" id="end_m" class="date-input w-12" placeholder="06" oninput="autoJump(this, 2, 'end_d')">
                                     <span class="date-sep">/</span>
@@ -534,7 +524,7 @@
                                 <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額 (月薪)</label>
                                 <div class="relative w-full md:w-64">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
-                                    <input type="number" id="work_amount" placeholder="28590" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 focus:ring-orange-500 font-mono text-lg">
+                                    <input type="number" id="work_amount" placeholder="27470" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 focus:ring-orange-500 font-mono text-lg">
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div>
                                 </div>
                             </div>
@@ -632,6 +622,7 @@
 
     <!-- JS 邏輯 -->
     <script>
+        // ... (省略不變的 helper functions)
         function autoJump(current, maxLen, nextId) {
             if (current.value.length >= maxLen) {
                 const next = document.getElementById(nextId);
@@ -660,7 +651,6 @@
             if(confirm('確定要清除所有資料重新填寫嗎？')) {
                 document.getElementById('contractForm').reset();
                 
-                // 重置後，需手動重置 UI 狀態，因為 reset() 只是清空值，不會觸發 onchange
                 // 1. 重置實習類型 -> 回到初始狀態
                 const panelInit = document.getElementById('panel_initial');
                 const panelLearn = document.getElementById('panel_learn');
@@ -837,8 +827,8 @@
                 xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
                 xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
                 xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
-                xmlStr = xmlStr.replace(/{\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*{/g, "{{");
-                xmlStr = xmlStr.replace(/}\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*}/g, "}}");
+                xmlStr = xmlStr.replace(/{(\s*<[^>]+>\s*)*{/g, "{{");
+                xmlStr = xmlStr.replace(/}(\s*<[^>]+>\s*)*}/g, "}}");
                 return xmlStr;
             } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
         }
@@ -883,11 +873,20 @@
                             id: document.getElementById(`s_id_${i}`)?.value || ""
                         });
                     }
-                    while (sList.length < 3) sList.push({name: "", id: ""});
-                    data.s1_name = sList[0].name; data.s1_id = sList[0].id;
-                    data.s2_name = sList[1].name; data.s2_id = sList[1].id;
-                    data.s3_name = sList[2].name; data.s3_id = sList[2].id;
                     data.student_name = sList[0].name + (sCount > 1 ? " 等" : "");
+                    
+                    // 核心：準備 Loop 用的 students 陣列
+                    const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                    data.students = sList.filter(s => s.name).map((s, index) => ({
+                        letter: alphabet[index] || (index + 1), // 使用 A, B, C...
+                        name: s.name,
+                        id: s.id,
+                    }));
+                    // 填補原本固定的 s1, s2, s3 欄位 (確保相容舊版模板)
+                    data.s1_name = data.students[0]?.name || "";
+                    data.s2_name = data.students[1]?.name || "";
+                    data.s3_name = data.students[2]?.name || "";
+
 
                     data.s_y = document.getElementById('start_y')?.value || "   ";
                     data.s_m = document.getElementById('start_m')?.value || "   ";
