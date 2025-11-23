@@ -35,6 +35,7 @@
             font-family: 'Noto Sans TC', sans-serif;
             padding-bottom: 100px; 
             color: #374151;
+            scroll-behavior: smooth;
         }
         
         /* 通用輸入框樣式 */
@@ -57,16 +58,13 @@
             background-color: #fef2f2 !important;
         }
 
-        /* 去除數字輸入框的上下箭頭 (Chrome, Safari, Edge, Opera) */
+        /* 移除數字輸入框的上下箭頭 */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
             margin: 0; 
         }
-        /* 去除數字輸入框的上下箭頭 (Firefox) */
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
+        input[type=number] { -moz-appearance: textfield; }
 
         /* 日期群組 */
         .date-group {
@@ -101,6 +99,7 @@
             border: 1px solid #e5e7eb;
             overflow: hidden; 
             margin-bottom: 2rem; 
+            transition: border-color 0.3s;
         }
         .card-header { 
             padding: 1.25rem 2rem; 
@@ -148,12 +147,13 @@
             z-index: 50;
             border-top: 3px solid #C6A87C;
         }
-
-        /* 進度條動態樣式 */
-        .step-active .step-circle { background-color: #002E5D; color: white; ring-color: #e5e7eb; }
-        .step-active .step-text { color: #002E5D; font-weight: bold; }
-        .step-inactive .step-circle { background-color: white; border: 2px solid #d1d5db; color: #9ca3af; }
-        .step-inactive .step-text { color: #9ca3af; }
+        
+        /* 提示框動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
     </style>
 </head>
 <body>
@@ -184,12 +184,10 @@
     <div class="fixed top-0 left-0 w-full bg-thuBlue z-50 shadow-md">
         <div class="max-w-7xl mx-auto px-4 md:px-8 h-[80px] flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-thuBlue font-bold text-2xl shrink-0">
-                    <i class="fa-solid fa-university"></i>
-                </div>
+                <img src="https://www.thu.edu.tw/upload/pagepic_upload/logo_w.svg" alt="THU Logo" class="h-10 w-auto">
                 <div class="flex flex-col justify-center text-white">
-                    <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">東海大學 | 實習與學生成就中心</div>
-                    <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">學生校外實習合約書產生系統</div>
+                    <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">學生校外實習合約書產生系統</div>
+                    <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">Internship Contract Generation System</div>
                 </div>
             </div>
             
@@ -205,31 +203,8 @@
         </div>
     </div>
 
-    <!-- 步驟條 (動態) -->
-    <div class="mt-32 mb-10 px-4 md:px-8 max-w-4xl mx-auto">
-        <div class="flex justify-between items-center relative">
-            <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -z-10 transform -translate-y-1/2"></div>
-            
-            <!-- 步驟 1 -->
-            <div class="flex flex-col items-center bg-[#f3f4f6] px-4 step-active" id="step-1">
-                <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow ring-4 ring-[#f3f4f6]">1</div>
-                <span class="step-text text-xs mt-2">機構資料</span>
-            </div>
-            <!-- 步驟 2 -->
-            <div class="flex flex-col items-center bg-[#f3f4f6] px-4 step-inactive" id="step-2">
-                <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ring-4 ring-[#f3f4f6]">2</div>
-                <span class="step-text text-xs mt-2">學生資料</span>
-            </div>
-            <!-- 步驟 3 -->
-            <div class="flex flex-col items-center bg-[#f3f4f6] px-4 step-inactive" id="step-3">
-                <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ring-4 ring-[#f3f4f6]">3</div>
-                <span class="step-text text-xs mt-2">條件設定</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 主要表單 -->
-    <main class="max-w-4xl mx-auto px-4 mb-20" onscroll="updateProgress()">
+    <!-- 主要表單 (移除步驟條，直接顯示內容) -->
+    <main class="max-w-4xl mx-auto px-4 mb-20 pt-28">
         
         <!-- 使用須知 -->
         <div class="bg-white border border-blue-100 rounded-xl p-6 mb-8 shadow-sm">
@@ -240,14 +215,21 @@
                 <div class="flex-1">
                     <h3 class="text-base font-bold text-gray-800 mb-1">使用須知</h3>
                     <p class="text-sm text-gray-500 leading-relaxed">
-                        本系統將協助您快速產出符合規範的實習合約書。請依序填寫下方資料，系統將自動帶入公版 Word 範本中。所有運算皆在您的瀏覽器完成，不會上傳任何個資。
+                        1.本系統將協助您快速產出符合規範的實習合約書。請依序填寫下方資料，系統將自動帶入公版 Word 範本中。所有運算皆在您的瀏覽器完成，不會上傳任何個資。</p>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        2.本系統於上線初期僅提供中文版本，適用範圍限於國內實習；後續將推出外語版本並擴大適用於國外實習。
+                    <p class="text-sm text-gray-500 leading-relaxed">                   
+                        3.因實習計畫書樣態多元，故目前版本不包含實習計畫書，合約用印前請務必完成實習計畫書填寫。
+                    <p class="text-sm text-gray-500 leading-relaxed">                   
+                        4.如有任何系統反饋，歡迎寄信至 s11810249@thu.edu.tw！
+
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- 卡片 1: 機構資料 -->
-        <div class="card section" id="sec-1">
+        <div class="card">
             <div class="card-header">
                 <span class="card-header-title">乙方：實習機構資料</span>
             </div>
@@ -282,7 +264,7 @@
                 <div class="md:col-span-2 pt-6 border-t border-gray-200 mt-2">
                     <div class="text-sm font-bold text-thuBlue mb-4 flex items-center gap-2 bg-blue-50 p-2 rounded">
                         <i class="fa-solid fa-location-dot"></i> 
-                        實習地點 (若與登記地址不同，請填寫以下欄位)
+                        實習地點 (若與登記地址不同，如派駐分公司，請填寫以下欄位)
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -299,11 +281,11 @@
         </div>
 
         <!-- 卡片 2: 學生資料 (人數增減按鈕 + 標題靠左) -->
-        <div class="card section" id="sec-2">
+        <div class="card">
             <div class="card-header">
                 <span class="card-header-title mr-4">甲方：實習學生資料</span>
                 <!-- 人數控制直接放這裡 -->
-                <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
                     <button type="button" onclick="changeStudentCount(-1)" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm hover:text-thuBlue transition-all">
                         <i class="fa-solid fa-minus"></i>
                     </button>
@@ -320,7 +302,7 @@
         </div>
 
         <!-- 卡片 3: 實習期間與時間 -->
-        <div class="card section" id="sec-3">
+        <div class="card">
             <div class="card-header">
                 <span class="card-header-title">實習期間與時間</span>
             </div>
@@ -373,22 +355,24 @@
             </div>
             <div class="p-8 space-y-8">
                 
-                <!-- 類型 (必填 - 等寬切分) -->
+                <!-- 類型 (必填 - 50% 等寬) -->
                 <div id="type-section" class="p-4 rounded-lg border border-transparent transition-all">
                     <label class="block text-lg font-bold text-thuBlue mb-3">1. 請選擇實習類型 <span class="text-red-500 text-sm">*必填</span></label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label class="relative flex items-center p-4 border rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-thuBlue has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-thuBlue h-full">
-                            <input type="radio" name="contract_type" value="learn" onchange="toggleType()" class="w-4 h-4 text-thuBlue border-gray-300 focus:ring-thuBlue">
-                            <div class="ml-3">
-                                <span class="block text-sm font-bold text-gray-900">一般型 (學習型)</span>
-                                <span class="block text-xs text-gray-500 mt-0.5">單純學習訓練，無僱傭關係</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="relative flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-thuBlue has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-thuBlue h-full">
+                            <input type="radio" name="contract_type" value="learn" onchange="toggleType()" class="w-5 h-5 text-thuBlue border-gray-300 focus:ring-thuBlue">
+                            <div class="ml-4">
+                                <i class="fa-solid fa-book-open text-2xl text-thuBlue opacity-30 absolute right-4 top-4"></i>
+                                <span class="block text-base font-bold text-gray-900">一般型 (學習型)</span>
+                                <span class="block text-xs text-gray-500 mt-1">單純學習訓練，無僱傭關係</span>
                             </div>
                         </label>
-                        <label class="relative flex items-center p-4 border rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50/50 has-[:checked]:ring-1 has-[:checked]:ring-orange-500 h-full">
-                            <input type="radio" name="contract_type" value="work" onchange="toggleType()" class="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500">
-                            <div class="ml-3">
-                                <span class="block text-sm font-bold text-gray-900">工作型 (勞資型)</span>
-                                <span class="block text-xs text-gray-500 mt-0.5">具僱傭關係，適用勞基法</span>
+                        <label class="relative flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50/50 has-[:checked]:ring-1 has-[:checked]:ring-orange-500 h-full">
+                            <input type="radio" name="contract_type" value="work" onchange="toggleType()" class="w-5 h-5 text-orange-600 border-gray-300 focus:ring-orange-500">
+                            <div class="ml-4">
+                                <i class="fa-solid fa-briefcase text-2xl text-orange-600 opacity-30 absolute right-4 top-4"></i>
+                                <span class="block text-base font-bold text-gray-900">工作型 (勞資型)</span>
+                                <span class="block text-xs text-gray-500 mt-1">具僱傭關係，適用勞基法</span>
                             </div>
                         </label>
                     </div>
@@ -403,7 +387,7 @@
                         <i class="fa-solid fa-arrow-up mr-2 animate-bounce"></i> 請先選擇上方「實習類型」以解鎖此區塊
                     </div>
 
-                    <div id="panel_learn" class="bg-green-50 p-6 rounded-xl border border-green-200 hidden">
+                    <div id="panel_learn" class="bg-green-50 p-6 rounded-xl border border-green-200 hidden fade-in">
                         <span class="text-[10px] font-black text-green-700 bg-green-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">學習型</span>
                         <div class="flex flex-wrap gap-6 mb-4">
                             <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="pay_opt_learn" value="none" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> <span class="font-bold text-gray-700">無</span></label>
@@ -411,23 +395,35 @@
                             <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()" class="text-green-600 focus:ring-green-500"> <span class="font-bold text-gray-700">實習津貼</span></label>
                         </div>
                         <div id="learn_amt_box" class="hidden transition-all">
-                            <input type="number" id="learn_amount" placeholder="請輸入每月金額 (新台幣)" class="input-field w-full md:w-64 border-green-300 focus:border-green-600 focus:ring-green-600">
+                            <div class="relative w-full md:w-64">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">NT$</div>
+                                <input type="number" id="learn_amount" placeholder="0" class="input-field pl-12 pr-8 text-right border-green-300 focus:border-green-600 focus:ring-green-600">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">元</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col md:flex-row gap-6">
-                        <div class="flex-1">
-                            <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">勞資型</span>
-                            <div>
-                                <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額</label>
-                                <input type="number" id="work_amount" placeholder="請輸入每月金額 (新台幣)" class="input-field w-full border-orange-300 focus:border-orange-500 focus:ring-orange-500">
+                    <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col gap-6 fade-in">
+                        <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider w-fit">勞資型</span>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額</label>
+                            <div class="relative w-full md:w-64">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">NT$</div>
+                                <input type="number" id="work_amount" placeholder="27470" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 focus:ring-orange-500">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">元</div>
                             </div>
                         </div>
-                        <!-- 勞資型法規提示 -->
-                        <div class="flex-1 bg-white/60 p-4 rounded-lg border border-orange-100 text-xs text-orange-800 leading-relaxed">
-                            <div class="font-bold mb-1 flex items-center gap-1"><i class="fa-solid fa-circle-info"></i> 最低工資法規提示：</div>
-                            <p class="mb-2">依據勞動部114年10月21日勞動條2字第1140148807號公告，自115年1月1日起，每月最低工資調整為29,500元，每小時最低工資調整為196元。</p>
-                            <p>依據勞動部113年9月19日勞動條2字第1130148668號公告，自114年1月1日起，每月最低工資調整為28,590元，每小時最低工資調整為190元。</p>
+                        
+                        <!-- 勞資型法規提示 (醒目設計) -->
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400 shadow-sm text-xs text-gray-600 leading-relaxed">
+                            <div class="font-bold text-orange-600 mb-2 flex items-center gap-1 text-sm">
+                                <i class="fa-solid fa-scale-balanced"></i> 勞動部基本工資公告
+                            </div>
+                            <ul class="list-disc list-inside space-y-1.5">
+                                <li><span class="font-bold text-gray-800">115年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">29,500</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">196</span> 元。(勞動部114年10月21日公告)</li>
+                                <li><span class="font-bold text-gray-800">114年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">28,590</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">190</span> 元。(勞動部113年9月19日公告)</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -444,7 +440,11 @@
                                 <option value="free">免費提供</option>
                                 <option value="paid">付費提供</option>
                             </select>
-                            <input id="dorm_cost" type="number" placeholder="金額 (元/月)" class="input-field mt-1 hidden">
+                            <div id="dorm_cost_wrapper" class="hidden relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm">NT$</div>
+                                <input id="dorm_cost" type="number" placeholder="金額" class="input-field pl-10 pr-8 text-right mt-1">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/月</div>
+                            </div>
                         </div>
                         <div>
                             <label class="text-sm font-bold text-gray-600 mb-1 block">膳食</label>
@@ -454,7 +454,11 @@
                                 <option value="free">免費提供</option>
                                 <option value="paid">付費提供</option>
                             </select>
-                            <input id="food_cost" type="number" placeholder="金額 (元/餐)" class="input-field mt-1 hidden">
+                            <div id="food_cost_wrapper" class="hidden relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm">NT$</div>
+                                <input id="food_cost" type="number" placeholder="金額" class="input-field pl-10 pr-8 text-right mt-1">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/餐</div>
+                            </div>
                         </div>
                         <div>
                             <label class="text-sm font-bold text-gray-600 mb-1 block">交通</label>
@@ -465,7 +469,11 @@
                                 <option value="paid">付費提供</option>
                                 <option value="subsidy">交通津貼</option>
                             </select>
-                            <input id="trans_cost" type="number" placeholder="金額 (元/月)" class="input-field mt-1 hidden">
+                            <div id="trans_cost_wrapper" class="hidden relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm">NT$</div>
+                                <input id="trans_cost" type="number" placeholder="金額" class="input-field pl-10 pr-8 text-right mt-1">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/月</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -475,7 +483,7 @@
 
         <!-- 底部操作區 (僅按鈕) -->
         <div class="flex justify-center md:justify-end items-center gap-4 mt-8">
-            <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-300 text-white px-10 py-3.5 rounded-lg font-bold shadow-none transition-all duration-300 flex items-center gap-3 text-lg cursor-not-allowed opacity-75">
+            <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-300 text-white px-12 py-4 rounded-full font-bold shadow-none transition-all duration-300 flex items-center gap-3 text-xl cursor-not-allowed opacity-75">
                 <span class="animate-pulse">系統載入中...</span>
             </button>
         </div>
@@ -485,9 +493,9 @@
     <footer>
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center justify-center gap-2">
-                <p class="font-bold text-white mb-1 tracking-wide text-sm">&copy; 2025 東海大學 Tunghai University. All Rights Reserved. | 系統版本 V1.0.0</p>
+                <p class="font-bold text-white mb-1 tracking-wide text-sm">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-xs text-gray-500">
-                    本系統僅供產出本校學生校外實習合約目的使用。合約內容為公版格式，請依實際情況修正。本工具不會儲存或保留任何個人資料。
+                    系統版本 V1.0.0 | 網頁製作：張博堯
                 </p>
             </div>
         </div>
@@ -540,7 +548,7 @@
                 // 增加
                 for (let i = currentChildren; i < count; i++) {
                     const wrapper = document.createElement('div');
-                    wrapper.className = "p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-enter";
+                    wrapper.className = "p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
                     wrapper.innerHTML = `
                         <div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">
                             學生 ${i+1}
@@ -564,31 +572,6 @@
                     c.removeChild(c.lastChild);
                 }
             }
-            
-            // 簡易進度條更新 (當學生人數變動時觸發)
-            updateProgressBar();
-        }
-
-        // 簡易進度條邏輯 (基於捲動位置或焦點)
-        // 這裡使用簡單的點擊觸發 active 狀態
-        document.querySelectorAll('.card').forEach((card, idx) => {
-            card.addEventListener('click', () => {
-                // 移除所有 active
-                document.querySelectorAll('.step-circle').forEach(el => {
-                    el.parentElement.classList.remove('bg-white', 'ring-4');
-                    el.parentElement.classList.add('bg-[#f3f4f6]');
-                });
-                // 點亮對應步驟 (概略對應)
-                let stepId = 'step-1';
-                if(idx === 1) stepId = 'step-2';
-                if(idx >= 2) stepId = 'step-3';
-                
-                // 這裡只是簡單視覺回饋，不影響功能
-            });
-        });
-
-        function updateProgressBar() {
-            // 留空，保留介面結構
         }
 
         function toggleType() {
@@ -621,11 +604,12 @@
         function toggleCost(prefix) {
             try {
                 const optEl = document.getElementById(prefix + '_opt');
-                const inputEl = document.getElementById(prefix + '_cost');
+                const wrapperEl = document.getElementById(prefix + '_cost_wrapper');
                 const v = optEl ? optEl.value : 'none';
-                if (!inputEl) return;
-                if (v === 'paid' || v === 'subsidy') inputEl.classList.remove('hidden');
-                else inputEl.classList.add('hidden');
+                
+                // 修改：控制 wrapper 的顯示
+                if (v === 'paid' || v === 'subsidy') wrapperEl.classList.remove('hidden');
+                else wrapperEl.classList.add('hidden');
             } catch (e) { console.warn(e); }
         }
 
