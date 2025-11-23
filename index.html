@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習合約書產生系統 (V1.0.3)</title>
+    <title>東海大學學生校外實習合約產生器 (V1.0.3)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -256,6 +256,22 @@
         .btn-reset:active {
             transform: translateY(0);
         }
+
+        /* 查詢按鈕樣式 */
+        .btn-query {
+            background-color: #C6A87C; /* thuGold */
+            color: #002E5D; /* thuBlue */
+            font-weight: bold;
+            border-radius: 0.375rem;
+            padding: 0.6rem 1.25rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .btn-query:hover {
+            background-color: #b3976e; /* 稍深一點 */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -288,7 +304,8 @@
             <div class="flex items-center gap-4">
                 <img src="https://www.thu.edu.tw/upload/pagepic_upload/logo_w.svg" alt="THU Logo" class="h-10 w-auto">
                 <div class="flex flex-col justify-center text-white">
-                    <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">學生校外實習合約書產生系統</div>
+                    <!-- 標題修改為 合約產生器 -->
+                    <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">學生校外實習合約產生器</div>
                     <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">Internship Contract Generation System</div>
                 </div>
             </div>
@@ -333,29 +350,41 @@
                     <span class="card-header-title">乙方：實習機構資料</span>
                 </div>
                 <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">機構全銜 (法定名稱)</label>
-                        <input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司">
+                    <!-- 說明文字 (移動到卡片內容頂部) -->
+                    <div class="md:col-span-2 mb-4">
+                        <span class="text-sm text-red-500 flex items-center">您可輸入統一編號後，點擊查詢按鈕，系統將自動帶入公司名稱、負責人與登記地址。資料來源為介接經濟部商工行政資料開放平台API，公示資料可能非最新，簽約前請再次確認所有資訊是否正確。</span>
                     </div>
                     
-                    <!-- 統一編號、代表人姓名、職稱 改為等寬 -->
-                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">統一編號</label>
-                            <input type="text" id="company_tax_id" class="input-field" placeholder="8碼統編">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">代表人姓名</label>
-                            <input type="text" id="company_rep" class="input-field">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">代表人職稱</label>
-                            <input type="text" id="company_title" class="input-field" placeholder="">
+                    <!-- Row 1: 統一編號 + 機構全銜 (並排，統編輸入框加寬) -->
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">統一編號 <span class="text-red-500">*</span></label>
+                        <div class="flex gap-2 items-center">
+                            <input type="text" id="company_tax_id" class="input-field w-32 md:w-48 flex-grow-0" placeholder="04231910" maxlength="8">
+                            <button type="button" id="queryBtn" class="btn-query flex items-center gap-2">
+                                <i class="fa-solid fa-magnifying-glass"></i> 自動查詢
+                            </button>
                         </div>
                     </div>
 
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">機構全銜 (法定名稱) <span class="text-red-500">*</span></label>
+                        <input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司">
+                    </div>
+
+                    <!-- Row 2: 代表人姓名 + 代表人職稱 (平均等寬) -->
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">代表人姓名 <span class="text-red-500">*</span></label>
+                        <input type="text" id="company_rep" class="input-field">
+                    </div>
+                    
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">代表人職稱 <span class="text-red-500">*</span></label>
+                        <input type="text" id="company_title" class="input-field" placeholder="">
+                    </div>
+
+                    <!-- Row 3: 公司登記地址 (佔滿兩欄) -->
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">公司登記地址 (總公司)</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">公司登記地址 (總公司) <span class="text-red-500">*</span></label>
                         <input type="text" id="reg_address" class="input-field" placeholder="例：臺北市信義區松仁路7號1樓">
                     </div>
                     
@@ -414,7 +443,7 @@
                             <div>
                                 <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習開始 (民國年/月/日)</span>
                                 <div class="date-group">
-                                    <input type="number" id="start_y" class="date-input w-16 font-bold text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
+                                    <input type="number" id="start_y" class="date-input w-16 text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')">
                                     <span class="date-sep">/</span>
                                     <input type="number" id="start_m" class="date-input w-12" placeholder="07" oninput="autoJump(this, 2, 'start_d')">
                                     <span class="date-sep">/</span>
@@ -425,7 +454,7 @@
                             <div>
                                 <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習結束 (民國年/月/日)</span>
                                 <div class="date-group">
-                                    <input type="number" id="end_y" class="date-input w-16 font-bold text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
+                                    <input type="number" id="end_y" class="date-input w-16 text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')">
                                     <span class="date-sep">/</span>
                                     <input type="number" id="end_m" class="date-input w-12" placeholder="06" oninput="autoJump(this, 2, 'end_d')">
                                     <span class="date-sep">/</span>
@@ -595,6 +624,7 @@
 
                 </div>
             </div>
+
 
             <!-- 底部操作區 (兩個按鈕等寬) -->
             <div class="grid grid-cols-2 gap-6 mt-12 max-w-4xl mx-auto">
@@ -775,6 +805,25 @@
             document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200'));
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
 
+            // 檢查機構必填欄位
+            const requiredFields = [
+                { id: 'company_tax_id', name: '統一編號' },
+                { id: 'company_name', name: '機構全銜' },
+                { id: 'company_rep', name: '代表人姓名' },
+                { id: 'company_title', name: '代表人職稱' },
+                { id: 'reg_address', name: '公司登記地址' }
+            ];
+
+            requiredFields.forEach(field => {
+                const el = document.getElementById(field.id);
+                if (!el || !el.value.trim()) {
+                    el.classList.add('input-error');
+                    isValid = false;
+                    errorMsg += `• 請填寫 ${field.name}\n`;
+                }
+            });
+
+            // 檢查實習類型 (卡片 4)
             const contractType = document.querySelector('input[name="contract_type"]:checked');
             if (!contractType) {
                 document.getElementById('type-section').classList.add('bg-red-50', 'border-red-200');
@@ -805,6 +854,7 @@
                 }
             }
 
+            // 檢查福利項目 (卡片 4)
             ['dorm', 'food', 'trans'].forEach(p => {
                 const val = document.getElementById(p + '_opt').value;
                 if (!val) {
@@ -834,6 +884,110 @@
             } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
         }
 
+        // 【新增】透過統一編號查詢公司資料並自動填入表單
+        async function getCompanyInfo() {
+            const taxIdInput = document.getElementById('company_tax_id');
+            const taxId = taxIdInput.value.trim();
+
+            // API URL: https://data.gcis.nat.gov.tw/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq {Business_Accounting_NO}&$skip={skip}&$top={top}
+            
+            // 由於瀏覽器 CORS 限制，使用 CORS 代理服務 (corsproxy.io) 來發送請求
+            const originalApiURL = `https://data.gcis.nat.gov.tw/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq ${taxId}&$skip=0&$top=1`;
+            const apiURL = `https://corsproxy.io/?${encodeURIComponent(originalApiURL)}`;
+
+            const btn = document.getElementById('genBtn');
+            const queryBtn = document.getElementById('queryBtn');
+            
+            // 檢查統編格式 (8 碼)
+            if (!taxId || taxId.length !== 8) {
+                showMsg("統一編號格式錯誤 (須為 8 碼)");
+                // 暫時將 input 標註錯誤樣式
+                taxIdInput.classList.add('input-error');
+                setTimeout(() => taxIdInput.classList.remove('input-error'), 3000);
+                return;
+            }
+            taxIdInput.classList.remove('input-error');
+            
+            // 暫存按鈕原始狀態 (用於恢復)
+            const originalQueryBtnHtml = queryBtn.innerHTML;
+            
+            try {
+                showMsg("正在查詢公司資料...");
+                
+                // 禁用按鈕並顯示載入狀態
+                btn.disabled = true;
+                queryBtn.disabled = true;
+                queryBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                queryBtn.classList.remove('btn-query');
+                queryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 查詢中...';
+                
+                // 使用 exponential backoff 處理 API 呼叫 (最多 3 次)
+                let response;
+                const maxRetries = 3;
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        // 使用代理 URL 進行 fetch 請求
+                        response = await fetch(apiURL);
+                        if (response.ok) break; 
+                    } catch (error) {
+                        if (i === maxRetries - 1) throw error; 
+                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); 
+                    }
+                }
+
+                if (!response.ok) {
+                    throw new Error(`API 請求失敗: HTTP 狀態碼 ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    showMsg(`查無統一編號 ${taxId} 的公司資料。`);
+                    // 清空相關欄位
+                    document.getElementById('company_name').value = "";
+                    document.getElementById('company_rep').value = "";
+                    document.getElementById('reg_address').value = "";
+                    return;
+                }
+
+                // 取得第一個結果
+                const company = data[0];
+
+                // 提取所需欄位：Responsible_Name, Company_Name, Company_Location
+                const companyName = company.Company_Name || ""; // 機構全銜
+                const responsibleName = company.Responsible_Name || ""; // 代表人姓名
+                const companyLocation = company.Company_Location || ""; // 公司登記地址
+
+                // 自動填入表單欄位
+                document.getElementById('company_name').value = companyName;
+                document.getElementById('company_rep').value = responsibleName;
+                document.getElementById('reg_address').value = companyLocation;
+                
+                // 清空實習地點，避免混淆
+                document.getElementById('branch_name').value = "";
+                document.getElementById('branch_addr').value = "";
+
+                showMsg(`「 ${companyName} 」公司資料已自動填入。`);
+
+            } catch (e) {
+                showError(`查詢公司資料時發生錯誤：${e.message || e}`);
+                console.error("API Error:", e);
+            } finally {
+                // 恢復查詢按鈕的狀態
+                queryBtn.disabled = false;
+                queryBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                queryBtn.classList.add('btn-query');
+                queryBtn.innerHTML = originalQueryBtnHtml;
+                
+                // 恢復產生按鈕的狀態
+                if (typeof PizZip !== 'undefined' && typeof window.docxtemplater !== 'undefined') {
+                     btn.disabled = false;
+                     btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none', 'opacity-75');
+                     btn.classList.add('btn-generate');
+                     btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
+                }
+            }
+        }
 
         // 產生文件主流程
         async function generateDoc() {
@@ -1039,6 +1193,13 @@
             toggleCost('dorm');
             toggleCost('food');
             toggleCost('trans');
+
+            // 【變更】移除統編欄位的 change 事件監聽
+            // 【新增】統編查詢按鈕的 click 事件監聽
+            const queryBtn = document.getElementById('queryBtn');
+            if (queryBtn) {
+                queryBtn.addEventListener('click', getCompanyInfo);
+            }
         };
     </script>
 </body>
