@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習合約書產生系統 (V1.0.1)</title>
+    <title>東海大學學生校外實習合約書產生系統 (V1.0.3)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -615,7 +615,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.1 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.3 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -646,44 +646,35 @@
             document.getElementById('error-modal').style.display = 'none';
         });
 
-        // 重置表單
+        // 重置表單 (移除 window.confirm)
         function resetForm() {
-            // 使用自定義模態框替代 confirm()
-            const customConfirm = (message, callback) => {
-                // 這是簡易的替代方案，實際應用中建議使用完整 UI 模態框
-                if (window.confirm(message)) {
-                    callback();
-                }
-            };
+            // 強制重置表單元素
+            document.getElementById('contractForm').reset();
+            
+            // 1. 重置實習類型 -> 回到初始狀態
+            const panelInit = document.getElementById('panel_initial');
+            const panelLearn = document.getElementById('panel_learn');
+            const panelWork = document.getElementById('panel_work');
+            panelInit.classList.remove('hidden');
+            panelLearn.classList.add('hidden');
+            panelWork.classList.add('hidden');
 
-            customConfirm('確定要清除所有資料重新填寫嗎？', () => {
-                // 強制重置表單元素
-                document.getElementById('contractForm').reset();
-                
-                // 1. 重置實習類型 -> 回到初始狀態
-                const panelInit = document.getElementById('panel_initial');
-                const panelLearn = document.getElementById('panel_learn');
-                const panelWork = document.getElementById('panel_work');
-                panelInit.classList.remove('hidden');
-                panelLearn.classList.add('hidden');
-                panelWork.classList.add('hidden');
-
-                // 2. 重置待遇輸入框
-                document.getElementById('learn_amt_box').classList.add('hidden');
-                
-                // 3. 重置福利金額輸入框
-                document.getElementById('dorm_cost_wrapper').classList.add('hidden');
-                document.getElementById('food_cost_wrapper').classList.add('hidden');
-                document.getElementById('trans_cost_wrapper').classList.add('hidden');
-                
-                // 4. 重置學生人數
-                document.getElementById('student_count').value = 1;
-                document.getElementById('student_count_display').innerText = "1 人";
-                renderStudents();
-                
-                // 5. 回到頂部
-                window.scrollTo(0, 0);
-            });
+            // 2. 重置待遇輸入框
+            document.getElementById('learn_amt_box').classList.add('hidden');
+            
+            // 3. 重置福利金額輸入框
+            document.getElementById('dorm_cost_wrapper').classList.add('hidden');
+            document.getElementById('food_cost_wrapper').classList.add('hidden');
+            document.getElementById('trans_cost_wrapper').classList.add('hidden');
+            
+            // 4. 重置學生人數
+            document.getElementById('student_count').value = 1;
+            document.getElementById('student_count_display').innerText = "1 人";
+            renderStudents();
+            
+            // 5. 回到頂部
+            window.scrollTo(0, 0);
+            showMsg("已清除所有表單資料。");
         }
 
         // 學生人數控制 (無上限)
@@ -824,40 +815,25 @@
             });
 
             if (!isValid) {
-                // 使用自定義模態框替代 alert()
                 showError("請填寫所有必填欄位：\n" + errorMsg);
             }
             return isValid;
         }
 
-        // XML 清洗引擎 (已強化 Docxtemplater 迴圈標籤的修復邏輯)
+        // 移除 cleanXML 函數，改為依賴模板中穩定的 Docxtemplater Hashtag 語法。
         function cleanXML(xmlStr) {
-            // 替換打勾符號為實心方塊
+             // 替換打勾符號為實心方塊
             xmlStr = xmlStr.replace(/☑/g, '■'); 
-
+            
+            // 僅執行最基本的 XML 清除，不進行複雜的標籤修復
             try {
-                // [關鍵修正] 處理 Docxtemplater 迴圈標籤 {%...%} 被 Word 拆開的情況
-                // 將 {% <XML> % 變成 {%
-                xmlStr = xmlStr.replace(/{%(\s*<[^>]+>\s*)*%/g, "{%");
-                // 將 % <XML> } 變成 %}
-                xmlStr = xmlStr.replace(/%(\s*<[^>]+>\s*)*}/g, "%}");
-
-                // 移除 Word 追蹤修訂/校對標籤
                 xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
                 xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
                 xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
-                xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
-                
-                // 處理 %%% 變數標籤被多餘的 XML 隔開的問題
-                xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
-                
-                // 處理 {{ }} 標籤 (若有用到) 被 XML 隔開的問題
-                xmlStr = xmlStr.replace(/{(\s*<[^>]+>\s*)*{/g, "{{");
-                xmlStr = xmlStr.replace(/}(\s*<[^>]+>\s*)*}/g, "}}");
-
                 return xmlStr;
             } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
         }
+
 
         // 產生文件主流程
         async function generateDoc() {
@@ -903,9 +879,10 @@
                     
                     // 核心：準備 Loop 用的 students 陣列
                     const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                    // 將學生資訊組裝成 Docxtemplater Hashtag 迴圈需要的格式
                     data.students = sList.filter(s => s.name).map((s, index) => ({
-                        letter: alphabet[index] || (index + 1), // 使用 A, B, C...
-                        name: s.name,
+                        letter: alphabet[index] || (index + 1), // 迴圈中的變數 letter
+                        name: s.name, // 迴圈中的變數 name
                         id: s.id,
                     }));
                     // 填補原本固定的 s1, s2, s3 欄位 (確保相容舊版模板)
@@ -969,13 +946,13 @@
 
                 } catch (e) {
                     showError("資料收集錯誤：" + e.message);
-                    return; // 確保在錯誤發生時跳出，不執行 finally 之外的重設邏輯
+                    return; 
                 }
 
                 // 自動讀取 template.docx
                 let arrayBuffer;
                 try {
-                    // 由於沒有實際的 template.docx 檔案，這裡假設它在同目錄下
+                    // 檔案名稱使用 template 2.docx
                     const resp = await fetch('./template 2.docx'); 
                     if (!resp.ok) throw new Error('找不到 template 2.docx（請確認檔案是否存在於根目錄）');
                     arrayBuffer = await resp.arrayBuffer();
@@ -998,7 +975,7 @@
                     const docFile = zip.file("word/document.xml");
                     if (docFile) {
                         const raw = docFile.asText();
-                        const cleaned = cleanXML(raw);
+                        const cleaned = cleanXML(raw); // 僅做基本清洗
                         zip.file("word/document.xml", cleaned);
                     }
                 } catch (e) { console.warn("XML 清洗失敗，可能影響渲染", e); }
