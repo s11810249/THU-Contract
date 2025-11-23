@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>東海大學學生校外實習合約產生系統 (PyScript)</title>
     
-    <!-- 1. 引入 PyScript (這讓瀏覽器看懂 Python) -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
-    <script src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
+    <!-- 1. 引入 PyScript (改用 2022.12.1 穩定版，避開 Plugin 錯誤) -->
+    <script src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
+    <!-- 不引入 pyscript.css，避免樣式干擾，因為我們不需要顯示終端機 -->
 
     <!-- 2. 其他介面函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,18 +48,20 @@
         import io
         import zipfile
         import re
-        from js import console
+        # 2022.12.1 版本不需要 from js import console，直接 print 會導向 console
 
         def clean_word_xml_py(file_content_bytes):
-            """
-            這是原本在 app.py 裡的強力清洗邏輯
-            現在直接在瀏覽器裡執行
-            """
             try:
-                console.log("Python: 開始清洗 Word XML...")
+                print("Python: 開始清洗 Word XML...")
                 
-                # 讀取 Bytes
-                bio_in = io.BytesIO(bytes(file_content_bytes))
+                # 轉換 JS Proxy 到 Python bytes
+                try:
+                    data_bytes = bytes(file_content_bytes.to_py())
+                except:
+                    # 舊版相容
+                    data_bytes = bytes(file_content_bytes)
+
+                bio_in = io.BytesIO(data_bytes)
                 bio_out = io.BytesIO()
 
                 with zipfile.ZipFile(bio_in, 'r') as zin:
@@ -68,7 +70,6 @@
                             content = zin.read(item.filename)
                             
                             if item.filename == 'word/document.xml':
-                                # 解碼為字串進行正則替換
                                 xml_str = content.decode('utf-8')
                                 
                                 # 1. 移除 Word 校對標記
@@ -76,26 +77,23 @@
                                 xml_str = re.sub(r'<w:gramE[^>]*/>', '', xml_str)
                                 xml_str = re.sub(r'<w:lang[^>]*/>', '', xml_str)
                                 
-                                # 2. 移除追蹤修訂 (刪除線與插入標記)
+                                # 2. 移除追蹤修訂
                                 xml_str = re.sub(r'<w:del[^>]*>.*?</w:del>', '', xml_str, flags=re.DOTALL)
                                 xml_str = re.sub(r'<w:ins[^>]*>', '', xml_str)
                                 xml_str = re.sub(r'</w:ins>', '', xml_str)
 
-                                # 3. 終極標籤修復 (處理被屬性或標籤隔開的括號)
-                                # 處理 { ... {
+                                # 3. 終極標籤修復
                                 xml_str = re.sub(r'<w:t[^>]*>({)</w:t>.*?<w:t[^>]*>({)</w:t>', '<w:t>{{</w:t>', xml_str, flags=re.DOTALL)
-                                # 處理 } ... }
                                 xml_str = re.sub(r'<w:t[^>]*>(})</w:t>.*?<w:t[^>]*>(})</w:t>', '<w:t>}}</w:t>', xml_str, flags=re.DOTALL)
                                 
                                 content = xml_str.encode('utf-8')
                             
                             zout.writestr(item, content)
                 
-                # 回傳清洗後的 Bytes
-                console.log("Python: 清洗完成")
+                print("Python: 清洗完成")
                 return bio_out.getvalue()
             except Exception as e:
-                console.log(f"Python Error: {str(e)}")
+                print(f"Python Error: {str(e)}")
                 return None
 
         # 將 Python 函式暴露給 JS
@@ -123,7 +121,7 @@
         </div>
     </div>
 
-    <!-- 步驟條 (省略重複代碼，保持原樣) -->
+    <!-- 步驟條 -->
     <div class="mt-28 mb-8 px-4 md:px-8 max-w-5xl mx-auto flex justify-between items-center relative">
         <div class="flex flex-col items-center z-10"><div class="w-8 h-8 bg-thuBlue text-white rounded-full flex items-center justify-center font-bold mb-1">1</div><span class="text-xs md:text-sm font-medium">機構資料</span></div>
         <div class="flex-1 h-1 bg-gray-300 mx-2 md:mx-4"></div>
@@ -138,7 +136,7 @@
         <div class="card border-top-blue">
             <div class="card-header bg-gray-50"><i class="fa-regular fa-building mr-2"></i> 乙方：實習機構資料</div>
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2"><label class="text-sm text-gray-500">機構全銜</label><input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司"></div>
+                <div class="md:col-span-2"><label class="text-sm text-gray-500">機構全銜 (法定名稱)</label><input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司"></div>
                 <div><label class="text-sm text-gray-500">統一編號</label><input type="text" id="company_tax_id" class="input-field"></div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-sm text-gray-500">代表人</label><input type="text" id="company_rep" class="input-field"></div>
@@ -188,7 +186,6 @@
 
     <!-- JS -->
     <script>
-        // 當 Python 載入完成後，會呼叫此函數
         window.pythonReady = function() {
             const btn = document.getElementById('genBtn');
             btn.disabled = false;
@@ -198,25 +195,21 @@
             document.getElementById('loading').style.display = 'none';
         };
 
-        // 初始化 UI
         window.onload = function() { renderStudents(); };
-        function renderStudents() { /* 同前，渲染學生 */ const count = document.getElementById('student_count').value; const c = document.getElementById('student_container'); c.innerHTML=''; for(let i=0;i<count;i++){ c.innerHTML += `<div class="p-3 bg-blue-50 border border-blue-100 rounded"><div class="text-sm font-bold text-blue-800 mb-2">學生 ${i+1}</div><div class="grid grid-cols-2 gap-4"><input type="text" id="s_name_${i}" placeholder="姓名" class="input-field"><input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field"></div></div>`; } }
+        function renderStudents() { const count = document.getElementById('student_count').value; const c = document.getElementById('student_container'); c.innerHTML=''; for(let i=0;i<count;i++){ c.innerHTML += `<div class="p-3 bg-blue-50 border border-blue-100 rounded"><div class="text-sm font-bold text-blue-800 mb-2">學生 ${i+1}</div><div class="grid grid-cols-2 gap-4"><input type="text" id="s_name_${i}" placeholder="姓名" class="input-field"><input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field"></div></div>`; } }
         function toggleBranch() { document.getElementById('branch_area').classList.toggle('hidden', !document.getElementById('is_branch').checked); }
         function toggleType() { const t = document.querySelector('input[name="contract_type"]:checked').value; document.getElementById('panel_learn').classList.toggle('hidden', t !== 'learn'); document.getElementById('panel_work').classList.toggle('hidden', t === 'learn'); }
         function togglePayInputs() { document.getElementById('learn_amt_box').classList.toggle('hidden', document.querySelector('input[name="pay_opt_learn"]:checked').value === 'none'); }
         function toggleCost(p) { const v = document.getElementById(p+'_opt').value; const i = document.getElementById(p+'_cost'); if(v==='paid'||v==='subsidy') i.classList.remove('hidden'); else i.classList.add('hidden'); }
 
-        // --- 核心產生邏輯 ---
         async function generateDoc() {
-            // 1. 顯示狀態
             const btn = document.getElementById('genBtn');
             btn.disabled = true;
             btn.innerText = "正在修復並產生...";
 
             try {
-                // 2. 收集資料
                 const data = {};
-                // (略過重複的資料收集代碼，功能與之前版本相同)
+                // ... (資料收集邏輯同上，簡化以節省空間)
                 data.company_name = document.getElementById('company_name').value || "未填寫";
                 data.company_tax_id = document.getElementById('company_tax_id').value;
                 data.company_rep = document.getElementById('company_rep').value;
@@ -249,7 +242,6 @@
                     if(v==='paid'||v==='subsidy') data[`${p}_cost`] = Number(document.getElementById(p+'_cost').value).toLocaleString();
                 });
 
-                // 3. 讀取檔案 (GitHub 自動或手動)
                 let content = null;
                 const manualFile = document.getElementById('manual_template').files[0];
                 if (manualFile) {
@@ -260,17 +252,12 @@
                     content = await resp.arrayBuffer();
                 }
 
-                // 4. 呼叫 Python 清洗 (這就是您要的：在 GitHub 上跑 .py 邏輯)
-                // 轉換 JS ArrayBuffer 為 Python bytes
+                // 呼叫 Python (V13 修改: 確保轉換型別)
                 const uint8Arr = new Uint8Array(content);
-                // 呼叫我們在 <py-script> 定義的函式
                 const cleanedBytes = window.clean_word_xml_py(uint8Arr);
 
-                if (!cleanedBytes) throw new Error("Python 清洗失敗，請檢查 Console");
+                if (!cleanedBytes) throw new Error("Python 清洗失敗");
 
-                // 5. 產生 Docx
-                // 將 Python bytes 轉回 JS ArrayBuffer (PizZip 需要)
-                // PyScript 回傳的是 Proxy 物件，需要轉換
                 const cleanedArray = cleanedBytes.toJs(); 
                 const zip = new PizZip(cleanedArray);
                 
@@ -280,7 +267,7 @@
                 const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                 saveAs(out, `東海大學實習合約_${data.s1_name}.docx`);
                 
-                alert("下載成功！Python 引擎已自動修復您的 Word 檔。");
+                alert("下載成功！");
 
             } catch (e) {
                 console.error(e);
