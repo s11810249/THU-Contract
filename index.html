@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>東海大學學生校外實習合約產生系統 (V11.8)</title>
-    
-    <!-- 核心函式庫 -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>東海大學學生校外實習合約產生系統 (V11.9 修正版)</title>
+
+    <!-- CDN (如在內網或學校網路被擋，請改為手動部署這些檔案) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- 東海配色 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
     <script>
         tailwind.config = {
             theme: { extend: { colors: { thuBlue: '#002E5D', thuGold: '#C6A87C' } } }
         }
     </script>
+
     <style>
         body { background-color: #f3f4f6; font-family: 'Noto Sans TC', sans-serif; padding-bottom: 80px; }
         .input-field { background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem; width: 100%; }
-        .input-field:focus { outline: none; border-color: #002E5D; ring: 2px solid #002E5D; }
+        .input-field:focus { outline: none; border-color: #002E5D; }
         .card { background: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 1.5rem; }
         .card-header { padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; color: #002E5D; font-weight: 700; font-size: 1.125rem; display: flex; align-items: center; }
         .border-top-blue { border-top: 4px solid #002E5D; }
@@ -29,9 +29,9 @@
         .hidden { display: none; }
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
         #status-bar { display: none; position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        /* 錯誤訊息彈窗 */
         #error-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
         #error-content { background: white; padding: 20px; border-radius: 8px; max-width: 80%; max-height: 80%; overflow-y: auto; }
+        pre { white-space: pre-wrap; word-break: break-word; }
     </style>
 </head>
 <body>
@@ -47,8 +47,8 @@
     <div id="error-modal">
         <div id="error-content">
             <h3 class="text-lg font-bold text-red-600 mb-2">發生錯誤</h3>
-            <pre id="error-details" class="text-sm bg-gray-100 p-2 rounded whitespace-pre-wrap"></pre>
-            <button onclick="document.getElementById('error-modal').style.display='none'" class="mt-4 bg-thuBlue text-white px-4 py-2 rounded">關閉</button>
+            <pre id="error-details" class="text-sm bg-gray-100 p-2 rounded"></pre>
+            <button id="err-close" class="mt-4 bg-thuBlue text-white px-4 py-2 rounded">關閉</button>
         </div>
     </div>
 
@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <!-- 步驟條 -->
+    <!-- 內容 -->
     <div class="mt-28 mb-8 px-4 md:px-8 max-w-5xl mx-auto flex justify-between items-center relative">
         <div class="flex flex-col items-center z-10">
             <div class="w-8 h-8 bg-thuBlue text-white rounded-full flex items-center justify-center font-bold mb-1">1</div>
@@ -88,26 +88,43 @@
         </div>
     </div>
 
-    <!-- 主要表單 -->
     <main class="max-w-5xl mx-auto px-4">
         <!-- 卡片 1: 機構 -->
         <div class="card border-top-blue">
             <div class="card-header bg-gray-50"><i class="fa-regular fa-building mr-2"></i> 乙方：實習機構資料</div>
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2"><label class="text-sm text-gray-500">機構全銜 (法定名稱)</label><input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司"></div>
+                <div class="md:col-span-2">
+                    <label class="text-sm text-gray-500">機構全銜 (法定名稱)</label>
+                    <input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司">
+                </div>
                 <div><label class="text-sm text-gray-500">統一編號</label><input type="text" id="company_tax_id" class="input-field"></div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-sm text-gray-500">代表人</label><input type="text" id="company_rep" class="input-field"></div>
                     <div><label class="text-sm text-gray-500">職稱</label><input type="text" id="company_title" class="input-field" value="負責人"></div>
                 </div>
                 <div class="md:col-span-2"><label class="text-sm text-gray-500">地址</label><input type="text" id="reg_address" class="input-field"></div>
-                <div class="md:col-span-2 pt-2"><label class="flex items-center gap-2 text-sm font-bold text-gray-600"><input type="checkbox" id="is_branch" onchange="toggleBranch()"> 實習地點不同 (如分公司)</label><div id="branch_area" class="grid grid-cols-2 gap-4 mt-2 hidden"><input type="text" id="branch_name" class="input-field" placeholder="分公司名稱"><input type="text" id="branch_addr" class="input-field" placeholder="實際地址"></div></div>
+                <div class="md:col-span-2 pt-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-gray-600">
+                        <input type="checkbox" id="is_branch" onchange="toggleBranch()"> 實習地點不同 (如分公司)
+                    </label>
+                    <div id="branch_area" class="grid grid-cols-2 gap-4 mt-2 hidden">
+                        <input type="text" id="branch_name" class="input-field" placeholder="分公司名稱">
+                        <input type="text" id="branch_addr" class="input-field" placeholder="實際地址">
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- 卡片 2: 學生 -->
         <div class="card border-top-blue">
-            <div class="card-header flex justify-between"><div><i class="fa-solid fa-user-graduate mr-2"></i> 甲方：學生資料</div><select id="student_count" onchange="renderStudents()" class="border rounded px-2 py-1 text-sm"><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option></select></div>
+            <div class="card-header flex justify-between">
+                <div><i class="fa-solid fa-user-graduate mr-2"></i> 甲方：學生資料</div>
+                <select id="student_count" onchange="renderStudents()" class="border rounded px-2 py-1 text-sm">
+                    <option value="1">1人</option>
+                    <option value="2">2人</option>
+                    <option value="3">3人</option>
+                </select>
+            </div>
             <div id="student_container" class="p-6 space-y-4"></div>
         </div>
 
@@ -116,26 +133,89 @@
             <div class="card-header"><i class="fa-solid fa-briefcase mr-2"></i> 條件與待遇</div>
             <div class="p-6 space-y-6">
                 <div class="flex gap-4">
-                    <label class="flex items-center gap-2 p-3 border rounded hover:bg-blue-50 cursor-pointer w-full"><input type="radio" name="contract_type" value="learn" checked onchange="toggleType()"> 一般型 (學習型)</label>
-                    <label class="flex items-center gap-2 p-3 border rounded hover:bg-orange-50 cursor-pointer w-full"><input type="radio" name="contract_type" value="work" onchange="toggleType()"> 工作型 (勞資型)</label>
+                    <label class="flex items-center gap-2 p-3 border rounded hover:bg-blue-50 cursor-pointer w-full">
+                        <input type="radio" name="contract_type" value="learn" checked onchange="toggleType()"> 一般型 (學習型)
+                    </label>
+                    <label class="flex items-center gap-2 p-3 border rounded hover:bg-orange-50 cursor-pointer w-full">
+                        <input type="radio" name="contract_type" value="work" onchange="toggleType()"> 工作型 (勞資型)
+                    </label>
                 </div>
-                <div class="grid grid-cols-2 gap-4"><div><span class="text-sm text-gray-500">開始</span><input type="date" id="start_date" class="input-field"></div><div><span class="text-sm text-gray-500">結束</span><input type="date" id="end_date" class="input-field"></div></div>
-                <div class="grid grid-cols-3 gap-4"><div><span class="text-sm text-gray-500">開始</span><input type="time" id="daily_start" value="09:00" class="input-field"></div><div><span class="text-sm text-gray-500">結束</span><input type="time" id="daily_end" value="18:00" class="input-field"></div><div><span class="text-sm text-gray-500">時數</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field"></div></div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div><span class="text-sm text-gray-500">開始</span><input type="date" id="start_date" class="input-field"></div>
+                    <div><span class="text-sm text-gray-500">結束</span><input type="date" id="end_date" class="input-field"></div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div><span class="text-sm text-gray-500">開始</span><input type="time" id="daily_start" value="09:00" class="input-field"></div>
+                    <div><span class="text-sm text-gray-500">結束</span><input type="time" id="daily_end" value="18:00" class="input-field"></div>
+                    <div><span class="text-sm text-gray-500">時數</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field"></div>
+                </div>
+
                 <div class="border-t pt-4">
-                    <div id="panel_learn" class="bg-green-50 p-4 rounded border border-green-200"><div class="text-sm font-bold text-green-800 mb-2">學習型給付</div><div class="flex gap-4 mb-2"><label><input type="radio" name="pay_opt_learn" value="none" checked onchange="togglePayInputs()"> 無</label><label><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()"> 獎學金</label><label><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()"> 津貼</label></div><input type="number" id="learn_amount" placeholder="金額" class="input-field w-48 hidden"></div>
-                    <div id="panel_work" class="bg-orange-50 p-4 rounded border border-orange-200 hidden"><div class="text-sm font-bold text-orange-800 mb-2">勞資型薪資</div><input type="number" id="work_amount" placeholder="27470" class="input-field w-48"></div>
+                    <div id="panel_learn" class="bg-green-50 p-4 rounded border border-green-200">
+                        <div class="text-sm font-bold text-green-800 mb-2">學習型給付</div>
+                        <div class="flex gap-4 mb-2">
+                            <label><input type="radio" name="pay_opt_learn" value="none" checked onchange="togglePayInputs()"> 無</label>
+                            <label><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()"> 獎學金</label>
+                            <label><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()"> 津貼</label>
+                        </div>
+
+                        <!-- learn_amount 包在容器中 (避免 null) -->
+                        <div id="learn_amt_box" class="hidden">
+                            <input type="number" id="learn_amount" placeholder="金額" class="input-field w-48 mt-2">
+                        </div>
+                    </div>
+
+                    <div id="panel_work" class="bg-orange-50 p-4 rounded border border-orange-200 hidden">
+                        <div class="text-sm font-bold text-orange-800 mb-2">勞資型薪資</div>
+                        <input type="number" id="work_amount" placeholder="27470" class="input-field w-48">
+                    </div>
                 </div>
+
                 <div class="grid grid-cols-3 gap-4 pt-4 border-t">
-                    <div><label class="text-sm font-bold">住宿</label><select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field"><option value="none">無</option><option value="free">免費</option><option value="paid">付費</option></select><input id="dorm_cost" type="number" placeholder="金額" class="input-field mt-1 hidden"></div>
-                    <div><label class="text-sm font-bold">膳食</label><select id="food_opt" onchange="toggleCost('food')" class="input-field"><option value="none">無</option><option value="free">免費</option><option value="paid">付費</option></select><input id="food_cost" type="number" placeholder="金額" class="input-field mt-1 hidden"></div>
-                    <div><label class="text-sm font-bold">交通</label><select id="trans_opt" onchange="toggleCost('trans')" class="input-field"><option value="none">無</option><option value="free">免費</option><option value="paid">付費</option><option value="subsidy">交通津貼</option></select><input id="trans_cost" type="number" placeholder="金額" class="input-field mt-1 hidden"></div>
+                    <div>
+                        <label class="text-sm font-bold">住宿</label>
+                        <select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field">
+                            <option value="none">無</option>
+                            <option value="free">免費</option>
+                            <option value="paid">付費</option>
+                        </select>
+                        <input id="dorm_cost" type="number" placeholder="金額" class="input-field mt-1 hidden">
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-bold">膳食</label>
+                        <select id="food_opt" onchange="toggleCost('food')" class="input-field">
+                            <option value="none">無</option>
+                            <option value="free">免費</option>
+                            <option value="paid">付費</option>
+                        </select>
+                        <input id="food_cost" type="number" placeholder="金額" class="input-field mt-1 hidden">
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-bold">交通</label>
+                        <select id="trans_opt" onchange="toggleCost('trans')" class="input-field">
+                            <option value="none">無</option>
+                            <option value="free">免費</option>
+                            <option value="paid">付費</option>
+                            <option value="subsidy">交通津貼</option>
+                        </select>
+                        <input id="trans_cost" type="number" placeholder="金額" class="input-field mt-1 hidden">
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 按鈕 -->
         <div class="pb-10 flex flex-col md:flex-row justify-end items-center gap-4">
-            <div class="text-sm text-gray-500 bg-gray-200 p-2 rounded flex items-center gap-2"><span class="font-bold text-xs bg-gray-500 text-white px-1 rounded">DEBUG</span><span>若無反應，手動選取：</span><input type="file" id="manual_template" accept=".docx" class="text-xs"></div>
+            <div class="text-sm text-gray-500 bg-gray-200 p-2 rounded flex items-center gap-2">
+                <span class="font-bold text-xs bg-gray-500 text-white px-1 rounded">DEBUG</span>
+                <span>若無反應，手動選取：</span>
+                <input type="file" id="manual_template" accept=".docx" class="text-xs">
+            </div>
+
             <button onclick="generateDoc()" id="genBtn" disabled class="bg-gray-400 text-white px-8 py-3 rounded-md font-bold shadow-lg transition flex items-center gap-2 text-lg w-full md:w-auto justify-center cursor-not-allowed">
                 <i class="fa-regular fa-file-word"></i> 系統載入中...
             </button>
@@ -144,15 +224,315 @@
 
     <!-- JS -->
     <script>
-        window.onload = function() { 
-            renderStudents(); 
-            // 檢查函式庫
+        // Utility UI functions
+        function showMsg(msg) {
+            const el = document.getElementById('status-bar');
+            el.innerText = msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+        function showError(details) {
+            const modal = document.getElementById('error-modal');
+            const content = document.getElementById('error-details');
+            content.textContent = details;
+            modal.style.display = 'flex';
+        }
+
+        document.getElementById('err-close').addEventListener('click', () => {
+            document.getElementById('error-modal').style.display = 'none';
+        });
+
+        // 渲染學生區塊
+        function renderStudents() {
+            const count = Number(document.getElementById('student_count').value) || 1;
+            const c = document.getElementById('student_container');
+            c.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = "p-3 bg-blue-50 border border-blue-100 rounded";
+                wrapper.innerHTML = `
+                    <div class="text-sm font-bold text-blue-800 mb-2">學生 ${i+1}</div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="s_name_${i}" placeholder="姓名" class="input-field">
+                        <input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field">
+                    </div>
+                `;
+                c.appendChild(wrapper);
+            }
+        }
+
+        function toggleBranch() {
+            const checked = document.getElementById('is_branch').checked;
+            const area = document.getElementById('branch_area');
+            if (area) area.classList.toggle('hidden', !checked);
+        }
+
+        function toggleType() {
+            const tEl = document.querySelector('input[name="contract_type"]:checked');
+            const t = tEl ? tEl.value : 'learn';
+            const panelLearn = document.getElementById('panel_learn');
+            const panelWork = document.getElementById('panel_work');
+            if (panelLearn) panelLearn.classList.toggle('hidden', t !== 'learn');
+            if (panelWork) panelWork.classList.toggle('hidden', t === 'learn');
+            // Ensure pay inputs correct visibility after toggling
+            togglePayInputs();
+        }
+
+        function togglePayInputs() {
+            try {
+                const box = document.getElementById('learn_amt_box');
+                const sel = document.querySelector('input[name="pay_opt_learn"]:checked');
+                const v = sel ? sel.value : 'none';
+                if (box) box.classList.toggle('hidden', v === 'none');
+            } catch (e) {
+                // 不致命，顯示 log
+                console.warn('togglePayInputs error', e);
+            }
+        }
+
+        function toggleCost(prefix) {
+            try {
+                const optEl = document.getElementById(prefix + '_opt');
+                const inputEl = document.getElementById(prefix + '_cost');
+                const v = optEl ? optEl.value : 'none';
+                if (!inputEl) return;
+                if (v === 'paid' || v === 'subsidy') inputEl.classList.remove('hidden');
+                else inputEl.classList.add('hidden');
+            } catch (e) {
+                console.warn('toggleCost error', e);
+            }
+        }
+
+        // XML 清洗引擎（保留原邏輯但更健壯）
+        function cleanXML(xmlStr) {
+            try {
+                // 基本清洗，移除常見會破壞標籤的元素
+                xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
+                xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
+                xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
+                xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
+                // 處理 %%% 斷裂 (盡量補回)
+                xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
+                return xmlStr;
+            } catch (e) {
+                console.warn('cleanXML failed', e);
+                return xmlStr;
+            }
+        }
+
+        // 產生文件主流程
+        async function generateDoc() {
+            const btn = document.getElementById('genBtn');
+            try {
+                if (typeof PizZip === 'undefined') {
+                    alert("核心元件未載入 (PizZip)。請確認 CDN 可用或改用其他網路。");
+                    return;
+                }
+                showMsg("處理中...");
+                btn.disabled = true;
+                btn.classList.remove('bg-thuBlue'); btn.classList.add('bg-gray-400');
+
+                // 收集資料
+                const data = {};
+                try {
+                    data.company_name = (document.getElementById('company_name')?.value || "未填寫");
+                    data.company_tax_id = (document.getElementById('company_tax_id')?.value || "");
+                    data.company_rep = (document.getElementById('company_rep')?.value || "");
+                    data.company_title = (document.getElementById('company_title')?.value || "");
+                    const regAddr = document.getElementById('reg_address')?.value || "";
+                    if (document.getElementById('is_branch')?.checked) {
+                        const bname = document.getElementById('branch_name')?.value || "";
+                        const baddr = document.getElementById('branch_addr')?.value || "";
+                        data.company_address = `${regAddr} (實習地點：${bname} - ${baddr})`;
+                    } else data.company_address = regAddr;
+
+                    // students
+                    const sCount = Number(document.getElementById('student_count')?.value || 1);
+                    const sList = [];
+                    for (let i = 0; i < sCount; i++) {
+                        sList.push({
+                            name: document.getElementById(`s_name_${i}`)?.value || "",
+                            id: document.getElementById(`s_id_${i}`)?.value || ""
+                        });
+                    }
+                    while (sList.length < 3) sList.push({name: "", id: ""});
+                    data.s1_name = sList[0].name; data.s1_id = sList[0].id;
+                    data.s2_name = sList[1].name; data.s2_id = sList[1].id;
+                    data.s3_name = sList[2].name; data.s3_id = sList[2].id;
+                    data.student_name = sList[0].name + (sCount > 1 ? " 等" : "");
+
+                    // dates (轉民國年)
+                    const sDateStr = document.getElementById('start_date')?.value;
+                    const eDateStr = document.getElementById('end_date')?.value;
+                    const sDate = sDateStr ? new Date(sDateStr) : null;
+                    const eDate = eDateStr ? new Date(eDateStr) : null;
+                    if (sDate && !isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); } else { data.s_y="";data.s_m="";data.s_d=""; }
+                    if (eDate && !isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); } else { data.e_y="";data.e_m="";data.e_d=""; }
+
+                    data.daily_start = document.getElementById('daily_start')?.value || "";
+                    data.daily_end = document.getElementById('daily_end')?.value || "";
+                    data.daily_hours = document.getElementById('daily_hours')?.value || "";
+
+                    const type = document.querySelector('input[name="contract_type"]:checked')?.value || 'learn';
+                    data.type_learn_check='□'; data.type_work_check='□';
+                    data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□';
+                    data.pay_learn_amount = ""; data.pay_work_amount = "";
+
+                    if (type === 'learn') {
+                        data.type_learn_check = '☑';
+                        const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value || 'none';
+                        if (pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
+                        else {
+                            if (pOpt === 'scholar') data.chk_pay_scholar = '☑';
+                            else data.chk_pay_allowance = '☑';
+                            const lam = Number(document.getElementById('learn_amount')?.value || 0);
+                            data.pay_learn_amount = lam ? lam.toLocaleString() : "";
+                            // 同步 desc 欄位以符合 template.docx 的變數名稱
+                            data.learn_amount_raw = lam || "";
+                        }
+                    } else {
+                        data.type_work_check = '☑';
+                        const wam = Number(document.getElementById('work_amount')?.value || 0);
+                        data.pay_work_amount = wam ? wam.toLocaleString() : "";
+                    }
+
+                    // 福利：dorm / food / trans
+                    function setWelfare(prefix) {
+                        const opt = document.getElementById(prefix + '_opt')?.value || 'none';
+                        data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
+                        if (opt === 'none') data[`chk_${prefix}_none`] = '☑';
+                        else if (opt === 'free') data[`chk_${prefix}_free`] = '☑';
+                        else {
+                            data[`chk_${prefix}_paid`] = '☑';
+                            const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
+                            // Template uses dorm_desc/food_desc/trans_desc — 我們填這些 key
+                            data[`${prefix}_desc`] = val ? val.toLocaleString() : "";
+                            // 也保留 cost 鍵給其他用途
+                            data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
+                        }
+                        // 如果不是付費，確保 desc 空字串（避免 docxtemplater 找不到）
+                        if (!data[`${prefix}_desc`]) data[`${prefix}_desc`] = "";
+                    }
+                    setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
+
+                } catch (e) {
+                    showMsg("資料收集發生錯誤：" + (e.message || e));
+                    console.error(e);
+                    btn.disabled = false;
+                    btn.classList.add('bg-thuBlue');
+                    return;
+                }
+
+                // 讀取範本（手動上傳優先）
+                const manualFile = document.getElementById('manual_template')?.files?.[0];
+                let arrayBuffer;
+                if (manualFile) {
+                    // 以 ArrayBuffer 讀取（較通用）
+                    arrayBuffer = await manualFile.arrayBuffer();
+                } else {
+                    // 嘗試 fetch 本地 template.docx
+                    try {
+                        const resp = await fetch('./template.docx');
+                        if (!resp.ok) throw new Error('找不到 template.docx（請確認路徑與檔案）');
+                        arrayBuffer = await resp.arrayBuffer();
+                    } catch (e) {
+                        showError("讀取 template.docx 失敗：" + e.message);
+                        btn.disabled = false;
+                        btn.classList.add('bg-thuBlue');
+                        return;
+                    }
+                }
+
+                // 解析 zip
+                let zip;
+                try {
+                    zip = new PizZip(arrayBuffer);
+                } catch (e) {
+                    showError("範本無法解析為 zip（template.docx 可能不是有效的 docx 檔）：" + e.message);
+                    console.error(e);
+                    btn.disabled = false;
+                    btn.classList.add('bg-thuBlue');
+                    return;
+                }
+
+                // 清洗 document.xml（若存在）
+                try {
+                    const docFile = zip.file("word/document.xml");
+                    if (docFile) {
+                        const raw = docFile.asText();
+                        const cleaned = cleanXML(raw);
+                        zip.file("word/document.xml", cleaned);
+                    }
+                } catch (e) {
+                    console.warn('document.xml 清洗失敗，將嘗試繼續。', e);
+                }
+
+                // 使用 docxtemplater render
+                try {
+                    // docxtemplater 檢查
+                    if (typeof window.docxtemplater === 'undefined' && typeof docxtemplater === 'undefined') {
+                        // 仍嘗試使用全域名 docxtemplater（不同 CDN 版本差異）
+                        console.warn('docxtemplater library 未直接掛到 window.docxtemplater，但嘗試繼續。');
+                    }
+
+                    const Docxtemplater = window.docxtemplater || docxtemplater;
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                        delimiters: { start: '%%%', end: '%%%' },
+                        nullGetter: function(part) { return ""; }
+                    });
+
+                    // render 可能會丟錯誤，包 try
+                    doc.render(data);
+                    const out = doc.getZip().generate({
+                        type: "blob",
+                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    });
+
+                    // 檔名
+                    const fname = `東海大學實習合約_${(data.s1_name || '學生')}.docx`;
+                    saveAs(out, fname);
+                    showMsg("下載成功！");
+                } catch (error) {
+                    // docxtemplater 的錯誤可能包含 properties.errors
+                    if (error && error.properties && error.properties.errors) {
+                        const msgs = error.properties.errors.map(e => {
+                            const errId = e.properties?.id || "unknown";
+                            const errExpl = e.properties?.explanation || JSON.stringify(e);
+                            return `錯誤類型: ${errId}\n說明: ${errExpl}`;
+                        }).join("\n\n");
+                        showError("範本標籤錯誤 (Multi Error)：\n" + msgs);
+                    } else {
+                        showError("產生文件時發生錯誤：" + (error.message || error));
+                    }
+                    console.error(error);
+                }
+
+            } catch (outer) {
+                console.error('generateDoc outer error', outer);
+                showError('未預期錯誤：' + (outer.message || outer));
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-400');
+                btn.classList.add('bg-thuBlue');
+            }
+        }
+
+        window.onload = function() {
+            renderStudents();
+
+            // 檢查函式庫是否已載入
             const missing = [];
             if (typeof PizZip === 'undefined') missing.push('PizZip');
-            if (typeof window.docxtemplater === 'undefined') missing.push('Docxtemplater');
+            // docxtemplater 可能掛在不同名稱，容錯處理
+            if (typeof window.docxtemplater === 'undefined' && typeof docxtemplater === 'undefined') missing.push('Docxtemplater');
+            if (typeof saveAs === 'undefined') missing.push('FileSaver.saveAs');
+
             if (missing.length > 0) {
                 document.getElementById('lib-error').style.display = 'block';
                 document.getElementById('missing-lib').innerText = missing.join(', ');
+                // 保留按鈕 disabled，以免觸發錯誤；但也允許手動載入範本
             } else {
                 // 啟用按鈕
                 const btn = document.getElementById('genBtn');
@@ -161,153 +541,14 @@
                 btn.classList.add('bg-thuBlue', 'hover:bg-blue-900');
                 btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
+
+            // 預設隱藏/顯示設定
+            toggleType();
+            togglePayInputs();
+            toggleCost('dorm');
+            toggleCost('food');
+            toggleCost('trans');
         };
-
-        function renderStudents() { const count = document.getElementById('student_count').value; const c = document.getElementById('student_container'); c.innerHTML=''; for(let i=0;i<count;i++){ c.innerHTML += `<div class="p-3 bg-blue-50 border border-blue-100 rounded"><div class="text-sm font-bold text-blue-800 mb-2">學生 ${i+1}</div><div class="grid grid-cols-2 gap-4"><input type="text" id="s_name_${i}" placeholder="姓名" class="input-field"><input type="text" id="s_id_${i}" placeholder="系級/學號" class="input-field"></div></div>`; } }
-        function toggleBranch() { document.getElementById('branch_area').classList.toggle('hidden', !document.getElementById('is_branch').checked); }
-        function toggleType() { const t = document.querySelector('input[name="contract_type"]:checked').value; document.getElementById('panel_learn').classList.toggle('hidden', t !== 'learn'); document.getElementById('panel_work').classList.toggle('hidden', t === 'learn'); }
-        function togglePayInputs() { document.getElementById('learn_amt_box').classList.toggle('hidden', document.querySelector('input[name="pay_opt_learn"]:checked').value === 'none'); }
-        function toggleCost(p) { const v = document.getElementById(p+'_opt').value; const i = document.getElementById(p+'_cost'); if(v==='paid'||v==='subsidy') i.classList.remove('hidden'); else i.classList.add('hidden'); }
-        function showMsg(msg) { const el = document.getElementById('status-bar'); el.innerText = msg; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 5000); }
-        function showError(details) {
-            const modal = document.getElementById('error-modal');
-            const content = document.getElementById('error-details');
-            content.textContent = details;
-            modal.style.display = 'flex';
-        }
-
-        // --- V11.8 自訂符號版清洗引擎 (改抓 %%%) ---
-        function cleanXML(xmlStr) {
-            console.log("開始清洗 Word XML (V11.8 - %%% 版)...");
-            
-            // 1. 移除隱形殺手
-            xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
-            xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
-            xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
-            xmlStr = xmlStr.replace(/<w:r[^>]*>\s*<w:t[^>]*\/>\s*<\/w:r>/g, "");
-            
-            // 2. 針對 %%% 進行修復
-            // 匹配 <w:t>%</w:t>...<w:t>%</w:t>...<w:t>%</w:t>
-            // 這比 {{ 更簡單，因為 % 不會像 { 那樣被當成程式碼區塊
-            
-            // 嘗試修復斷裂的 %%% (開頭)
-            // 邏輯：連續三個 %，不管中間隔了什麼標籤
-            xmlStr = xmlStr.replace(/%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%\s*(<\/w:t>[\s\S]*?<w:t[^>]*>)\s*%/g, "%%%$2");
-            
-            // 修復斷裂的 %%% (結尾)
-            // 同理，其實上面那一行應該就能處理大部分情況，因為開頭結尾都是 %%%
-            
-            console.log("XML 清洗完成");
-            return xmlStr;
-        }
-
-        async function generateDoc() {
-            if (typeof PizZip === 'undefined') { alert("核心元件未載入"); return; }
-            showMsg("處理中...");
-            const btn = document.getElementById('genBtn');
-            btn.disabled = true;
-
-            const data = {};
-            try {
-                // 資料收集...
-                data.company_name = document.getElementById('company_name').value || "未填寫";
-                data.company_tax_id = document.getElementById('company_tax_id').value;
-                data.company_rep = document.getElementById('company_rep').value;
-                data.company_title = document.getElementById('company_title').value;
-                const regAddr = document.getElementById('reg_address').value;
-                data.company_address = document.getElementById('is_branch').checked ? 
-                    `${regAddr} (實習地點：${document.getElementById('branch_name').value} - ${document.getElementById('branch_addr').value})` : regAddr;
-
-                const sCount = document.getElementById('student_count').value;
-                const sList = [];
-                for(let i=0; i<sCount; i++) sList.push({name: document.getElementById(`s_name_${i}`).value, id: document.getElementById(`s_id_${i}`).value});
-                while(sList.length < 3) sList.push({name: "", id: ""});
-                data.s1_name = sList[0].name; data.s1_id = sList[0].id;
-                data.s2_name = sList[1].name; data.s2_id = sList[1].id;
-                data.s3_name = sList[2].name; data.s3_id = sList[2].id;
-                data.student_name = sList[0].name + (sCount > 1 ? " 等" : "");
-
-                const sDate = new Date(document.getElementById('start_date').value);
-                const eDate = new Date(document.getElementById('end_date').value);
-                if(!isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); } else { data.s_y="";data.s_m="";data.s_d=""; }
-                if(!isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); } else { data.e_y="";data.e_m="";data.e_d=""; }
-                
-                data.daily_start = document.getElementById('daily_start').value;
-                data.daily_end = document.getElementById('daily_end').value;
-                data.daily_hours = document.getElementById('daily_hours').value;
-
-                const type = document.querySelector('input[name="contract_type"]:checked').value;
-                data.type_learn_check = '□'; data.type_work_check = '□';
-                data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□';
-                data.pay_learn_amount = ""; data.pay_work_amount = "";
-
-                if (type === 'learn') {
-                    data.type_learn_check = '☑';
-                    const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked').value;
-                    if(pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
-                    else {
-                        data[pOpt === 'scholar' ? 'chk_pay_scholar' : 'chk_pay_allowance'] = '☑';
-                        data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString();
-                    }
-                } else {
-                    data.type_work_check = '☑';
-                    data.pay_work_amount = Number(document.getElementById('work_amount').value).toLocaleString();
-                }
-
-                function setWelfare(prefix) {
-                    const opt = document.getElementById(prefix + '_opt').value;
-                    data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
-                    if(opt === 'none') data[`chk_${prefix}_none`] = '☑'; else if(opt === 'free') data[`chk_${prefix}_free`] = '☑';
-                    else {
-                        data[`chk_${prefix}_paid`] = '☑';
-                        data[`${prefix}_cost`] = Number(document.getElementById(prefix + '_cost').value).toLocaleString();
-                    }
-                }
-                setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
-
-            } catch(e) { showMsg("資料收集錯誤：" + e.message); btn.disabled = false; return; }
-
-            // 讀取與清洗流程
-            const manualFile = document.getElementById('manual_template').files[0];
-            const loadPromise = manualFile ? 
-                new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve(e.target.result); r.readAsBinaryString(manualFile); }) :
-                fetch('./template.docx').then(r => { if(!r.ok) throw new Error("找不到 template.docx"); return r.arrayBuffer(); });
-
-            loadPromise.then(content => {
-                const zip = new PizZip(content);
-                
-                // === 核心：執行清洗 ===
-                const docXml = zip.file("word/document.xml").asText();
-                const cleanDocXml = cleanXML(docXml);
-                zip.file("word/document.xml", cleanDocXml);
-                // ===================
-
-                // V11.8 關鍵修改：指定 delimiters 為 %%%
-                const doc = new window.docxtemplater(zip, { 
-                    paragraphLoop: true, 
-                    linebreaks: true,
-                    delimiters: {start: '%%%', end: '%%%'}, // 這裡！
-                    nullGetter: function(part) { return ""; }
-                });
-                
-                doc.render(data);
-                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-                saveAs(out, `東海大學實習合約_${data.s1_name}.docx`);
-                showMsg("下載成功！");
-            }).catch(error => {
-                if (error.properties && error.properties.errors) {
-                    const msgs = error.properties.errors.map(e => {
-                        const errId = e.properties.id || "unknown";
-                        const errExpl = e.properties.explanation || "無詳細說明";
-                        return `錯誤類型: ${errId}\n說明: ${errExpl}`;
-                    }).join("\n\n");
-                    showError("範本標籤錯誤 (Multi Error)：\n" + msgs);
-                } else { 
-                    showError("錯誤：" + error.message); 
-                }
-                console.error(error);
-            }).finally(() => { btn.disabled = false; });
-        }
     </script>
 </body>
 </html>
