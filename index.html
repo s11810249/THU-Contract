@@ -5,16 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>東海大學學生校外實習合約產生系統</title>
     
-    <!-- 1. 核心函式庫 (更換為更穩定的來源) -->
-    <!-- Tailwind CSS -->
+    <!-- 1. 核心函式庫 (使用穩定版 Unpkg) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PizZip (處理 Zip 壓縮核心) -->
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
-    <!-- Docxtemplater (處理 Word 替換核心) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
-    <!-- FileSaver (處理檔案下載) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-    <!-- FontAwesome (圖示) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- 東海配色 -->
@@ -34,13 +29,11 @@
         .border-top-blue { border-top: 4px solid #002E5D; }
         .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
-        /* 錯誤訊息樣式 */
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- 函式庫載入檢查警告 -->
     <div id="lib-error">
         ⚠️ 系統偵測到核心元件未載入成功！可能是網路阻擋了 CDN。<br>
         請嘗試使用手機網路或更換瀏覽器。錯誤元件：<span id="missing-lib"></span>
@@ -141,7 +134,6 @@
                 </select>
             </div>
             <div id="student_container" class="p-6 space-y-4">
-                <!-- JS 會自動產生輸入框 -->
             </div>
         </div>
 
@@ -199,11 +191,10 @@
                     </div>
                 </div>
 
-                <!-- 待遇 (動態變換) -->
+                <!-- 待遇 -->
                 <div class="border-t pt-4">
                     <label class="block text-lg font-bold text-thuBlue mb-2">4. 實習待遇與給付</label>
                     
-                    <!-- 學習型面板 -->
                     <div id="panel_learn" class="bg-green-50 p-4 rounded border border-green-200">
                         <span class="text-xs bg-green-600 text-white px-2 py-1 rounded">學習型適用</span>
                         <div class="mt-2 flex flex-wrap gap-4">
@@ -216,7 +207,6 @@
                         </div>
                     </div>
 
-                    <!-- 勞資型面板 -->
                     <div id="panel_work" class="bg-orange-50 p-4 rounded border border-orange-200 hidden">
                         <span class="text-xs bg-orange-600 text-white px-2 py-1 rounded">勞資型適用</span>
                         <div class="mt-2">
@@ -230,7 +220,6 @@
                 <div class="border-t pt-4">
                     <label class="block text-lg font-bold text-thuBlue mb-2">5. 福利項目</label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- 住宿 -->
                         <div>
                             <label class="text-sm font-bold">住宿</label>
                             <select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field mb-2">
@@ -240,7 +229,6 @@
                             </select>
                             <input type="number" id="dorm_cost" placeholder="元/月" class="input-field hidden">
                         </div>
-                        <!-- 膳食 -->
                         <div>
                             <label class="text-sm font-bold">膳食</label>
                             <select id="food_opt" onchange="toggleCost('food')" class="input-field mb-2">
@@ -250,7 +238,6 @@
                             </select>
                             <input type="number" id="food_cost" placeholder="元/餐" class="input-field hidden">
                         </div>
-                        <!-- 交通 -->
                         <div>
                             <label class="text-sm font-bold">交通</label>
                             <select id="trans_opt" onchange="toggleCost('trans')" class="input-field mb-2">
@@ -270,43 +257,35 @@
         <!-- 產生按鈕與測試區 -->
         <div class="pb-10">
             <div class="flex flex-col md:flex-row justify-end items-center gap-4">
-                
-                <!-- 測試用：手動上傳範本 (當 GitHub 讀不到時使用) -->
                 <div class="text-sm text-gray-500 bg-gray-200 p-2 rounded flex items-center gap-2">
                     <span class="font-bold text-xs bg-gray-500 text-white px-1 rounded">DEBUG</span>
                     <span>若無反應，請手動選取 template.docx：</span>
                     <input type="file" id="manual_template" accept=".docx" class="text-xs">
                 </div>
-
                 <button onclick="generateDoc()" id="genBtn" class="bg-thuBlue text-white px-8 py-3 rounded-md font-bold shadow-lg hover:bg-blue-900 transition flex items-center gap-2 text-lg w-full md:w-auto justify-center">
                     <i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)
                 </button>
             </div>
-            <p id="statusMsg" class="text-right text-sm mt-2 font-bold text-red-600 hidden"></p>
+            <p id="statusMsg" class="text-right text-sm mt-2 font-bold text-red-600 hidden whitespace-pre-wrap"></p>
         </div>
 
     </main>
 
     <!-- JS 邏輯區 -->
     <script>
-        // 0. 網頁載入時檢查 PizZip 是否存在
         window.onload = function() {
-            renderStudents(); // 渲染學生欄位
-            
+            renderStudents(); 
             const missing = [];
             if (typeof PizZip === 'undefined') missing.push('PizZip');
             if (typeof window.docxtemplater === 'undefined') missing.push('Docxtemplater');
-            
             if (missing.length > 0) {
                 document.getElementById('lib-error').style.display = 'block';
                 document.getElementById('missing-lib').innerText = missing.join(', ');
                 document.getElementById('genBtn').disabled = true;
                 document.getElementById('genBtn').classList.add('bg-gray-400', 'cursor-not-allowed');
-                document.getElementById('genBtn').classList.remove('bg-thuBlue', 'hover:bg-blue-900');
             }
         };
 
-        // 初始化：渲染學生欄位
         function renderStudents() {
             const count = document.getElementById('student_count').value;
             const container = document.getElementById('student_container');
@@ -324,38 +303,22 @@
             }
         }
 
-        // UI 切換邏輯
-        function toggleBranch() {
-            document.getElementById('branch_area').classList.toggle('hidden', !document.getElementById('is_branch').checked);
-        }
-
+        function toggleBranch() { document.getElementById('branch_area').classList.toggle('hidden', !document.getElementById('is_branch').checked); }
         function toggleType() {
             const type = document.querySelector('input[name="contract_type"]:checked').value;
-            const pLearn = document.getElementById('panel_learn');
-            const pWork = document.getElementById('panel_work');
-            if (type === 'learn') {
-                pLearn.classList.remove('hidden');
-                pWork.classList.add('hidden');
-            } else {
-                pLearn.classList.add('hidden');
-                pWork.classList.remove('hidden');
-            }
+            document.getElementById('panel_learn').classList.toggle('hidden', type !== 'learn');
+            document.getElementById('panel_work').classList.toggle('hidden', type === 'learn');
         }
-
         function togglePayInputs() {
             const val = document.querySelector('input[name="pay_opt_learn"]:checked').value;
             document.getElementById('learn_amt_box').classList.toggle('hidden', val === 'none');
         }
-
         function toggleCost(prefix) {
             const val = document.getElementById(prefix + '_opt').value;
             const input = document.getElementById(prefix + '_cost');
-            if (val === 'paid' || val === 'subsidy') input.classList.remove('hidden');
-            else input.classList.add('hidden');
+            if (val === 'paid' || val === 'subsidy') input.classList.remove('hidden'); else input.classList.add('hidden');
         }
 
-        // --- 核心：產生 Word 檔案 ---
-        
         function showStatus(msg, isError=false) {
             const el = document.getElementById('statusMsg');
             el.innerText = msg;
@@ -365,27 +328,18 @@
         }
 
         function generateDoc() {
-            // 二次檢查
-            if (typeof PizZip === 'undefined') {
-                alert("錯誤：核心元件 PizZip 未載入，無法產生合約。請檢查網路連線。");
-                return;
-            }
-
-            showStatus("正在處理中...請稍候", false);
+            if (typeof PizZip === 'undefined') { alert("錯誤：PizZip 元件未載入"); return; }
+            showStatus("處理中...", false);
             const btn = document.getElementById('genBtn');
             btn.disabled = true;
-            btn.innerText = "處理中...";
 
-            // 1. 收集資料
             const data = {};
             try {
-                // 機構
                 data.company_name = document.getElementById('company_name').value || "未填寫機構";
                 data.company_tax_id = document.getElementById('company_tax_id').value;
                 data.company_rep = document.getElementById('company_rep').value;
                 data.company_title = document.getElementById('company_title').value;
                 
-                // 地址處理
                 const regAddr = document.getElementById('reg_address').value;
                 if (document.getElementById('is_branch').checked) {
                     const bName = document.getElementById('branch_name').value;
@@ -395,7 +349,6 @@
                     data.company_address = regAddr;
                 }
 
-                // 學生 (多位)
                 const sCount = document.getElementById('student_count').value;
                 const sList = [];
                 for(let i=0; i<sCount; i++) {
@@ -410,32 +363,19 @@
                 data.s3_name = sList[2].name; data.s3_id = sList[2].id;
                 data.student_name = sList[0].name + (sCount > 1 ? " 等" : "");
 
-                // 日期 (轉民國年)
                 const sDate = new Date(document.getElementById('start_date').value);
                 const eDate = new Date(document.getElementById('end_date').value);
                 
-                if(!isNaN(sDate.getTime())) {
-                    data.s_y = sDate.getFullYear() - 1911;
-                    data.s_m = sDate.getMonth() + 1;
-                    data.s_d = sDate.getDate();
-                } else {
-                    data.s_y = ""; data.s_m = ""; data.s_d = "";
-                }
+                if(!isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); }
+                else { data.s_y = ""; data.s_m = ""; data.s_d = ""; }
 
-                if(!isNaN(eDate.getTime())) {
-                    data.e_y = eDate.getFullYear() - 1911;
-                    data.e_m = eDate.getMonth() + 1;
-                    data.e_d = eDate.getDate();
-                } else {
-                    data.e_y = ""; data.e_m = ""; data.e_d = "";
-                }
+                if(!isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); }
+                else { data.e_y = ""; data.e_m = ""; data.e_d = ""; }
 
-                // 時間
                 data.daily_start = document.getElementById('daily_start').value;
                 data.daily_end = document.getElementById('daily_end').value;
                 data.daily_hours = document.getElementById('daily_hours').value;
 
-                // 條件與待遇
                 const type = document.querySelector('input[name="contract_type"]:checked').value;
                 data.type_learn_check = '□'; data.type_work_check = '□';
                 data.chk_pay_none = '□'; data.chk_pay_scholar = '□'; data.chk_pay_allowance = '□';
@@ -444,14 +384,9 @@
                 if (type === 'learn') {
                     data.type_learn_check = '☑';
                     const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked').value;
-                    if(pOpt === 'none') {
-                        data.chk_pay_none = '☑';
-                        data.pay_learn_amount = "0";
-                    } else if(pOpt === 'scholar') {
-                        data.chk_pay_scholar = '☑';
-                        data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString();
-                    } else {
-                        data.chk_pay_allowance = '☑';
+                    if(pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
+                    else {
+                        data[pOpt === 'scholar' ? 'chk_pay_scholar' : 'chk_pay_allowance'] = '☑';
                         data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString();
                     }
                 } else {
@@ -459,12 +394,9 @@
                     data.pay_work_amount = Number(document.getElementById('work_amount').value).toLocaleString();
                 }
 
-                // 福利
                 function setWelfare(prefix) {
                     const opt = document.getElementById(prefix + '_opt').value;
-                    data[`chk_${prefix}_none`] = '□';
-                    data[`chk_${prefix}_free`] = '□';
-                    data[`chk_${prefix}_paid`] = '□';
+                    data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
                     if(opt === 'none') data[`chk_${prefix}_none`] = '☑';
                     else if(opt === 'free') data[`chk_${prefix}_free`] = '☑';
                     else {
@@ -480,55 +412,43 @@
                 return;
             }
 
-            // 2. 決定讀取方式 (手動 vs 自動)
             const manualFile = document.getElementById('manual_template').files[0];
-            
             if (manualFile) {
-                // A. 使用手動上傳的檔案
                 const reader = new FileReader();
-                reader.onload = function(evt) {
-                    processTemplate(evt.target.result, data, btn);
-                };
+                reader.onload = function(evt) { processTemplate(evt.target.result, data, btn); };
                 reader.readAsBinaryString(manualFile);
             } else {
-                // B. 自動從 GitHub 讀取 (使用 fetch)
                 fetch('./template.docx')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`找不到範本檔案 (template.docx)！狀態: ${response.status}`);
-                        }
-                        return response.arrayBuffer();
+                    .then(r => {
+                        if (!r.ok) throw new Error("找不到 template.docx (請確認檔名小寫)");
+                        return r.arrayBuffer();
                     })
-                    .then(content => {
-                        processTemplate(content, data, btn);
-                    })
-                    .catch(error => {
-                        showStatus("讀取範本失敗：" + error.message, true);
+                    .then(c => processTemplate(c, data, btn))
+                    .catch(e => {
+                        showStatus("讀取範本錯誤：" + e.message, true);
                         btn.disabled = false; btn.innerText = "產生合約文件 (Word)";
                     });
             }
         }
 
-        // 3. 處理 Word 替換
         function processTemplate(content, data, btn) {
             try {
                 const zip = new PizZip(content);
-                const doc = new window.docxtemplater(zip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                });
-
+                const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 doc.render(data);
-
-                const out = doc.getZip().generate({
-                    type: "blob",
-                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                });
-                
+                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                 saveAs(out, `東海大學實習合約_${data.s1_name}.docx`);
                 showStatus("下載成功！", false);
             } catch (error) {
-                showStatus("產生 Word 時發生錯誤：" + error.message, true);
+                // Multi Error 診斷邏輯
+                if (error.properties && error.properties.errors) {
+                    const errorMessages = error.properties.errors.map(function(e) {
+                        return e.properties.explanation;
+                    }).join("\n");
+                    showStatus("Word 範本標籤錯誤 (Multi Error)：\n" + errorMessages + "\n\n請檢查 Word 檔內的 {{ }} 是否有打錯字。", true);
+                } else {
+                    showStatus("產生 Word 錯誤：" + error.message, true);
+                }
                 console.error(error);
             } finally {
                 btn.disabled = false;
