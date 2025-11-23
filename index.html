@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>東海大學學生校外實習合約產生系統 (V8)</title>
+    <title>東海大學學生校外實習合約產生系統 (V9)</title>
     
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,9 +27,15 @@
         .border-top-blue { border-top: 4px solid #002E5D; }
         .border-top-gold { border-top: 4px solid #C6A87C; }
         .hidden { display: none; }
+        #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
     </style>
 </head>
 <body>
+
+    <div id="lib-error">
+        ⚠️ 系統偵測到核心元件未載入成功！可能是網路阻擋了 CDN。<br>
+        請嘗試使用手機網路或更換瀏覽器。錯誤元件：<span id="missing-lib"></span>
+    </div>
 
     <!-- Header -->
     <div class="fixed top-0 left-0 w-full h-[70px] bg-thuBlue text-white z-50 flex items-center justify-between px-4 md:px-8 shadow-md">
@@ -301,39 +307,28 @@
             if(isError) alert(msg); 
         }
 
-        // --- 核心：產生 Word 檔案 (含 V8 智慧修復) ---
+        // --- 核心：產生 Word 檔案 (含 V9 終極淨化邏輯) ---
         function generateDoc() {
             if (typeof PizZip === 'undefined') { alert("核心元件未載入"); return; }
             showStatus("處理中...", false);
             const btn = document.getElementById('genBtn');
             btn.disabled = true;
 
-            // 1. 收集資料
             const data = {};
             try {
+                // 資料收集 (略為縮減以節省空間，邏輯與 V8 相同)
                 data.company_name = document.getElementById('company_name').value || "未填寫機構";
                 data.company_tax_id = document.getElementById('company_tax_id').value;
                 data.company_rep = document.getElementById('company_rep').value;
                 data.company_title = document.getElementById('company_title').value;
-                
                 const regAddr = document.getElementById('reg_address').value;
-                if (document.getElementById('is_branch').checked) {
-                    const bName = document.getElementById('branch_name').value;
-                    const bAddr = document.getElementById('branch_addr').value;
-                    data.company_address = `${regAddr} (實習地點：${bName} - ${bAddr})`;
-                } else {
-                    data.company_address = regAddr;
-                }
+                data.company_address = document.getElementById('is_branch').checked ? 
+                    `${regAddr} (實習地點：${document.getElementById('branch_name').value} - ${document.getElementById('branch_addr').value})` : regAddr;
 
                 const sCount = document.getElementById('student_count').value;
                 const sList = [];
-                for(let i=0; i<sCount; i++) {
-                    const n = document.getElementById(`s_name_${i}`).value;
-                    const id = document.getElementById(`s_id_${i}`).value;
-                    sList.push({name: n, id: id});
-                }
+                for(let i=0; i<sCount; i++) sList.push({name: document.getElementById(`s_name_${i}`).value, id: document.getElementById(`s_id_${i}`).value});
                 while(sList.length < 3) sList.push({name: "", id: ""});
-                
                 data.s1_name = sList[0].name; data.s1_id = sList[0].id;
                 data.s2_name = sList[1].name; data.s2_id = sList[1].id;
                 data.s3_name = sList[2].name; data.s3_id = sList[2].id;
@@ -343,90 +338,65 @@
                 const eDate = new Date(document.getElementById('end_date').value);
                 if(!isNaN(sDate.getTime())) { data.s_y = sDate.getFullYear() - 1911; data.s_m = sDate.getMonth() + 1; data.s_d = sDate.getDate(); } else { data.s_y="";data.s_m="";data.s_d=""; }
                 if(!isNaN(eDate.getTime())) { data.e_y = eDate.getFullYear() - 1911; data.e_m = eDate.getMonth() + 1; data.e_d = eDate.getDate(); } else { data.e_y="";data.e_m="";data.e_d=""; }
-
                 data.daily_start = document.getElementById('daily_start').value;
                 data.daily_end = document.getElementById('daily_end').value;
                 data.daily_hours = document.getElementById('daily_hours').value;
 
                 const type = document.querySelector('input[name="contract_type"]:checked').value;
-                data.type_learn_check = '□'; data.type_work_check = '□';
-                data.chk_pay_none = '□'; data.chk_pay_scholar = '□'; data.chk_pay_allowance = '□';
+                data.type_learn_check = '□'; data.type_work_check = '□'; data.chk_pay_none = '□'; data.chk_pay_scholar = '□'; data.chk_pay_allowance = '□';
                 data.pay_learn_amount = ""; data.pay_work_amount = "";
-
                 if (type === 'learn') {
                     data.type_learn_check = '☑';
                     const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked').value;
                     if(pOpt === 'none') { data.chk_pay_none = '☑'; data.pay_learn_amount = "0"; }
-                    else {
-                        data[pOpt === 'scholar' ? 'chk_pay_scholar' : 'chk_pay_allowance'] = '☑';
-                        data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString();
-                    }
-                } else {
-                    data.type_work_check = '☑';
-                    data.pay_work_amount = Number(document.getElementById('work_amount').value).toLocaleString();
-                }
+                    else { data[pOpt === 'scholar' ? 'chk_pay_scholar' : 'chk_pay_allowance'] = '☑'; data.pay_learn_amount = Number(document.getElementById('learn_amount').value).toLocaleString(); }
+                } else { data.type_work_check = '☑'; data.pay_work_amount = Number(document.getElementById('work_amount').value).toLocaleString(); }
 
                 function setWelfare(prefix) {
                     const opt = document.getElementById(prefix + '_opt').value;
                     data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
-                    if(opt === 'none') data[`chk_${prefix}_none`] = '☑';
-                    else if(opt === 'free') data[`chk_${prefix}_free`] = '☑';
-                    else {
-                        data[`chk_${prefix}_paid`] = '☑';
-                        data[`${prefix}_cost`] = Number(document.getElementById(prefix + '_cost').value).toLocaleString();
-                    }
+                    if(opt === 'none') data[`chk_${prefix}_none`] = '☑'; else if(opt === 'free') data[`chk_${prefix}_free`] = '☑';
+                    else { data[`chk_${prefix}_paid`] = '☑'; data[`${prefix}_cost`] = Number(document.getElementById(prefix + '_cost').value).toLocaleString(); }
                 }
                 setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
 
-            } catch(e) {
-                showStatus("資料收集錯誤：" + e.message, true); btn.disabled = false; return;
-            }
+            } catch(e) { showStatus("資料收集錯誤：" + e.message, true); btn.disabled = false; return; }
 
             const manualFile = document.getElementById('manual_template').files[0];
-            if (manualFile) {
-                const reader = new FileReader();
-                reader.onload = function(evt) { processTemplate(evt.target.result, data, btn); };
-                reader.readAsBinaryString(manualFile);
-            } else {
-                fetch('./template.docx').then(r => { if(!r.ok) throw new Error("找不到 template.docx"); return r.arrayBuffer(); })
-                .then(c => processTemplate(c, data, btn))
-                .catch(e => { showStatus("讀取範本錯誤：" + e.message, true); btn.disabled = false; });
-            }
-        }
+            const loadPromise = manualFile ? 
+                new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve(e.target.result); r.readAsBinaryString(manualFile); }) :
+                fetch('./template.docx').then(r => { if(!r.ok) throw new Error("找不到 template.docx"); return r.arrayBuffer(); });
 
-        // V8 智慧修復與產生邏輯
-        function processTemplate(content, data, btn) {
-            try {
+            loadPromise.then(content => {
                 const zip = new PizZip(content);
                 
-                // --- V8 智慧修復區塊 ---
-                // 嘗試讀取 document.xml 並修復 Word 弄碎的標籤
-                const docXml = zip.file("word/document.xml").asText();
-                // 1. 修復 Split Open Tags: <w:t>{</w:t>...<w:t>{</w:t> -> <w:t>{{</w:t>
-                let fixedXml = docXml.replace(/<w:t>({)<\/w:t>(\s*<[^>]+>\s*)*<w:t>({)<\/w:t>/g, "<w:t>{{</w:t>");
-                // 2. 修復 Split Close Tags: <w:t>}</w:t>...<w:t>}</w:t> -> <w:t>}}</w:t>
-                fixedXml = fixedXml.replace(/<w:t>(})<\/w:t>(\s*<[^>]+>\s*)*<w:t>(})<\/w:t>/g, "<w:t>}}</w:t>");
+                // === V9 終極淨化邏輯 ===
+                let docXml = zip.file("word/document.xml").asText();
+                // 1. 移除拼字/文法檢查標記 (最關鍵!)
+                docXml = docXml.replace(/<w:proofErr[^>]*\/?>/g, "");
+                docXml = docXml.replace(/<w:gramE[^>]*\/?>/g, "");
+                // 2. 移除語言標記 (減少干擾)
+                docXml = docXml.replace(/<w:lang[^>]*\/?>/g, "");
+                // 3. 縫合被切斷的標籤 (針對 Duplicate open/close tags)
+                // 將 <w:t>{</w:t>...<w:t>{</w:t> 轉為 <w:t>{{</w:t>
+                docXml = docXml.replace(/<w:t>({)<\/w:t>(\s*<[^>]+>\s*)*<w:t>({)<\/w:t>/g, "<w:t>{{</w:t>");
+                docXml = docXml.replace(/<w:t>(})<\/w:t>(\s*<[^>]+>\s*)*<w:t>(})<\/w:t>/g, "<w:t>}}</w:t>");
                 
-                zip.file("word/document.xml", fixedXml);
-                // ---------------------
+                zip.file("word/document.xml", docXml);
+                // ======================
 
                 const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 doc.render(data);
                 const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                 saveAs(out, `東海大學實習合約_${data.s1_name}.docx`);
                 showStatus("下載成功！", false);
-            } catch (error) {
+            }).catch(error => {
                 if (error.properties && error.properties.errors) {
                     const msgs = error.properties.errors.map(e => e.properties.explanation).join("\n");
                     showStatus("標籤錯誤 (Multi Error)：\n" + msgs + "\n\n建議：請嘗試在 Word 中將 {{ }} 刪除並重新手動輸入。", true);
-                } else {
-                    showStatus("錯誤：" + error.message, true);
-                }
+                } else { showStatus("錯誤：" + error.message, true); }
                 console.error(error);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
-            }
+            }).finally(() => { btn.disabled = false; btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)'; });
         }
     </script>
 </body>
