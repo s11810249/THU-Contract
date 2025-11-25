@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.55)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.56 Debug)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -412,6 +412,31 @@
             font-weight: bold;
             color: #64748b;
         }
+
+        /* DEBUG 上傳按鈕樣式 */
+        .debug-upload-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+            cursor: pointer;
+            transition: color 0.2s;
+            margin-left: 1rem;
+        }
+        .debug-upload-label:hover {
+            color: #002E5D;
+        }
+        .debug-status {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #16a34a;
+            margin-left: 0.5rem;
+            display: none;
+        }
+        .debug-status.show {
+            display: inline;
+        }
     </style>
 </head>
 <body>
@@ -447,7 +472,7 @@
                 <div class="flex flex-col justify-center text-white">
                     <!-- 標題修改為 文件產生器 -->
                     <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">學生校外實習文件產生器</div>
-                    <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">Internship Document Generation System</div>
+                    <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">Internship Document Generation System (Debug Mode)</div>
                 </div>
             </div>
             
@@ -487,7 +512,7 @@
 
         <form id="contractForm">
             
-            <!-- ========== Page 1: 使用須知 (New Page) ========== -->
+            <!-- ========== Page 1: 使用須知 ========== -->
             <div id="page-1" class="page-content mt-4">
                 <div class="bg-white border border-blue-100 rounded-xl p-8 shadow-sm">
                     <div class="flex items-start gap-4">
@@ -522,11 +547,9 @@
 
             <!-- ========== Page 2: 實習學生資料 ========== -->
             <div id="page-2" class="page-content hidden">
-                <!-- 卡片 2: 學生資料 (人數增減按鈕 + 標題靠左) -->
                 <div class="card">
                     <div class="card-header">
                         <span class="card-header-title mr-4">實習學生資料 (Page 2/4)</span>
-                        <!-- 人數控制 -->
                         <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
                             <button type="button" onclick="changeStudentCount(-1)" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm hover:text-thuBlue transition-all">
                                 <i class="fa-solid fa-minus"></i>
@@ -539,7 +562,6 @@
                         <input type="hidden" id="student_count" value="1">
                     </div>
                     
-                    <!-- V1.0.38 新增: 匯入 Excel 區域 -->
                     <div class="px-8 pt-4 flex justify-end">
                          <input type="file" id="upload_excel" accept=".xlsx, .xls" class="hidden" onchange="handleExcelUpload(event)">
                          <div class="flex gap-2">
@@ -557,7 +579,6 @@
                     </div>
                 </div>
 
-                <!-- 頁面導航 -->
                 <div class="flex justify-between mt-6">
                     <button type="button" onclick="showPage('page-1')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-left"></i> 上一步
@@ -568,27 +589,29 @@
                 </div>
             </div>
 
-            <!-- ========== Page 3: 實習合約資料 (Contract Data) ========== -->
+            <!-- ========== Page 3: 實習合約資料 ========== -->
             <div id="page-3" class="page-content hidden">
-                <!-- 卡片 1: 機構資料 -->
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-header-title">乙方：實習機構資料 (Page 3/4)</span>
+                        <div class="flex items-center">
+                             <span class="card-header-title">乙方：實習機構資料 (Page 3/4)</span>
+                             <!-- DEBUG: Contract Template Upload -->
+                             <label class="debug-upload-label">
+                                <i class="fa-solid fa-wrench"></i> 測試合約範本
+                                <input type="file" accept=".docx" class="hidden" onchange="handleDebugUpload(event, 'contract')">
+                             </label>
+                             <span id="debug_contract_status" class="debug-status"><i class="fa-solid fa-check"></i> 已載入</span>
+                        </div>
                     </div>
                     
                     <div class="p-8 grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-6">
-                        
-                        <!-- Row 1: 說明文字 (Span 4) -->
                         <div class="md:col-span-4 mb-2">
-                            <span class="text-sm text-red-500 flex items-center">您可輸入統一編號後，點擊查詢按鈕，系統將自動帶入公司名稱、負責人與登記地址。資料來源為介接經濟部商工行政資料開放平台API，公示資料可能非最新，簽約前請再次確認所有資訊是否正確。</span>
+                            <span class="text-sm text-red-500 flex items-center">您可輸入統一編號後，點擊查詢按鈕，系統將自動帶入公司名稱、負責人與登記地址。</span>
                         </div>
                         
-                        <!-- Row 2 (Span 4): 統一編號輸入/查詢 (加寬至 60%) V.S. 無設立字號核取方塊 (40%) -->
                         <div class="md:col-span-4 flex flex-col md:flex-row gap-x-6 gap-y-4">
-                            <!-- Left (Tax ID Input + Query) - 加寬 -->
-                            <!-- V1.0.48: 寬度調整為 md:w-[65%] -->
                             <div class="w-full md:w-[65%]">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">統一編號（或相關營利事業登記、法人登記或設立字號）</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">統一編號</label>
                                 <div id="tax_id_input_group" class="flex gap-2 items-center transition-opacity duration-300">
                                     <input type="text" id="company_tax_id" class="input-field flex-grow" placeholder="04231910" maxlength="15">
                                     <button type="button" id="queryBtn" class="btn-query flex items-center gap-2 opacity-50 cursor-not-allowed whitespace-nowrap" disabled>
@@ -597,24 +620,20 @@
                                 </div>
                             </div>
                             
-                            <!-- Right (New Checkbox) - 調整寬度 -->
-                            <!-- V1.0.48: 寬度調整為 md:w-[35%] -->
                             <div class="w-full md:w-[35%] self-end">
                                 <label class="block text-sm font-bold text-gray-700 mb-2 invisible md:visible"></label> 
                                 <label for="no_tax_id" class="flex items-center p-3 h-[42px] border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-100 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/50">
                                     <input type="checkbox" id="no_tax_id" onchange="toggleTaxIdFields()" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500">
-                                    <span class="ml-2 text-base font-medium text-gray-800 select-none whitespace-normal">實習機構未申請設立字號 (合約將顯示此文字)</span>
+                                    <span class="ml-2 text-base font-medium text-gray-800 select-none whitespace-normal">實習機構未申請設立字號</span>
                                 </label>
                             </div>
                         </div>
 
-                        <!-- Row 3: 機構全銜 (法定名稱) (Span 4) -->
                         <div class="md:col-span-4">
                             <label class="block text-sm font-bold text-gray-700 mb-2">機構全銜 (法定名稱) <span class="text-red-500">*</span></label>
                             <input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司">
                         </div>
 
-                        <!-- Row 4: 代表人姓名 (Span 2) + 代表人職稱 (Span 2) -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-bold text-gray-700 mb-2">代表人姓名 <span class="text-red-500">*</span></label>
                             <input type="text" id="company_rep" class="input-field">
@@ -625,26 +644,22 @@
                             <input type="text" id="company_title" class="input-field" placeholder="">
                         </div>
 
-                        <!-- Row 5: 公司登記地址 (Span 4) -->
                         <div class="md:col-span-4">
                             <label class="block text-sm font-bold text-gray-700 mb-2">公司登記地址 (總公司) <span class="text-red-500">*</span></label>
                             <input type="text" id="reg_address" class="input-field" placeholder="例：臺北市信義區松仁路7號1樓">
                         </div>
                         
-                        <!-- 分公司 (Row 6, Span 4) -->
                         <div class="md:col-span-4 pt-6 border-t border-gray-200 mt-2">
                             <div class="text-sm font-bold text-thuBlue mb-4 flex items-center gap-2 bg-blue-50 p-2 rounded">
                                 <i class="fa-solid fa-location-dot"></i> 
                                 實習地點
                             </div>
                             
-                            <!-- 新增總公司實習選項 -->
                             <div class="mb-4 flex items-center">
                                 <input type="checkbox" id="is_head_office" class="w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue" onchange="toggleBranchFields()">
                                 <label for="is_head_office" class="ml-2 text-sm font-medium text-gray-700 select-none">學生於總公司實習 (或實習機構無分公司)</label>
                             </div>
                             
-                            <!-- 將輸入框包裹起來 -->
                             <div id="branch_fields_wrapper" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 mb-2">實習單位/分公司名稱 <span class="text-red-500">*</span></label>
@@ -659,18 +674,14 @@
                     </div>
                 </div>
 
-                <!-- 卡片 3: 實習期間與時間 -->
                 <div class="card">
                     <div class="card-header">
                         <span class="card-header-title">實習期間與時間</span>
                     </div>
                     <div class="p-8 space-y-8">
-
-                        <!-- 日期 -->
-                        <div class="">
+                        <div>
                             <label class="block text-sm font-bold text-gray-700 mb-3">1. 實習期間</label>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- 開始時間 -->
                                 <div>
                                     <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習開始 (民國年/月/日)</span>
                                     <div class="date-group">
@@ -681,7 +692,6 @@
                                         <input type="number" id="start_d" class="date-input w-12" placeholder="01" oninput="autoJump(this, 2, 'end_y')"> 
                                     </div>
                                 </div>
-                                <!-- 結束時間 -->
                                 <div>
                                     <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習結束 (民國年/月/日)</span>
                                     <div class="date-group">
@@ -695,7 +705,6 @@
                             </div>
                         </div>
 
-                        <!-- 時間 -->
                         <div class="border-t border-gray-200 pt-8">
                             <label class="block text-sm font-bold text-gray-700 mb-3">2. 每日實習時間</label>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
@@ -707,14 +716,11 @@
                     </div>
                 </div>
 
-                <!-- 卡片 4: 類型、待遇與福利 -->
                 <div class="card" id="card-conditions">
                     <div class="card-header">
                         <span class="card-header-title">實習類型與待遇福利</span>
                     </div>
                     <div class="p-8 space-y-8">
-                        
-                        <!-- 類型 (必填 - 50% 等寬) -->
                         <div id="type-section" class="p-4 rounded-lg border border-transparent transition-all">
                             <label class="block text-lg font-bold text-thuBlue mb-3">1. 請選擇實習類型 <span class="text-red-500 text-sm">*必填</span></label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -737,20 +743,13 @@
                             </div>
                         </div>
 
-                        <!-- 待遇 (必填) -->
                         <div id="pay-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
                             <label class="block text-lg font-bold text-thuBlue mb-3">2. 實習待遇與給付 <span class="text-red-500 text-sm">*必填</span></label>
-                            
-                            <!-- 未選擇類型的提醒方塊 (預設顯示) -->
                             <div id="panel_initial" class="flex items-center justify-center p-8 bg-yellow-50 rounded-xl border-2 border-dashed border-yellow-200 text-yellow-700 font-bold shadow-sm">
                                 <i class="fa-solid fa-arrow-up mr-2 animate-bounce"></i> 請先選擇上方「實習類型」以解鎖此區塊
                             </div>
-
-                            <!-- 學習型面板 (RESTORING card layout) -->
                             <div id="panel_learn" class="bg-green-50 p-6 rounded-xl border border-green-200 hidden fade-in">
                                 <span class="text-[10px] font-black text-green-700 bg-green-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">學習型</span>
-                                
-                                <!-- 卡片式選項 (RESTORED) -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                     <label class="pay-option-label pay-option-none">
                                         <input type="radio" name="pay_opt_learn" value="none" onchange="togglePayInputs()" class="radio-card-input">
@@ -768,7 +767,6 @@
                                         <span class="pay-option-text text-sm">實習津貼</span>
                                     </label>
                                 </div>
-
                                 <div id="learn_amt_box" class="hidden transition-all">
                                     <label class="block text-xs font-bold text-green-800 mb-2 uppercase">每月給付總額</label>
                                     <div class="relative w-full md:w-64">
@@ -778,12 +776,9 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- 勞資型面板 (FIXED: Restored old structure without extra margins) -->
                             <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col gap-6 fade-in">
                                 <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider w-fit">勞資型</span>
-                                
-                                <div> <!-- REVERTED: No margin bottom here -->
+                                <div>
                                     <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額 (月薪)</label>
                                     <div class="relative w-full md:w-64">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
@@ -791,21 +786,9 @@
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div>
                                     </div>
                                 </div>
-                                
-                                <!-- 勞資型法規提示 -->
-                                <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400 shadow-sm text-xs text-gray-600 leading-relaxed">
-                                    <div class="font-bold text-orange-600 mb-2 flex items-center gap-1 text-sm">
-                                        <i class="fa-solid fa-scale-balanced"></i> 勞動部基本工資公告
-                                    </div>
-                                    <ul class="list-disc list-inside space-y-1.5">
-                                        <li><span class="font-bold text-gray-800">115年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">29,500</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">196</span> 元。(勞動部114年10月21日公告)</li>
-                                        <li><span class="font-bold text-gray-800">114年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">28,590</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">190</span> 元。(勞動部113年9月19日公告)</li>
-                                    </ul>
-                                </div>
                             </div>
                         </div>
 
-                        <!-- 福利 (必填) -->
                         <div id="welfare-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
                             <label class="block text-lg font-bold text-thuBlue mb-3">3. 福利項目 <span class="text-red-500 text-sm">*必填</span></label>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -818,9 +801,7 @@
                                         <option value="paid">付費提供</option>
                                     </select>
                                     <div id="dorm_cost_wrapper" class="hidden relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm font-bold">NT$</div>
                                         <input id="dorm_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono">
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/月</div>
                                     </div>
                                 </div>
                                 <div>
@@ -832,9 +813,7 @@
                                         <option value="paid">付費提供</option>
                                     </select>
                                     <div id="food_cost_wrapper" class="hidden relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm font-bold">NT$</div>
                                         <input id="food_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono">
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/餐</div>
                                     </div>
                                 </div>
                                 <div>
@@ -847,9 +826,7 @@
                                         <option value="subsidy">交通津貼</option>
                                     </select>
                                     <div id="trans_cost_wrapper" class="hidden relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-sm font-bold">NT$</div>
                                         <input id="trans_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono">
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">/月</div>
                                     </div>
                                 </div>
                             </div>
@@ -858,26 +835,31 @@
                     </div>
                 </div>
 
-                <!-- 底部按鈕 -->
                 <div class="flex justify-between items-center mt-12">
                     <button type="button" onclick="showPage('page-2')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-left"></i> 上一步
                     </button>
-                    
-                    <!-- Primary action button: 產生合約文件 -->
                     <button type="button" onclick="generateDoc()" id="genContractBtn" disabled class="btn-generate w-64 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3 opacity-75 cursor-not-allowed">
                         <span class="animate-pulse">系統載入中...</span>
                     </button>
                 </div>
             </div>
 
-            <!-- ========== Page 4: 實習計畫書產出 (Proposal Data) ========== -->
+            <!-- ========== Page 4: 實習計畫書 ========== -->
             <div id="page-4" class="page-content hidden">
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-header-title">學生實習計畫書：每位學生之課程與指導老師資料 (Page 4/4)</span>
+                        <div class="flex items-center">
+                            <span class="card-header-title">學生實習計畫書 (Page 4/4)</span>
+                             <!-- DEBUG: Proposal Template Upload -->
+                             <label class="debug-upload-label">
+                                <i class="fa-solid fa-wrench"></i> 測試計畫書範本
+                                <input type="file" accept=".docx" class="hidden" onchange="handleDebugUpload(event, 'proposal')">
+                             </label>
+                             <span id="debug_proposal_status" class="debug-status"><i class="fa-solid fa-check"></i> 已載入</span>
+                        </div>
                         <div class="text-xs font-medium text-gray-500">
-                            學生人數：<span id="proposal_student_count">1</span> 人 (連動 Page 2)
+                            學生人數：<span id="proposal_student_count">1</span> 人
                         </div>
                     </div>
                     
@@ -885,7 +867,6 @@
                         <table class="w-full proposal-table border-collapse">
                             <thead>
                                 <tr>
-                                    <!-- 新增：選取欄 (Checkbox) -->
                                     <th class="w-12 text-center">
                                         <input type="checkbox" id="select_all_proposals" onclick="toggleSelectAll(this)" class="w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue">
                                     </th>
@@ -897,12 +878,10 @@
                                     <th class="w-16">學分 <span class="text-red-500">*</span></th>
                                     <th class="w-40">實習類別 <span class="text-red-500">*</span></th>
                                     <th class="w-24">時數說明</th>
-                                    <th class="w-24 text-center">操作</th> <!-- 新增：下載個別計畫書 -->
+                                    <th class="w-24 text-center">操作</th>
                                 </tr>
                             </thead>
-                            <tbody id="proposal_table_body">
-                                <!-- Dynamic rows inserted here by JS -->
-                            </tbody>
+                            <tbody id="proposal_table_body"></tbody>
                         </table>
                     </div>
                     <div id="proposal_empty_msg" class="p-8 text-center text-gray-500 hidden">
@@ -910,40 +889,29 @@
                     </div>
                 </div>
                 
-                <!-- Page 4 專屬的產生按鈕 -->
                 <div class="flex flex-col md:flex-row justify-between items-center mt-12 gap-4">
                     <button type="button" onclick="showPage('page-3')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-left"></i> 上一步
                     </button>
                     
-                    <!-- 新增：打包下載選取計畫書 (ZIP) -->
                     <button type="button" onclick="downloadSelectedProposals()" id="bulkDownloadBtn" class="btn-generate w-full md:w-80 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3">
                         <i class="fa-solid fa-file-zipper"></i> 打包下載選取計畫書 (ZIP)
                     </button>
 
-                    <!-- Primary action button: 產生計畫書文件 (整批生成，但建議使用打包下載) -->
                     <button type="button" onclick="generateProposalDoc()" id="genProposalBtn" class="btn-generate w-64 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3 hidden">
                         <i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)
                     </button>
                 </div>
             </div>
-
-            <!-- 隱藏的整體重置按鈕 -->
-            <div class="hidden">
-                 <button type="button" onclick="resetForm()" id="resetBtn" class="btn-reset w-full px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-rotate-right"></i> 清除重填 (hidden)
-                </button>
-            </div>
         </form>
     </main>
 
-    <!-- 頁尾版權宣告 (縮小字級) -->
     <footer>
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.55 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.56 (Debug Mode) | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -951,11 +919,48 @@
 
     <!-- JS 邏輯 -->
     <script>
-        // 全域變數，用於儲存學生基礎資料和 Page 4 輸入的資料
         let studentDataState = [];
         
-        // V1.0.55 修正: 改回相對路徑，與合約書一致，確保在同目錄下可讀取
-        const PROPOSAL_TEMPLATE_URL = './template_plan.docx';
+        // --- 核心工具：清洗 XML (解決 ReferenceError 問題) ---
+        function cleanXML(xml) {
+            if (!xml) return "";
+            const pattern = /%%%[^%]+%%%/g;
+            return xml.replace(pattern, function(match) {
+                return match.replace(/<\/?[^>]+(>|$)/g, "");
+            });
+        }
+
+        // --- DEBUG: 上傳測試範本 ---
+        let debugContractBuffer = null;
+        let debugProposalBuffer = null;
+
+        function handleDebugUpload(event, type) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if(type === 'contract') {
+                    debugContractBuffer = e.target.result;
+                    document.getElementById('debug_contract_status').classList.add('show');
+                } else {
+                    debugProposalBuffer = e.target.result;
+                    document.getElementById('debug_proposal_status').classList.add('show');
+                }
+                showMsg("測試範本載入成功，請進行文件產出");
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // 取得範本 (優先使用 Debug)
+        async function getTemplateBuffer(type) {
+            if (type === 'contract' && debugContractBuffer) return debugContractBuffer;
+            if (type === 'proposal' && debugProposalBuffer) return debugProposalBuffer;
+
+            const url = type === 'contract' ? './template.docx' : './template_plan.docx';
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`找不到 ${url}（請確認檔案是否存在於根目錄）`);
+            return await resp.arrayBuffer();
+        }
 
         function autoJump(current, maxLen, nextId) {
             if (current.value.length >= maxLen) {
@@ -964,7 +969,6 @@
             }
         }
 
-        // 簡化 showMsg，只用於右下角狀態列（例如：下載成功）
         function showMsg(msg) {
             const el = document.getElementById('status-bar');
             el.innerText = msg;
@@ -972,17 +976,14 @@
             setTimeout(() => { el.style.display = 'none'; }, 4000);
         }
 
-        // 多功能彈窗 Modal
         function showModal(title, message, style = 'error') { 
             const modal = document.getElementById('error-modal');
             const content = document.getElementById('error-details');
             const header = document.getElementById('modal-header-title');
             const icon = document.getElementById('modal-header-icon');
 
-            // Reset color classes
             header.classList.remove('text-red-600', 'text-yellow-600', 'text-blue-600', 'text-gray-600');
             
-            // Set style based on type
             let iconClass = 'fa-solid ';
             if (style === 'error') {
                 header.classList.add('text-red-600');
@@ -990,7 +991,7 @@
             } else if (style === 'info') {
                 header.classList.add('text-blue-600');
                 iconClass += 'fa-circle-info';
-            } else if (style === 'warning') { // 用於查無資料的提示
+            } else if (style === 'warning') {
                 header.classList.add('text-yellow-600');
                 iconClass += 'fa-triangle-exclamation';
             } else { 
@@ -998,25 +999,17 @@
                 iconClass += 'fa-circle-info';
             }
 
-            // 修正: 確保 icon 元素存在才設定 className
-            if (icon) {
-                icon.className = iconClass;
-            }
-            // 標題應該一直存在，但保險起見也更新
-            if (header) {
-                 header.innerHTML = `<i class="${iconClass}"></i> ${title}`;
-            }
+            if (icon) icon.className = iconClass;
+            if (header) header.innerHTML = `<i class="${iconClass}"></i> ${title}`;
             
             content.textContent = message;
             modal.style.display = 'flex';
         }
 
-        // 重新定義 showError (使用新的 showModal)
         function showError(details) {
             showModal('發生錯誤', details, 'error');
         }
 
-        // 查無資料專用提示 (使用 warning 樣式)
         function showQueryInfo(message) {
             showModal('提示', message, 'warning');
         }
@@ -1025,38 +1018,24 @@
             document.getElementById('error-modal').style.display = 'none';
         });
 
-        // ----------------------------------------------------
-        // V1.0.47/V1.0.51: 核心函式定義 (全部移到頂層)
-        // ----------------------------------------------------
-
-        // V1.0.25 變更: 頁面切換邏輯
         function showPage(pageId) {
             const pages = document.querySelectorAll('.page-content');
             const tabs = document.querySelectorAll('.tab-button');
-
             pages.forEach(page => page.classList.add('hidden'));
             tabs.forEach(tab => tab.classList.remove('active'));
-
             document.getElementById(pageId).classList.remove('hidden');
             document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-            
-            // 如果切換到 Page 4，則更新表格
             if (pageId === 'page-4') {
-                // 必須先從 Page 2 收集最新的學生資料
                 collectStudentDataFromPage2();
                 renderProposalTable();
             }
         }
         
-        // V1.0.25 變更: 收集 Page 2 學生基礎資料至 state
         function collectStudentDataFromPage2() {
             const sCount = Number(document.getElementById('student_count').value) || 1;
             const tempStudentData = [];
             for (let i = 0; i < sCount; i++) {
-                // 確保讀取現有的 Page 4 數據，如果存在
                 const existingState = studentDataState.find(s => s.index === i) || {};
-
-                // V1.0.26: 讀取新的分組輸入
                 const gradeInput = document.getElementById(`s_grade_${i}`)?.value || "";
                 const gradeText = gradeInput.trim() ? `${gradeInput}年級` : "";
 
@@ -1064,13 +1043,10 @@
                     index: i,
                     name: document.getElementById(`s_name_${i}`)?.value || "",
                     dept: document.getElementById(`s_dept_${i}`)?.value || "",
-                    grade: gradeText, // V1.0.26: 帶入年級文字
-                    raw_grade: gradeInput, // V1.0.26: 儲存原始數字
+                    grade: gradeText,
+                    raw_grade: gradeInput,
                     id: document.getElementById(`s_id_${i}`)?.value || "",
-                    // V1.0.42 新增：選取狀態
                     isSelected: existingState.isSelected === undefined ? true : existingState.isSelected,
-
-                    // Page 4 欄位 (保留 existingState 中的值)
                     teacher_name: existingState.teacher_name || "",
                     course_name: existingState.course_name || "",
                     semester: existingState.semester || "",
@@ -1082,54 +1058,39 @@
             studentDataState = tempStudentData;
         }
 
-        // 渲染學生欄位 (Page 2 - V1.0.28 4欄佈局, V1.0.39 刪除按鈕)
         function renderStudents() {
             const count = Number(document.getElementById('student_count').value) || 1;
             const c = document.getElementById('student_container');
-            
-            // 先保存舊的 input 數據到狀態中
             collectStudentDataFromPage2();
+            while (c.children.length > count) c.removeChild(c.lastChild);
 
-            // 移除多餘的元素
-            while (c.children.length > count) {
-                c.removeChild(c.lastChild);
-            }
-
-            // 創建或更新元素
             const currentChildren = c.children.length;
             if (count > currentChildren) {
                 for (let i = currentChildren; i < count; i++) {
                     const wrapper = document.createElement('div');
-                    // V1.0.39: 為每個學生新增 data-index 屬性和刪除按鈕 (使用 student-wrapper 類名來定義 hover 樣式)
                     wrapper.className = "student-wrapper p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
                     wrapper.setAttribute('data-index', i);
                     
-                    // V1.0.28: 4 欄佈局，獨立標籤
                     wrapper.innerHTML = `
                         <div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">
                             學生 ${i+1}
                         </div>
-                        <!-- V1.0.39: 刪除按鈕，通過 CSS 實現 hover 效果 -->
                         <button type="button" onclick="deleteStudent(${i})" class="delete-student-btn" aria-label="刪除學生 ${i+1}">
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-4 mt-2">
-                            <!-- 姓名 (Col 1) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">姓名 <span class="text-red-500">*</span></label>
                                 <input type="text" id="s_name_${i}" class="input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.name || ''}">
                             </div>
-                            <!-- 學號 (Col 2) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">學號 <span class="text-red-500">*</span></label>
                                 <input type="text" id="s_id_${i}" class="input-field" placeholder="例：S1181000" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.id || ''}">
                             </div>
-                            <!-- 系所 (Col 3) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">系所 <span class="text-red-500">*</span></label>
                                 <input type="text" id="s_dept_${i}" class="input-field" placeholder="例：法律系" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.dept || ''}">
                             </div>
-                            <!-- 年級 (Col 4 - 使用 grade-input-group 確保等高) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">年級 <span class="text-red-500">*</span></label>
                                 <div class="grade-input-group w-full">
@@ -1143,34 +1104,24 @@
                 }
             } 
             
-            // 重新整理學生列表時，確保現有元素的 data-index 和內容正確
             const currentWrappers = c.querySelectorAll('.student-wrapper');
             currentWrappers.forEach((wrapper, index) => {
                 wrapper.setAttribute('data-index', index);
-                // 更新標題的數字 (學生 1, 學生 2...)
                 const titleEl = wrapper.querySelector('.absolute.-top-3.-left-2');
-                if (titleEl) {
-                    titleEl.innerHTML = `學生 ${index + 1}`;
-                }
-                
-                // 更新刪除按鈕的 index
+                if (titleEl) titleEl.innerHTML = `學生 ${index + 1}`;
                 const deleteBtn = wrapper.querySelector('.delete-student-btn');
                 if (deleteBtn) {
                     deleteBtn.setAttribute('onclick', `deleteStudent(${index})`);
                     deleteBtn.setAttribute('aria-label', `刪除學生 ${index + 1}`);
                 }
-
-                // V1.0.39: 重新賦值（因為 splice 會改變索引）
                 document.getElementById(`s_name_${index}`).value = studentDataState[index]?.name || '';
                 document.getElementById(`s_id_${index}`).value = studentDataState[index]?.id || '';
                 document.getElementById(`s_dept_${index}`).value = studentDataState[index]?.dept || '';
                 document.getElementById(`s_grade_${index}`).value = studentDataState[index]?.raw_grade || '';
             });
-            
             collectStudentDataFromPage2();
         }
 
-        // 學生人數控制 (無上限)
         function changeStudentCount(delta) {
             const input = document.getElementById('student_count');
             let val = parseInt(input.value) || 1;
@@ -1179,38 +1130,25 @@
             input.value = val;
             document.getElementById('student_count_display').innerText = val + " 人";
             renderStudents();
-            // 每次人數變動都觸發 Page 4 的表格更新
             renderProposalTable();
         }
         
-        // V1.0.39 新增: 刪除學生功能
         function deleteStudent(indexToDelete) {
             let currentCount = Number(document.getElementById('student_count').value);
             if (currentCount <= 1) {
                 showModal("無法刪除", "至少需要保留一位學生。", 'warning');
                 return;
             }
-
-            // 1. 從狀態中移除該學生 (使用 index)
             studentDataState.splice(indexToDelete, 1);
-            
-            // 2. 更新人數
             currentCount -= 1;
             document.getElementById('student_count').value = currentCount;
             document.getElementById('student_count_display').innerText = currentCount + " 人";
-            
-            // 3. 重新渲染 Page 2 的欄位和 Page 4 的表格
             renderStudents();
             renderProposalTable();
         }
 
-        // V1.0.38: Excel upload functions
         function downloadExcelTemplate() {
-            const data = [
-                ['姓名', '學號', '系所', '年級'],
-                ['王小明', 'S1181000', '法律系', '四'],
-                ['陳小華', 'S1181001', '社會系', '三']
-            ];
+            const data = [['姓名', '學號', '系所', '年級'], ['王小明', 'S1181000', '法律系', '四'], ['陳小華', 'S1181001', '社會系', '三']];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "學生名單");
@@ -1220,7 +1158,6 @@
         function handleExcelUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -1228,58 +1165,35 @@
                     const workbook = XLSX.read(data, {type: 'array'});
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    // 轉換為 JSON，header: 1 表示輸出為二維陣列
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-                    
-                    // 移除標題列
                     if (jsonData.length > 0) jsonData.shift();
                     
-                    // 過濾空行並格式化數據
                     const validStudents = jsonData.filter(row => row.length > 0 && row[0]).map(row => ({
-                        name: row[0] || "",
-                        id: row[1] || "",
-                        dept: row[2] || "",
-                        grade: row[3] || "" // 假設 Excel 填寫的是數字 '四' 或 '4'
+                        name: row[0] || "", id: row[1] || "", dept: row[2] || "", grade: row[3] || ""
                     }));
 
                     if (validStudents.length === 0) {
                         showError("Excel 檔案中沒有有效的學生資料。");
                         return;
                     }
-
-                    // 更新人數
                     document.getElementById('student_count').value = validStudents.length;
                     document.getElementById('student_count_display').innerText = validStudents.length + " 人";
-                    
-                    // 重新渲染欄位
                     renderStudents();
-                    
-                    // 填入數據
                     validStudents.forEach((s, i) => {
                         const nameInput = document.getElementById(`s_name_${i}`);
                         const idInput = document.getElementById(`s_id_${i}`);
                         const deptInput = document.getElementById(`s_dept_${i}`);
                         const gradeInput = document.getElementById(`s_grade_${i}`);
-                        
                         if(nameInput) nameInput.value = s.name;
                         if(idInput) idInput.value = s.id;
                         if(deptInput) deptInput.value = s.dept;
                         if(gradeInput) gradeInput.value = s.grade;
                     });
-
-                    // 更新全域狀態
                     collectStudentDataFromPage2();
-                    // 更新 Page 4 表格
                     renderProposalTable();
-                    
                     showMsg(`成功匯入 ${validStudents.length} 筆學生資料！`);
-                    
-                    // 重置 input 讓同個檔案可以再次觸發 change 事件
                     event.target.value = '';
-
                 } catch (error) {
-                    console.error(error);
                     showError("Excel 解析失敗，請確認格式是否正確。\n" + error.message);
                 }
             };
@@ -1298,23 +1212,16 @@
         function toggleType() {
             const tEl = document.querySelector('input[name="contract_type"]:checked');
             const t = tEl ? tEl.value : null;
-            
             const panelInit = document.getElementById('panel_initial');
             const panelLearn = document.getElementById('panel_learn');
             const panelWork = document.getElementById('panel_work');
             
             if (t === 'learn') {
-                panelInit.classList.add('hidden');
-                panelLearn.classList.remove('hidden');
-                panelWork.classList.add('hidden');
+                panelInit.classList.add('hidden'); panelLearn.classList.remove('hidden'); panelWork.classList.add('hidden');
             } else if (t === 'work') {
-                panelInit.classList.add('hidden');
-                panelLearn.classList.add('hidden');
-                panelWork.classList.remove('hidden');
+                panelInit.classList.add('hidden'); panelLearn.classList.add('hidden'); panelWork.classList.remove('hidden');
             } else {
-                panelInit.classList.remove('hidden');
-                panelLearn.classList.add('hidden');
-                panelWork.classList.add('hidden');
+                panelInit.classList.remove('hidden'); panelLearn.classList.add('hidden'); panelWork.classList.add('hidden');
             }
             togglePayInputs();
         }
@@ -1324,117 +1231,70 @@
                 const optEl = document.getElementById(prefix + '_opt');
                 const wrapperEl = document.getElementById(prefix + '_cost_wrapper');
                 const v = optEl ? optEl.value : 'none';
-                
                 if (v === 'paid' || v === 'subsidy') wrapperEl.classList.remove('hidden');
                 else wrapperEl.classList.add('hidden');
             } catch (e) { console.warn(e); }
         }
 
-        // 實習地點鎖定/解鎖邏輯
         function toggleBranchFields() {
             const isHeadOffice = document.getElementById('is_head_office').checked;
             const wrapper = document.getElementById('branch_fields_wrapper');
             const branchName = document.getElementById('branch_name');
             const branchAddr = document.getElementById('branch_addr');
-
             if (isHeadOffice) {
-                // 鎖定狀態
                 wrapper.classList.add('opacity-50', 'pointer-events-none');
-                branchName.disabled = true;
-                branchAddr.disabled = true;
-                // 清空欄位以確保合約中不會帶入舊資料
-                branchName.value = '';
-                branchAddr.value = '';
-                // 移除錯誤標記
-                branchName.classList.remove('input-error');
-                branchAddr.classList.remove('input-error');
+                branchName.disabled = true; branchAddr.disabled = true;
+                branchName.value = ''; branchAddr.value = '';
+                branchName.classList.remove('input-error'); branchAddr.classList.remove('input-error');
             } else {
-                // 解鎖狀態
                 wrapper.classList.remove('opacity-50', 'pointer-events-none');
-                branchName.disabled = false;
-                branchAddr.disabled = false;
+                branchName.disabled = false; branchAddr.disabled = false;
             }
         }
 
-        // 處理無設立字號選項的連動邏輯
         function toggleTaxIdFields() {
             const noTaxIdChecked = document.getElementById('no_tax_id').checked;
             const taxIdInput = document.getElementById('company_tax_id');
             const queryBtn = document.getElementById('queryBtn');
             const inputGroup = document.getElementById('tax_id_input_group');
-
             if (noTaxIdChecked) {
-                // 鎖定狀態
                 inputGroup.classList.add('opacity-50', 'pointer-events-none');
-                taxIdInput.disabled = true;
-                queryBtn.disabled = true;
-                
-                // 清空統編，確保合約寫入「實習機構未申請設立字號」
-                taxIdInput.value = '';
-                
+                taxIdInput.disabled = true; queryBtn.disabled = true; taxIdInput.value = '';
             } else {
-                // 解鎖狀態
                 inputGroup.classList.remove('opacity-50', 'pointer-events-none');
-                taxIdInput.disabled = false;
-                
-                // 恢復查詢按鈕的狀態 (根據當前輸入內容)
-                updateQueryButtonState(); 
+                taxIdInput.disabled = false; updateQueryButtonState(); 
             }
         }
 
-        // V1.0.42 新增: 切換單一學生選取狀態
         function toggleStudentSelection(index) {
-            if (studentDataState[index]) {
-                studentDataState[index].isSelected = !studentDataState[index].isSelected;
-            }
-            // 檢查是否需要更新全選按鈕狀態
+            if (studentDataState[index]) studentDataState[index].isSelected = !studentDataState[index].isSelected;
             updateSelectAllCheckbox();
         }
 
-        // V1.0.42 新增: 全選/反選
         function toggleSelectAll(checkbox) {
             const isChecked = checkbox.checked;
-            studentDataState = studentDataState.map(s => ({
-                ...s,
-                isSelected: isChecked
-            }));
-            // 重新渲染表格以反映選取狀態
+            studentDataState = studentDataState.map(s => ({ ...s, isSelected: isChecked }));
             renderProposalTable(false);
         }
 
-        // V1.0.42 新增: 更新全選核取方塊的狀態
         function updateSelectAllCheckbox() {
             const selectAll = document.getElementById('select_all_proposals');
             if (!selectAll) return;
-
             const totalStudents = studentDataState.length;
             const selectedStudents = studentDataState.filter(s => s.isSelected).length;
-
-            if (totalStudents === 0) {
-                selectAll.checked = false;
-                selectAll.indeterminate = false;
-            } else if (selectedStudents === totalStudents) {
-                selectAll.checked = true;
-                selectAll.indeterminate = false;
-            } else if (selectedStudents > 0) {
-                selectAll.checked = false;
-                selectAll.indeterminate = true;
-            } else {
-                selectAll.checked = false;
-                selectAll.indeterminate = false;
-            }
+            if (totalStudents === 0) { selectAll.checked = false; selectAll.indeterminate = false; }
+            else if (selectedStudents === totalStudents) { selectAll.checked = true; selectAll.indeterminate = false; }
+            else if (selectedStudents > 0) { selectAll.checked = false; selectAll.indeterminate = true; }
+            else { selectAll.checked = false; selectAll.indeterminate = false; }
         }
 
-        // V1.0.25 變更: 渲染 Page 4 計畫書資料表格
         function renderProposalTable(restoreSelection = true) {
             const tableBody = document.getElementById('proposal_table_body');
             const studentCountDisplay = document.getElementById('proposal_student_count');
             const emptyMsg = document.getElementById('proposal_empty_msg');
-            
             collectStudentDataFromPage2();
             const students = studentDataState;
             const count = students.length;
-
             studentCountDisplay.textContent = count;
             tableBody.innerHTML = '';
 
@@ -1446,48 +1306,30 @@
             emptyMsg.classList.add('hidden');
             document.getElementById('select_all_proposals').disabled = false;
 
-
             students.forEach((s, i) => {
                 const tr = document.createElement('tr');
                 tr.id = `proposal_row_${i}`;
                 tr.className = "border-b border-gray-100 hover:bg-yellow-50/50 transition";
-                
-                // 檢查是否需要還原選取狀態 (在 renderStudents 時狀態可能變動，這裡需要確保表格選取狀態正確)
                 const isSelected = students[i].isSelected;
 
-                // V1.0.44: 課程名稱和時數說明改為 textarea
                 tr.innerHTML = `
-                    <!-- 選取欄 -->
                     <td class="text-center">
                         <input type="checkbox" data-index="${i}" onchange="toggleStudentSelection(${i})" class="proposal-select-checkbox w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue" ${isSelected ? 'checked' : ''}>
                     </td>
-
-                    <!-- 姓名 / 學號 -->
                     <td class="text-center font-bold text-xs-force">
                         <div class="font-bold">${s.name}</div>
                         <div class="text-gray-500">${s.id}</div>
                     </td>
-                    <!-- 系所 / 年級 -->
                     <td class="text-xs-force">
                         <div>${s.dept}</div>
                         <div class="text-gray-500">${s.grade}</div>
                     </td>
-                    
-                    <!-- 輔導老師 -->
                     <td class="p-0 py-1"><input type="text" id="p_teacher_name_${i}" data-field="teacher_name" class="input-field p-1 text-sm h-8" value="${s.teacher_name}" placeholder="姓名"></td>
-                    
-                    <!-- 課程名稱 (Textarea) -->
                     <td class="p-0 py-1">
                         <textarea id="p_course_name_${i}" data-field="course_name" class="input-field proposal-textarea text-sm" placeholder="課程名稱 (可換行填寫)">${s.course_name}</textarea>
                     </td>
-
-                    <!-- 學期 -->
                     <td class="p-0 py-1"><input type="text" id="p_semester_${i}" data-field="semester" class="input-field p-1 text-sm h-8" value="${s.semester}" placeholder="113-1"></td>
-                    
-                    <!-- 學分 -->
                     <td class="p-0 py-1"><input type="number" id="p_credits_${i}" data-field="credits" class="input-field p-1 text-sm h-8" value="${s.credits}" placeholder="3"></td>
-
-                    <!-- 實習類別 Dropdown -->
                     <td>
                         <select id="p_intern_type_select_${i}" data-field="intern_type_select" class="input-field text-xs-force h-8 p-1">
                             <option value="" disabled selected>請選擇</option>
@@ -1499,13 +1341,9 @@
                         </select>
                         <div class="text-red-500 font-bold text-xs-force mt-1" id="p_type_error_${i}"></div>
                     </td>
-                    
-                    <!-- 時數說明 (Textarea) -->
                     <td class="p-0 py-1">
-                        <textarea id="p_hours_exceeded_desc_${i}" data-field="hours_exceeded_desc" class="input-field proposal-textarea text-sm" placeholder="選填 (可換行填寫)">${s.hours_exceeded_desc}</textarea>
+                        <textarea id="p_hours_exceeded_desc_${i}" data-field="hours_exceeded_desc" class="input-field proposal-textarea text-sm" placeholder="選填">${s.hours_exceeded_desc}</textarea>
                     </td>
-                    
-                    <!-- 個別下載按鈕 -->
                     <td class="text-center">
                         <button type="button" onclick="downloadIndividualProposal(${i})" class="bg-thuGold text-thuBlue text-xs font-bold px-3 py-1.5 rounded hover:bg-thuGold/80 transition shadow-sm">
                             <i class="fa-solid fa-download"></i> 下載
@@ -1514,7 +1352,6 @@
                 `;
                 tableBody.appendChild(tr);
 
-                // 綁定事件監聽器，確保 Page 4 的輸入能更新到 State (只在迴圈內綁定，確保事件正確)
                 document.getElementById(`p_teacher_name_${i}`)?.addEventListener('input', updateProposalDataState);
                 document.getElementById(`p_course_name_${i}`)?.addEventListener('input', updateProposalDataState);
                 document.getElementById(`p_semester_${i}`)?.addEventListener('input', updateProposalDataState);
@@ -1522,999 +1359,390 @@
                 document.getElementById(`p_intern_type_select_${i}`)?.addEventListener('change', updateProposalDataState);
                 document.getElementById(`p_hours_exceeded_desc_${i}`)?.addEventListener('input', updateProposalDataState);
             });
-            
-            // 更新全選按鈕狀態
             updateSelectAllCheckbox();
         }
 
-        // Page 4 輸入時更新 State (處理單選)
         function updateProposalDataState() {
-            // 遍歷所有學生行
             studentDataState.forEach((s, i) => {
                 const row = document.getElementById(`proposal_row_${i}`);
                 if (!row) return;
-
-                // 收集單行輸入
-                const fields = ['teacher_name', 'semester', 'credits'];
-                fields.forEach(field => {
-                    const input = document.getElementById(`p_${field}_${i}`);
-                    if (input) s[field] = input.value;
+                ['teacher_name', 'semester', 'credits'].forEach(f => {
+                    const input = document.getElementById(`p_${f}_${i}`);
+                    if (input) s[f] = input.value;
                 });
-                
-                // 收集 Textarea
-                const textareaFields = ['course_name', 'hours_exceeded_desc'];
-                textareaFields.forEach(field => {
-                    const textarea = document.getElementById(`p_${field}_${i}`);
-                    if (textarea) s[field] = textarea.value;
+                ['course_name', 'hours_exceeded_desc'].forEach(f => {
+                    const textarea = document.getElementById(`p_${f}_${i}`);
+                    if (textarea) s[f] = textarea.value;
                 });
-                
-                // 收集 Dropdown
                 const selectEl = document.getElementById(`p_intern_type_select_${i}`);
-                if (selectEl) {
-                    s.intern_type_select = selectEl.value;
-                }
+                if (selectEl) s.intern_type_select = selectEl.value;
             });
         }
         
-        // ----------------------------------------------------
-        // 核心狀態切換函式結束
-        // ----------------------------------------------------
-
-
-        // 根據輸入內容鎖定/解鎖查詢按鈕 (如果「無設立字號」未勾選)
         function updateQueryButtonState() {
             const taxIdInput = document.getElementById('company_tax_id');
             const queryBtn = document.getElementById('queryBtn');
             const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-
-            // 如果已經勾選「無設立字號」，則強制按鈕禁用，並直接返回
             if (noTaxIdChecked) {
-                 queryBtn.disabled = true;
-                 queryBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                 return;
+                 queryBtn.disabled = true; queryBtn.classList.add('opacity-50', 'cursor-not-allowed'); return;
             }
-
             const taxId = taxIdInput.value.trim();
-            
-            // 檢查是否為 exactly 8 digits
             const isTaxId = /^\d{8}$/.test(taxId);
-
             if (isTaxId) {
-                queryBtn.disabled = false;
-                queryBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                queryBtn.disabled = false; queryBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
-                queryBtn.disabled = true;
-                queryBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                queryBtn.disabled = true; queryBtn.classList.add('opacity-50', 'cursor-not-allowed');
             }
         }
 
-
-        // 驗證表單 (V1.0.25: 分為合約 Page 3 和計畫書 Page 4 檢查)
         function validateForm(isProposal = false) {
             let isValid = true;
             let errorMsg = "";
-            
-            // 清除上次的錯誤標記
             document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200'));
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
             document.querySelectorAll('.text-red-500.font-bold.text-xs-force').forEach(el => el.textContent = '');
             
-            // =========================================================================
-            // 1. 學生基礎資料檢查 (Page 2)
-            // =========================================================================
             const students = studentDataState;
             let studentErrorCount = 0;
             
             students.forEach((s, i) => {
                 const prefix = `s_`;
-                const fields = [
-                    { id: `${prefix}name_${i}`, name: '姓名' },
-                    { id: `${prefix}id_${i}`, name: '學號' },
-                    { id: `${prefix}dept_${i}`, name: '系所' },
-                    { id: `${prefix}grade_${i}`, name: '年級' }
-                ];
-                
+                const fields = [{ id: `${prefix}name_${i}`, name: '姓名' }, { id: `${prefix}id_${i}`, name: '學號' }, { id: `${prefix}dept_${i}`, name: '系所' }, { id: `${prefix}grade_${i}`, name: '年級' }];
                 fields.forEach(field => {
                     const el = document.getElementById(field.id);
-                    // 注意：這裡檢查的是原始輸入值，避免檢查帶有「年級」文字的 grade 
                     let value = el ? el.value.trim() : ''; 
-                    
-                    if (!value) {
-                        el?.classList.add('input-error');
-                        isValid = false;
-                        studentErrorCount++;
-                    }
+                    if (!value) { el?.classList.add('input-error'); isValid = false; studentErrorCount++; }
                 });
             });
 
-            if (studentErrorCount > 0) {
-                errorMsg += `• 實習學生資料 (Page 2) 共有 ${studentErrorCount} 個必填欄位未填寫。\n`;
-            }
+            if (studentErrorCount > 0) errorMsg += `• 實習學生資料 (Page 2) 共有 ${studentErrorCount} 個必填欄位未填寫。\n`;
 
-            // 如果只生成計畫書，則跳過合約部分的檢查，並強制要求計畫書欄位完整
             if (!isProposal) {
-                
-                // =========================================================================
-                // 2. 合約資料檢查 (Page 3)
-                // =========================================================================
-
-                // 檢查機構必填欄位
-                const requiredFields = [
-                    { id: 'company_name', name: '機構全銜' },
-                    { id: 'company_rep', name: '代表人姓名' },
-                    { id: 'company_title', name: '代表人職稱' },
-                    { id: 'reg_address', name: '公司登記地址' }
-                ];
-
+                const requiredFields = [{ id: 'company_name', name: '機構全銜' }, { id: 'company_rep', name: '代表人姓名' }, { id: 'company_title', name: '代表人職稱' }, { id: 'reg_address', name: '公司登記地址' }];
                 requiredFields.forEach(field => {
                     const el = document.getElementById(field.id);
-                    if (!el || !el.value.trim()) {
-                        el.classList.add('input-error');
-                        isValid = false;
-                        errorMsg += `• 請填寫 ${field.name}\n`;
-                    }
+                    if (!el || !el.value.trim()) { el.classList.add('input-error'); isValid = false; errorMsg += `• 請填寫 ${field.name}\n`; }
                 });
 
-                // 檢查分公司地址（如果沒有勾選總公司）
                 if (!document.getElementById('is_head_office').checked) {
-                    const branchFields = [
-                        { id: 'branch_name', name: '實習單位/分公司名稱' },
-                        { id: 'branch_addr', name: '實際實習地址' }
-                    ];
+                    const branchFields = [{ id: 'branch_name', name: '實習單位/分公司名稱' }, { id: 'branch_addr', name: '實際實習地址' }];
                     branchFields.forEach(field => {
                         const el = document.getElementById(field.id);
-                        if (!el || !el.value.trim()) {
-                            el.classList.add('input-error');
-                            isValid = false;
-                            errorMsg += `• 請填寫 ${field.name}\n`;
-                        }
+                        if (!el || !el.value.trim()) { el.classList.add('input-error'); isValid = false; errorMsg += `• 請填寫 ${field.name}\n`; }
                     });
                 }
-
-                // 檢查實習期間
                 const dateFields = ['start_y', 'start_m', 'start_d', 'end_y', 'end_m', 'end_d'];
                 dateFields.forEach(id => {
                     const el = document.getElementById(id);
-                    if (!el || !el.value.trim()) {
-                        el.classList.add('input-error');
-                        isValid = false;
-                        errorMsg += `• 請填寫完整的實習期間\n`;
-                    }
+                    if (!el || !el.value.trim()) { el.classList.add('input-error'); isValid = false; errorMsg += `• 請填寫完整的實習期間\n`; }
                 });
                 
-                // 檢查實習類型 (卡片 4)
                 const contractType = document.querySelector('input[name="contract_type"]:checked');
                 if (!contractType) {
-                    document.getElementById('type-section').classList.add('bg-red-50', 'border-red-200');
-                    isValid = false;
-                    errorMsg += "• 請選擇實習類型\n";
+                    document.getElementById('type-section').classList.add('bg-red-50', 'border-red-200'); isValid = false; errorMsg += "• 請選擇實習類型\n";
                 } else {
-                    // 檢查薪資待遇
                     if (contractType.value === 'learn') {
                         const payOpt = document.querySelector('input[name="pay_opt_learn"]:checked');
                         if (!payOpt) {
-                            document.getElementById('pay-section').classList.add('bg-red-50', 'border-red-200');
-                            isValid = false;
-                            errorMsg += "• 請選擇學習型給付項目\n";
+                            document.getElementById('pay-section').classList.add('bg-red-50', 'border-red-200'); isValid = false; errorMsg += "• 請選擇學習型給付項目\n";
                         } else if (payOpt.value !== 'none') {
                             const amt = document.getElementById('learn_amount');
-                            if (!amt.value || Number(amt.value) <= 0) {
-                                amt.classList.add('input-error');
-                                isValid = false;
-                                errorMsg += "• 請輸入獎學金/津貼金額 (須大於 0)\n";
-                            }
+                            if (!amt.value || Number(amt.value) <= 0) { amt.classList.add('input-error'); isValid = false; errorMsg += "• 請輸入獎學金/津貼金額 (須大於 0)\n"; }
                         }
                     } else if (contractType.value === 'work') {
                         const amt = document.getElementById('work_amount');
-                        if (!amt.value || Number(amt.value) <= 0) {
-                            amt.classList.add('input-error');
-                            isValid = false;
-                            errorMsg += "• 請輸入薪資金額 (須大於 0)\n";
-                        }
+                        if (!amt.value || Number(amt.value) <= 0) { amt.classList.add('input-error'); isValid = false; errorMsg += "• 請輸入薪資金額 (須大於 0)\n"; }
                     }
                 }
-
-                // 檢查福利項目 (卡片 4)
                 ['dorm', 'food', 'trans'].forEach(p => {
                     const val = document.getElementById(p + '_opt').value;
-                    if (!val) {
-                        document.getElementById('welfare-section').classList.add('bg-red-50', 'border-red-200');
-                        isValid = false;
-                        errorMsg += `• 請選擇${p==='dorm'?'住宿':p==='food'?'膳食':'交通'}福利\n`;
-                    }
+                    if (!val) { document.getElementById('welfare-section').classList.add('bg-red-50', 'border-red-200'); isValid = false; errorMsg += `• 請選擇${p==='dorm'?'住宿':p==='food'?'膳食':'交通'}福利\n`; }
                 });
             }
 
-
-            // =========================================================================
-            // 3. 計畫書資料檢查 (Page 4) - 只在生成計畫書時才檢查
-            // =========================================================================
-            
-            // V1.0.53 修正: 只有 isProposal 為 true 時，才進行 Page 4 必填檢查
             if (isProposal && students.length > 0 && studentErrorCount === 0) {
                 let proposalErrorCount = 0;
-                // 我們只檢查被選取的學生
                 const selectedStudents = students.filter(s => s.isSelected);
-                
                 selectedStudents.forEach((s, i) => {
                     const fields = ['teacher_name', 'course_name', 'semester', 'credits'];
                     let studentHasError = false;
-
                     fields.forEach(field => {
-                        // 注意：這裡必須使用實際的 DOM ID，即使是 selectedStudents 也是從 DOM 獲取的
                         const input = document.getElementById(`p_${field}_${s.index}`);
-                        if (!input || !input.value.trim()) {
-                            input?.classList.add('input-error');
-                            studentHasError = true;
-                        }
+                        if (!input || !input.value.trim()) { input?.classList.add('input-error'); studentHasError = true; }
                     });
-                    
-                    // 檢查實習類別
                     const selectEl = document.getElementById(`p_intern_type_select_${s.index}`);
                     if (!selectEl || !selectEl.value.trim()) {
-                        selectEl?.classList.add('input-error');
-                        document.getElementById(`p_type_error_${s.index}`).textContent = '請選擇';
-                        studentHasError = true;
-                    } else {
-                        document.getElementById(`p_type_error_${s.index}`).textContent = '';
-                    }
-
-                    if (studentHasError) {
-                        proposalErrorCount++;
-                        isValid = false;
-                    }
+                        selectEl?.classList.add('input-error'); document.getElementById(`p_type_error_${s.index}`).textContent = '請選擇'; studentHasError = true;
+                    } else { document.getElementById(`p_type_error_${s.index}`).textContent = ''; }
+                    if (studentHasError) { proposalErrorCount++; isValid = false; }
                 });
-
-                if (proposalErrorCount > 0) {
-                    errorMsg += `• 學生實習計畫書 (Page 4) 共有 ${proposalErrorCount} 位選取的學生的必填欄位未填寫。\n`;
-                }
+                if (proposalErrorCount > 0) errorMsg += `• 學生實習計畫書 (Page 4) 共有 ${proposalErrorCount} 位選取的學生的必填欄位未填寫。\n`;
             }
 
-
-            if (!isValid) {
-                showError("請修正以下錯誤：\n" + errorMsg);
-            }
+            if (!isValid) showError("請修正以下錯誤：\n" + errorMsg);
             return isValid;
         }
 
-
-        // 透過統一編號查詢公司資料並自動填入表單
         async function getCompanyInfo() {
             const taxIdInput = document.getElementById('company_tax_id');
             const taxId = taxIdInput.value.trim();
-
-            // API URL: https://data.gcis.nat.gov.tw/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq {Business_Accounting_NO}&$skip={skip}&$top={top}
-            
-            // 由於瀏覽器 CORS 限制，使用 CORS 代理服務 (corsproxy.io) 來發送請求
             const originalApiURL = `https://data.gcis.nat.gov.tw/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq ${taxId}&$skip=0&$top=1`;
             const apiURL = `https://corsproxy.io/?${encodeURIComponent(originalApiURL)}`;
-
             const queryBtn = document.getElementById('queryBtn');
             const originalQueryBtnHtml = queryBtn.innerHTML;
-            
-            // 檢查統編格式 (8 碼) 在 updateQueryButtonState 中已完成，這裡只需要處理執行狀態
 
             try {
-                // 禁用按鈕並顯示載入狀態
-                queryBtn.disabled = true;
-                queryBtn.classList.add('btn-query-loading');
-                queryBtn.classList.remove('btn-query');
+                queryBtn.disabled = true; queryBtn.classList.add('btn-query-loading');
                 queryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 查詢中...';
-                
-                // 使用 exponential backoff 處理 API 呼叫 (最多 3 次，超時 10 秒)
-                let response;
-                const maxRetries = 3;
-                const timeoutDuration = 10000; // 10 seconds
-
+                let response; const maxRetries = 3; const timeoutDuration = 10000;
                 for (let i = 0; i < maxRetries; i++) {
                     try {
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
-
                         response = await fetch(apiURL, { signal: controller.signal });
                         clearTimeout(timeoutId);
-                        
                         if (response.ok) break; 
-                        
-                    } catch (error) {
-                        // 網路錯誤或超時錯誤，統一記錄為可預期錯誤
-                        if (error.name === 'AbortError' || error.message.includes('Failed to fetch')) {
-                            console.log("統編查詢發生可預期的錯誤 (已自動處理):", error);
-                        } else {
-                            // 其他未知錯誤，拋出
-                            throw error;
-                        }
-                        
-                        if (i === maxRetries - 1) throw new Error("API_NETWORK_ERROR");
-                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); 
-                    }
+                    } catch (error) { if (i === maxRetries - 1) throw new Error("API_NETWORK_ERROR"); await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); }
                 }
 
-                if (!response || !response.ok) {
-                    throw new Error("API_REQUEST_FAILED");
-                }
-
-                // 檢查內容類型，防止非 JSON 內容被 json() 解析
+                if (!response || !response.ok) throw new Error("API_REQUEST_FAILED");
                 const contentType = response.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
-                    // 如果不是 JSON，則可能是 CORS 代理回傳的錯誤頁面或空內容
-                    throw new Error("API_CONTENT_ERROR");
-                }
-                
+                if (!contentType || !contentType.includes("application/json")) throw new Error("API_CONTENT_ERROR");
                 const data = await response.json();
+                if (!data || data.length === 0) throw new Error("NO_DATA_FOUND");
 
-                if (!data || data.length === 0) {
-                    throw new Error("NO_DATA_FOUND");
-                }
-
-                // 取得第一個結果
                 const company = data[0];
-
-                // 提取所需欄位：Responsible_Name, Company_Name, Company_Location
-                const companyName = company.Company_Name || ""; // 機構全銜
-                const responsibleName = company.Responsible_Name || ""; // 代表人姓名
-                const companyLocation = company.Company_Location || ""; // 公司登記地址
-
-                // 自動填入表單欄位
-                document.getElementById('company_name').value = companyName;
-                document.getElementById('company_rep').value = responsibleName;
-                document.getElementById('reg_address').value = companyLocation;
-                
-                // 清空實習地點，避免混淆
-                document.getElementById('branch_name').value = "";
-                document.getElementById('branch_addr').value = "";
-                
-                // V1.0.40 修正: 查詢成功時，不自動勾選「無設立字號」
-                document.getElementById('no_tax_id').checked = false;
-                toggleTaxIdFields(); // 解鎖統編欄位
-
-                showMsg(`「 ${companyName} 」公司資料已自動填入。`);
+                document.getElementById('company_name').value = company.Company_Name || "";
+                document.getElementById('company_rep').value = company.Responsible_Name || "";
+                document.getElementById('reg_address').value = company.Company_Location || "";
+                document.getElementById('branch_name').value = ""; document.getElementById('branch_addr').value = "";
+                document.getElementById('no_tax_id').checked = false; toggleTaxIdFields(); 
+                showMsg(`「 ${company.Company_Name} 」公司資料已自動填入。`);
 
             } catch (e) {
-                // 所有的錯誤，不論是網路、超時、解析失敗或查無資料，都統一提示「查無資料」
-                
-                if (e.name === 'AbortError' || e.message.includes('Failed to fetch') || e.message.includes('Failed to execute') || e.message.includes('API_NETWORK_ERROR') || e.message.includes('API_REQUEST_FAILED') || e.message.includes('API_CONTENT_ERROR') || e.message.includes('NO_DATA_FOUND')) {
+                if (e.name === 'AbortError' || e.message.includes('Failed to fetch') || e.message.includes('NO_DATA_FOUND')) {
                     showQueryInfo("查無資料，請手動填入相關欄位。");
-                    
-                    // 清空相關欄位
-                    document.getElementById('company_name').value = "";
-                    document.getElementById('company_rep').value = "";
-                    document.getElementById('reg_address').value = "";
-                    
+                    document.getElementById('company_name').value = ""; document.getElementById('company_rep').value = ""; document.getElementById('reg_address').value = "";
                 } else {
-                    // 拋出非預期的程式碼錯誤
                     showError(`非預期錯誤：${e.message || e}`);
-                    console.error("API Error:", e);
                 }
             } finally {
-                // 恢復查詢按鈕的狀態
-                queryBtn.classList.remove('btn-query-loading');
-                queryBtn.classList.add('btn-query');
-                queryBtn.innerHTML = originalQueryBtnHtml;
-                
-                // 恢復禁用狀態 (根據當前輸入內容決定是否啟用按鈕)
-                updateQueryButtonState();
+                queryBtn.classList.remove('btn-query-loading'); queryBtn.innerHTML = originalQueryBtnHtml; updateQueryButtonState();
             }
         }
 
-
-        // 產生合約文件主流程
         async function generateDoc() {
             if (!validateForm(false)) return;
-
             const btn = document.getElementById('genContractBtn');
             try {
-                if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined' || typeof saveAs === 'undefined') {
-                    showError("核心元件未載入", "核心元件未載入，請確認網路連線。");
-                    return;
-                }
-                showMsg("處理中...");
-                btn.disabled = true;
-                btn.classList.remove('btn-generate'); 
-                btn.classList.add('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
-
-                // 在產生文件前，強制從 Page 2/4 收集最新的學生資料 (包含 Page 4 的計畫書資訊)
-                collectStudentDataFromPage2();
-                updateProposalDataState(); // 確保 state 內有 Page 4 的數據
+                if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined' || typeof saveAs === 'undefined') { showError("核心元件未載入"); return; }
+                showMsg("處理中..."); btn.disabled = true; btn.classList.remove('btn-generate'); btn.classList.add('bg-gray-400', 'cursor-not-allowed'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
+                collectStudentDataFromPage2(); updateProposalDataState();
 
                 const data = {};
-                // --- 數據收集開始 ---
-                try {
-                    // 乙方：實習機構資料
-                    data.company_name = (document.getElementById('company_name')?.value || "未填寫");
-                    data.company_rep = (document.getElementById('company_rep')?.value || "");
-                    data.company_title = (document.getElementById('company_title')?.value || "");
-                    const regAddr = document.getElementById('reg_address')?.value || "";
-                    data.company_address = regAddr;
-                    
-                    // 設立字號處理
-                    const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-                    data.company_tax_id = (document.getElementById('company_tax_id')?.value || "").trim();
-                    if (noTaxIdChecked || !data.company_tax_id) {
-                        data.company_tax_id = "實習機構未申請設立字號";
+                data.company_name = (document.getElementById('company_name')?.value || "未填寫");
+                data.company_rep = (document.getElementById('company_rep')?.value || "");
+                data.company_title = (document.getElementById('company_title')?.value || "");
+                const regAddr = document.getElementById('reg_address')?.value || "";
+                data.company_address = regAddr;
+                const noTaxIdChecked = document.getElementById('no_tax_id').checked;
+                data.company_tax_id = noTaxIdChecked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "").trim();
+                const isHeadOffice = document.getElementById('is_head_office').checked;
+                const bname = isHeadOffice ? "" : document.getElementById('branch_name')?.value || "";
+                const baddr = isHeadOffice ? "" : document.getElementById('branch_addr')?.value || "";
+                data.intern_location = (bname && baddr) ? `${bname}（${baddr}）` : (baddr || regAddr);
+
+                data.s_y = document.getElementById('start_y')?.value || "   "; data.s_m = document.getElementById('start_m')?.value || "   "; data.s_d = document.getElementById('start_d')?.value || "   ";
+                data.e_y = document.getElementById('end_y')?.value || "   "; data.e_m = document.getElementById('end_m')?.value || "   "; data.e_d = document.getElementById('end_d')?.value || "   ";
+                data.daily_start = document.getElementById('daily_start')?.value || ""; data.daily_end = document.getElementById('daily_end')?.value || ""; data.daily_hours = document.getElementById('daily_hours')?.value || "";
+
+                const type = document.querySelector('input[name="contract_type"]:checked')?.value;
+                data.type_learn_check='□'; data.type_work_check='□'; data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□'; data.pay_learn_amount = ""; data.pay_work_amount = "";
+
+                if (type === 'learn') {
+                    data.type_learn_check = '■'; const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
+                    if (pOpt === 'none') { data.chk_pay_none = '■'; data.pay_learn_amount = "0"; }
+                    else {
+                        if (pOpt === 'scholar') data.chk_pay_scholar = '■'; else data.chk_pay_allowance = '■';
+                        const lam = Number(document.getElementById('learn_amount')?.value || 0); data.pay_learn_amount = lam ? lam.toLocaleString() : "";
                     }
-                    
-                    // 實習地點處理
-                    const isHeadOffice = document.getElementById('is_head_office').checked;
-                    const bname = isHeadOffice ? "" : document.getElementById('branch_name')?.value || "";
-                    const baddr = isHeadOffice ? "" : document.getElementById('branch_addr')?.value || "";
-                    if (bname && baddr) data.intern_location = `${bname}（${baddr}）`;
-                    else if (baddr) data.intern_location = baddr;
-                    else data.intern_location = regAddr;
+                } else {
+                    data.type_work_check = '■'; const wam = Number(document.getElementById('work_amount')?.value || 0); data.pay_work_amount = wam ? wam.toLocaleString() : "";
+                }
 
-
-                    // 實習期間與時間
-                    data.s_y = document.getElementById('start_y')?.value || "   ";
-                    data.s_m = document.getElementById('start_m')?.value || "   ";
-                    data.s_d = document.getElementById('start_d')?.value || "   ";
-                    data.e_y = document.getElementById('end_y')?.value || "   ";
-                    data.e_m = document.getElementById('end_m')?.value || "   ";
-                    data.e_d = document.getElementById('end_d')?.value || "   ";
-                    data.daily_start = document.getElementById('daily_start')?.value || "";
-                    data.daily_end = document.getElementById('daily_end')?.value || "";
-                    data.daily_hours = document.getElementById('daily_hours')?.value || "";
-
-
-                    // 實習類型與待遇福利
-                    const type = document.querySelector('input[name="contract_type"]:checked')?.value;
-                    data.type_learn_check='□'; data.type_work_check='□';
-                    data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□';
-                    data.pay_learn_amount = ""; data.pay_work_amount = "";
-                    // ... (待遇福利邏輯, 保持 V1.0.22 不變) ...
-
-                    if (type === 'learn') {
-                        data.type_learn_check = '■';
-                        const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
-                        if (pOpt === 'none') { data.chk_pay_none = '■'; data.pay_learn_amount = "0"; }
-                        else {
-                            if (pOpt === 'scholar') data.chk_pay_scholar = '■';
-                            else data.chk_pay_allowance = '■';
-                            const lam = Number(document.getElementById('learn_amount')?.value || 0);
-                            data.pay_learn_amount = lam ? lam.toLocaleString() : "";
-                        }
+                function setWelfare(prefix) {
+                    const opt = document.getElementById(prefix + '_opt')?.value || 'none';
+                    data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
+                    if (opt === 'none') data[`chk_${prefix}_none`] = '■'; else if (opt === 'free') data[`chk_${prefix}_free`] = '■';
+                    else if (prefix === 'trans' && opt === 'subsidy') {
+                         data.chk_trans_paid = '■'; const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
+                         data[`${prefix}_desc`] = val ? val.toLocaleString() : ""; data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
                     } else {
-                        data.type_work_check = '■';
-                        const wam = Number(document.getElementById('work_amount')?.value || 0);
-                        data.pay_work_amount = wam ? wam.toLocaleString() : "";
+                        data[`chk_${prefix}_paid`] = '■'; const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
+                        data[`${prefix}_desc`] = val ? val.toLocaleString() : ""; data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
                     }
-
-                    // 福利
-                    function setWelfare(prefix) {
-                        const opt = document.getElementById(prefix + '_opt')?.value || 'none';
-                        data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
-                        if (opt === 'none') data[`chk_${prefix}_none`] = '■';
-                        else if (opt === 'free') data[`chk_${prefix}_free`] = '■';
-                        else if (prefix === 'trans' && opt === 'subsidy') {
-                             data.chk_trans_paid = '■';
-                             const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
-                             data[`${prefix}_desc`] = val ? val.toLocaleString() : "";
-                             data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
-                        }
-                        else {
-                            data[`chk_${prefix}_paid`] = '■';
-                            const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
-                            data[`${prefix}_desc`] = val ? val.toLocaleString() : "";
-                            data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
-                        }
-                        if (!data[`${prefix}_desc`]) data[`${prefix}_desc`] = "";
-                    }
-                    setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
-
-
-                    // 甲方：學生資料 (使用 studentDataState，它包含了 Page 4 的資料)
-                    const sList = studentDataState.filter(s => s.name.trim());
-                    data.student_name = sList[0]?.name + (sList.length > 1 ? " 等" : "");
-                    
-                    const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-                    
-                    // 核心：準備 Docxtemplater 迴圈的 students 陣列
-                    data.students = sList.map((s, index) => ({
-                        letter: alphabet[index] || (index + 1),
-                        name: s.name,
-                        dept: s.dept,
-                        grade: s.grade, // 已經包含 '年級' 文字
-                        raw_grade: s.raw_grade,
-                        id: s.id,
-
-                        // Page 4 - 計畫書資料
-                        teacher_name: s.teacher_name || "",
-                        course_name: s.course_name || "",
-                        semester: s.semester || "",
-                        credits: s.credits || "",
-                        hours_exceeded_desc: s.hours_exceeded_desc || "",
-                        
-                        // Page 4 - 實習類別 Checkboxes (for loop context - 根據單選結果映射)
-                        intern_type_full: s.intern_type_select === 'full' ? '■' : '□',
-                        intern_type_sem: s.intern_type_select === 'sem' ? '■' : '□',
-                        intern_type_winter: s.intern_type_select === 'winter' ? '■' : '□',
-                        intern_type_summer: s.intern_type_select === 'summer' ? '■' : '□',
-                        intern_type_term: s.intern_type_select === 'term' ? '■' : '□',
-                    }));
-
-                    // 填補舊版固定標籤 (僅使用第一個學生的資料)
-                    data.s1_name = data.students[0]?.name || "";
-                    data.s2_name = data.students[1]?.name || "";
-                    data.s3_name = data.students[2]?.name || "";
-                    data.teacher_name = data.students[0]?.teacher_name || "";
-                    data.teacher_title = ""; // V1.0.22 移除，強制空字串
-                    data.course_name = data.students[0]?.course_name || "";
-                    data.semester = data.students[0]?.semester || "";
-                    data.credits = data.students[0]?.credits || "";
-                    data.hours_exceeded_desc = data.students[0]?.hours_exceeded_desc || "";
-                    data.intern_type_full = data.students[0]?.intern_type_full || '□';
-                    data.intern_type_sem = data.students[0]?.intern_type_sem || '□';
-                    data.intern_type_winter = data.students[0]?.intern_type_winter || '□';
-                    data.intern_type_summer = data.students[0]?.intern_type_summer || '□';
-                    data.intern_type_term = data.students[0]?.intern_type_term || '□';
-
-                } catch (e) {
-                    showError("資料收集錯誤：" + e.message);
-                    return; 
+                    if (!data[`${prefix}_desc`]) data[`${prefix}_desc`] = "";
                 }
+                setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
 
-                // --- Docxtemplater 產生流程 ---
-                // ... (保持不變) ...
-                let arrayBuffer;
-                try {
-                    const resp = await fetch('./template.docx'); 
-                    if (!resp.ok) throw new Error('找不到 template.docx（請確認檔案是否存在於根目錄）');
-                    arrayBuffer = await resp.arrayBuffer();
-                } catch (e) {
-                    showError("讀取內建範本失敗：" + e.message);
-                    return;
-                }
-
-                let zip;
-                try {
-                    zip = new PizZip(arrayBuffer);
-                } catch (e) {
-                    showError("範本格式錯誤：" + e.message);
-                    return;
-                }
-
-                try {
-                    const docFile = zip.file("word/document.xml");
-                    if (docFile) {
-                        const raw = docFile.asText();
-                        const cleaned = cleanXML(raw);
-                        zip.file("word/document.xml", cleaned);
-                    }
-                } catch (e) { console.warn("XML 清洗失敗，可能影響渲染", e); }
-
-                try {
-                    const Docxtemplater = window.docxtemplater || docxtemplater;
-                    const doc = new Docxtemplater(zip, {
-                        paragraphLoop: true,
-                        linebreaks: true,
-                        delimiters: { start: '%%%', end: '%%%' },
-                        nullGetter: function(part) { return ""; }
-                    });
-
-                    doc.render(data);
-                    const out = doc.getZip().generate({
-                        type: "blob",
-                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    });
-
-                    const fname = `東海大學實習合約_${(data.s1_name || '學生')}.docx`;
-                    saveAs(out, fname);
-                    showMsg("下載成功！");
-                } catch (error) {
-                    if (error && error.properties && error.properties.errors) {
-                        const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n");
-                        showError("標籤錯誤：", msgs);
-                    } else {
-                        showError("產生錯誤：", (error.message || error));
-                    }
-                }
-
-            } catch (outer) {
-                console.error(outer);
-                showError('系統錯誤：', outer);
-            } finally {
-                // 無論成功或失敗，都重設按鈕狀態
-                btn.disabled = false;
-                btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                btn.classList.add('btn-generate');
-                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
-            }
-        }
-        
-        // V1.0.26 變更: 產生計畫書文件主流程 (範本名稱變更為 template_plan.docx)
-        async function generateProposalDoc() {
-            if (!validateForm(true)) return; // 執行計畫書專屬驗證
-
-            const btn = document.getElementById('genProposalBtn');
-            try {
-                 if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined' || typeof saveAs === 'undefined') {
-                    showError("核心元件未載入，請確認網路連線。");
-                    return;
-                }
-                showMsg("處理中...");
-                btn.disabled = true;
-                btn.classList.remove('btn-generate'); 
-                btn.classList.add('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
-                
-                // 數據收集: 復用 generateDoc 內的數據收集邏輯
-                collectStudentDataFromPage2();
-                updateProposalDataState();
-                const data = {};
-                
-                // 這裡重新實現 data 收集，確保 Page 4 的數據優先
                 const sList = studentDataState.filter(s => s.name.trim());
+                data.student_name = sList[0]?.name + (sList.length > 1 ? " 等" : "");
                 const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
                 data.students = sList.map((s, index) => ({
-                    letter: alphabet[index] || (index + 1),
-                    name: s.name,
-                    dept: s.dept,
-                    grade: s.grade,
-                    raw_grade: s.raw_grade,
-                    id: s.id,
-                    teacher_name: s.teacher_name || "",
-                    course_name: s.course_name || "",
-                    semester: s.semester || "",
-                    credits: s.credits || "",
-                    hours_exceeded_desc: s.hours_exceeded_desc || "",
-                    
-                    // Page 4 - 實習類別 Checkboxes (for loop context - 根據單選結果映射)
-                    intern_type_full: s.intern_type_select === 'full' ? '■' : '□',
-                    intern_type_sem: s.intern_type_select === 'sem' ? '■' : '□',
-                    intern_type_winter: s.intern_type_select === 'winter' ? '■' : '□',
-                    intern_type_summer: s.intern_type_select === 'summer' ? '■' : '□',
-                    intern_type_term: s.intern_type_select === 'term' ? '■' : '□',
+                    letter: alphabet[index] || (index + 1), name: s.name, dept: s.dept, grade: s.grade, raw_grade: s.raw_grade, id: s.id,
+                    teacher_name: s.teacher_name || "", course_name: s.course_name || "", semester: s.semester || "", credits: s.credits || "", hours_exceeded_desc: s.hours_exceeded_desc || "",
+                    intern_type_full: s.intern_type_select === 'full' ? '■' : '□', intern_type_sem: s.intern_type_select === 'sem' ? '■' : '□',
+                    intern_type_winter: s.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: s.intern_type_select === 'summer' ? '■' : '□', intern_type_term: s.intern_type_select === 'term' ? '■' : '□',
                 }));
-                data.s1_name = data.students[0]?.name || ""; // 確保檔名能使用
+                data.s1_name = data.students[0]?.name || "";
 
-                // 讀取 Proposal Template (Item 13)
-                let arrayBuffer;
-                try {
-                    // V1.0.55: 使用本地相對路徑
-                    const resp = await fetch('./template_plan.docx');
-                    if (!resp.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否存在於根目錄）');
-                    arrayBuffer = await resp.arrayBuffer();
-                } catch (e) {
-                    showError("讀取計畫書範本失敗：" + e.message);
-                    return;
-                }
-
-                // Docxtemplater 產生流程 (與 generateDoc 相同)
+                const arrayBuffer = await getTemplateBuffer('contract');
                 let zip = new PizZip(arrayBuffer);
-                // ... (Clean XML and Render logic)
-                try {
-                    const docFile = zip.file("word/document.xml");
-                    if (docFile) {
-                        const raw = docFile.asText();
-                        const cleaned = cleanXML(raw);
-                        zip.file("word/document.xml", cleaned);
-                    }
-                } catch (e) { console.warn("XML 清洗失敗，可能影響渲染", e); }
+                const docFile = zip.file("word/document.xml");
+                if (docFile) zip.file("word/document.xml", cleanXML(docFile.asText()));
 
+                const Docxtemplater = window.docxtemplater || docxtemplater;
+                const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
+                doc.render(data);
+                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                saveAs(out, `東海大學實習合約_${(data.s1_name || '學生')}.docx`);
+                showMsg("下載成功！");
 
-                try {
-                    const Docxtemplater = window.docxtemplater || docxtemplater;
-                    const doc = new Docxtemplater(zip, {
-                        paragraphLoop: true,
-                        linebreaks: true,
-                        delimiters: { start: '%%%', end: '%%%' },
-                        nullGetter: function(part) { return ""; }
-                    });
-
-                    doc.render(data);
-                    const out = doc.getZip().generate({
-                        type: "blob",
-                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    });
-
-                    const fname = `東海大學實習計畫書_${(data.s1_name || '學生')}.docx`;
-                    saveAs(out, fname);
-                    showMsg("計畫書下載成功！");
-                } catch (error) {
-                    if (error && error.properties && error.properties.errors) {
-                        const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n");
-                        showError("計畫書標籤錯誤：", msgs);
-                    } else {
-                        showError("產生計畫書錯誤：", (error.message || error));
-                    }
-                }
-                
-
-            } catch (outer) {
-                console.error(outer);
-                showError('系統錯誤：', outer);
+            } catch (error) {
+                if (error && error.properties && error.properties.errors) {
+                    const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n"); showError("標籤錯誤：" + msgs);
+                } else { showError("產生錯誤：" + (error.message || error)); }
             } finally {
-                // 無論成功或失敗，都重設按鈕狀態
-                btn.disabled = false;
-                btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                btn.classList.add('btn-generate');
-                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)';
+                btn.disabled = false; btn.classList.remove('bg-gray-400', 'cursor-not-allowed'); btn.classList.add('btn-generate'); btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
             }
         }
         
-        // V1.0.42 新增: 單獨下載個別計畫書
+        async function generateProposalDoc() {
+             showModal("提示", "建議使用「打包下載」功能，可以一次下載所有選取學生的個別計畫書。", 'info');
+        }
+        
         async function downloadIndividualProposal(index) {
-            // 1. 執行驗證 (只針對當前學生)
             if (!validateForm(true)) return;
-            
-            // 2. 獲取單個學生資料
             const student = studentDataState[index];
-            if (!student || !student.name.trim()) {
-                 showModal("錯誤", "無法下載，該學生資料不完整或不存在。", 'error');
-                 return;
-            }
-            
+            if (!student || !student.name.trim()) { showModal("錯誤", "無法下載，該學生資料不完整或不存在。", 'error'); return; }
             await generateProposalFile(student);
         }
 
-        // V1.0.42 新增: 打包下載選取計畫書 (ZIP)
         async function downloadSelectedProposals() {
-            // 1. 執行驗證
             if (!validateForm(true)) return;
-
             const selectedStudents = studentDataState.filter(s => s.isSelected && s.name.trim());
-            if (selectedStudents.length === 0) {
-                 showModal("提示", "請至少選取一位學生。", 'warning');
-                 return;
-            }
-
-            // 確保 JSZip 已載入
-            if (typeof JSZip === 'undefined') {
-                 showError("核心元件未載入", "ZIP 打包功能所需的核心元件 (JSZip) 未載入，請確認網路連線。");
-                 return;
-            }
+            if (selectedStudents.length === 0) { showModal("提示", "請至少選取一位學生。", 'warning'); return; }
+            if (typeof JSZip === 'undefined') { showError("核心元件未載入"); return; }
 
             const zip = new JSZip();
             const bulkDownloadBtn = document.getElementById('bulkDownloadBtn');
             const originalBtnHtml = bulkDownloadBtn.innerHTML;
-            
-            bulkDownloadBtn.disabled = true;
-            bulkDownloadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在打包 (${selectedStudents.length} 份)...`;
-            showMsg("正在打包計畫書...");
+            bulkDownloadBtn.disabled = true; bulkDownloadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在打包 (${selectedStudents.length} 份)...`; showMsg("正在打包計畫書...");
 
             try {
-                // 獲取模板緩衝區
-                // V1.0.55: 使用本地相對路徑
-                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
-                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否存在於根目錄）');
-                    return res.arrayBuffer();
-                });
-
-                const Docxtemplater = window.docxtemplater || docxtemplater;
-                
-                // Page 3: 機構共用數據
+                const arrayBuffer = await getTemplateBuffer('proposal');
                 const companyName = document.getElementById('company_name')?.value || "未填寫";
                 const regAddr = document.getElementById('reg_address')?.value || "";
                 const branchName = document.getElementById('branch_name')?.value || "";
+                const isHeadOffice = document.getElementById('is_head_office')?.checked;
+                let planLoc = companyName; if (!isHeadOffice && branchName) planLoc = `${companyName} (${branchName})`;
+
+                const s_y = document.getElementById('start_y')?.value || ""; const s_m = document.getElementById('start_m')?.value || ""; const s_d = document.getElementById('start_d')?.value || "";
+                const e_y = document.getElementById('end_y')?.value || ""; const e_m = document.getElementById('end_m')?.value || ""; const e_d = document.getElementById('end_d')?.value || "";
 
                 const commonData = {
-                    company_name: companyName,
-                    company_address: regAddr,
-                    
-                    // V1.0.50 新增：計畫書專用地點 (總公司名 + 分公司名)
-                    plan_intern_location: branchName.trim()
-                        ? `${companyName} (${branchName})`
-                        : companyName,
-                    
-                    // 其他 Page 3 數據
+                    company_name: companyName, company_address: regAddr, plan_intern_location: planLoc,
+                    s_y, s_m, s_d, e_y, e_m, e_d,
                     company_tax_id: document.getElementById('no_tax_id').checked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "未填寫"),
-                    company_rep: document.getElementById('company_rep')?.value || "未填寫",
-                    company_title: document.getElementById('company_title')?.value || "未填寫",
-                    // 這裡只列出 Plan 中需要的，避免不必要的數據傳輸
+                    company_rep: document.getElementById('company_rep')?.value || "未填寫", company_title: document.getElementById('company_title')?.value || "未填寫",
                 };
 
+                const Docxtemplater = window.docxtemplater || docxtemplater;
+
                 for (const student of selectedStudents) {
-                    // 1. 準備該學生的數據
-                    const data = {
-                        ...commonData, // 包含 Page 3 合約共用數據
-                        
-                        // 該學生專屬的數據
-                        students: [{...student, letter: 'A'}], // 迴圈只跑一次，但需要用 students 結構
-                        
-                        // 頂層標籤 (使用該學生數據覆蓋)
-                        student_name: student.name,
-                        s1_name: student.name,
-                        
-                        // Page 2/4 頂層標籤
-                        id: student.id,
-                        dept: student.dept,
-                        grade: student.grade,
-                        teacher_name: student.teacher_name,
-                        course_name: student.course_name,
-                        semester: student.semester,
-                        credits: student.credits,
-                        hours_exceeded_desc: student.hours_exceeded_desc,
-                        intern_type_full: student.intern_type_select === 'full' ? '■' : '□',
-                        intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□',
-                        intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□',
-                        intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□',
-                        intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
-                        
-                    };
+                    const data = { ...commonData, students: [{...student, letter: 'A'}], student_name: student.name, s1_name: student.name, id: student.id, dept: student.dept, grade: student.grade, teacher_name: student.teacher_name, course_name: student.course_name, semester: student.semester, credits: student.credits, hours_exceeded_desc: student.hours_exceeded_desc, intern_type_full: student.intern_type_select === 'full' ? '■' : '□', intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□', intern_type_term: student.intern_type_select === 'term' ? '■' : '□', };
 
-                    // 2. 複製模板 ZIP 並渲染
-                    // V1.0.55: 使用 slice(0) 複製緩衝區，避免 PizZip 修改原始 buffer 導致後續生成失敗
                     let docZip = new PizZip(arrayBuffer.slice(0));
-
-                    // 清洗 XML
                     const docFile = docZip.file("word/document.xml");
-                    if (docFile) {
-                        const raw = docFile.asText();
-                        const cleaned = cleanXML(raw);
-                        docZip.file("word/document.xml", cleaned);
-                    }
+                    if (docFile) docZip.file("word/document.xml", cleanXML(docFile.asText()));
 
-                    // 渲染文件
-                    const doc = new Docxtemplater(docZip, {
-                        paragraphLoop: true,
-                        linebreaks: true,
-                        delimiters: { start: '%%%', end: '%%%' },
-                        nullGetter: function(part) { return ""; }
-                    });
+                    const doc = new Docxtemplater(docZip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
                     doc.render(data);
-
-                    // 3. 取得二進制 buffer 並加入 ZIP
                     const out = doc.getZip().generate({ type: "nodebuffer" });
-                    const filename = `實習計畫書_${student.name}.docx`;
-                    zip.file(filename, out);
+                    zip.file(`實習計畫書_${student.name}.docx`, out);
                 }
 
-                // 4. 產生並下載 ZIP 檔案
-                zip.generateAsync({ type: "blob" })
-                    .then(function(content) {
-                        saveAs(content, "學生實習計畫書_打包.zip");
-                        showMsg(`成功打包 ${selectedStudents.length} 份計畫書。`);
-                    });
+                zip.generateAsync({ type: "blob" }).then(function(content) { saveAs(content, "學生實習計畫書_打包.zip"); showMsg(`成功打包 ${selectedStudents.length} 份計畫書。`); });
 
             } catch (error) {
-                showError("打包計畫書時發生錯誤，請檢查範本或學生資料。", error.message || error);
+                if (error && error.properties && error.properties.errors) {
+                     const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n"); showError("打包計畫書時標籤錯誤：" + msgs);
+                } else { showError("打包計畫書時發生錯誤，請檢查範本或學生資料。" + (error.message || error)); }
             } finally {
-                bulkDownloadBtn.disabled = false;
-                bulkDownloadBtn.innerHTML = originalBtnHtml;
+                bulkDownloadBtn.disabled = false; bulkDownloadBtn.innerHTML = originalBtnHtml;
             }
         }
 
-        // 獨立函式：用於單獨產生計畫書文件 (供 downloadIndividualProposal 呼叫)
         async function generateProposalFile(studentData) {
             const tempBtn = document.getElementById('bulkDownloadBtn') || document.getElementById('genProposalBtn');
-            const originalBtnHtml = tempBtn.innerHTML;
-            
-            tempBtn.disabled = true;
-            tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`;
+            const originalBtnHtml = tempBtn ? tempBtn.innerHTML : '';
+            if(tempBtn) { tempBtn.disabled = true; tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`; }
 
             try {
-                // V1.0.55: 使用本地相對路徑
-                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
-                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否存在於根目錄）');
-                    return res.arrayBuffer();
-                });
-
-                // Page 3: 機構共用數據
+                const arrayBuffer = await getTemplateBuffer('proposal');
                 const companyName = document.getElementById('company_name')?.value || "未填寫";
                 const regAddr = document.getElementById('reg_address')?.value || "";
                 const branchName = document.getElementById('branch_name')?.value || "";
+                const isHeadOffice = document.getElementById('is_head_office')?.checked;
+                let planLoc = companyName; if (!isHeadOffice && branchName) planLoc = `${companyName} (${branchName})`;
+                
+                const s_y = document.getElementById('start_y')?.value || ""; const s_m = document.getElementById('start_m')?.value || ""; const s_d = document.getElementById('start_d')?.value || "";
+                const e_y = document.getElementById('end_y')?.value || ""; const e_m = document.getElementById('end_m')?.value || ""; const e_d = document.getElementById('end_d')?.value || "";
 
                 const data = {
-                    company_name: companyName,
-                    company_address: regAddr,
-                    
-                    // V1.0.50 新增：計畫書專用地點 (總公司名 + 分公司名)
-                    plan_intern_location: branchName.trim()
-                        ? `${companyName} (${branchName})`
-                        : companyName,
-
-                    // 學生數據 (計畫書為單一學生)
-                    students: [studentData],
-                    
-                    // 頂層標籤 (使用該學生數據覆蓋)
-                    student_name: studentData.name,
-                    s1_name: studentData.name,
-                    id: studentData.id,
-                    dept: studentData.dept,
-                    grade: studentData.grade,
-
-                    teacher_name: studentData.teacher_name,
-                    course_name: studentData.course_name,
-                    semester: studentData.semester,
-                    credits: studentData.credits,
-                    hours_exceeded_desc: studentData.hours_exceeded_desc,
-                    intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□',
-                    intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□',
-                    intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□',
-                    intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□',
-                    intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
+                    company_name: companyName, company_address: regAddr, plan_intern_location: planLoc,
+                    s_y, s_m, s_d, e_y, e_m, e_d,
+                    students: [studentData], student_name: studentData.name, s1_name: studentData.name, id: studentData.id, dept: studentData.dept, grade: studentData.grade,
+                    teacher_name: studentData.teacher_name, course_name: studentData.course_name, semester: studentData.semester, credits: studentData.credits, hours_exceeded_desc: studentData.hours_exceeded_desc,
+                    intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□', intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□', intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
                 };
                 
                 let docZip = new PizZip(arrayBuffer);
-
-                // 清洗 XML
                 const docFile = docZip.file("word/document.xml");
-                if (docFile) {
-                    const raw = docFile.asText();
-                    const cleaned = cleanXML(raw);
-                    docZip.file("word/document.xml", cleaned);
-                }
+                if (docFile) docZip.file("word/document.xml", cleanXML(docFile.asText()));
 
                 const Docxtemplater = window.docxtemplater || docxtemplater;
-                const doc = new Docxtemplater(docZip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                    delimiters: { start: '%%%', end: '%%%' },
-                    nullGetter: function(part) { return ""; }
-                });
-
+                const doc = new Docxtemplater(docZip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
                 doc.render(data);
-                const out = doc.getZip().generate({
-                    type: "blob",
-                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                });
-
-                const fname = `實習計畫書_${studentData.name}.docx`;
-                saveAs(out, fname);
+                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                saveAs(out, `實習計畫書_${studentData.name}.docx`);
                 showMsg(`成功生成 ${studentData.name} 的計畫書。`);
 
             } catch (error) {
-                showError("生成個別計畫書錯誤：", error.message || error);
+                if (error && error.properties && error.properties.errors) {
+                    const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n"); showError("計畫書標籤錯誤：" + msgs);
+                } else { showError("生成個別計畫書錯誤：" + (error.message || error)); }
             } finally {
-                tempBtn.disabled = false;
-                tempBtn.innerHTML = originalBtnHtml;
+                if(tempBtn) { tempBtn.disabled = false; tempBtn.innerHTML = originalBtnHtml; }
             }
         }
 
-
         window.onload = function() {
             renderStudents();
-
             if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
-                document.getElementById('lib-error').style.display = 'block';
-                document.getElementById('missing-lib').innerText = "核心元件";
+                document.getElementById('lib-error').style.display = 'block'; document.getElementById('missing-lib').innerText = "核心元件";
             } else {
-                const btn = document.getElementById('genContractBtn');
-                btn.disabled = false;
-                btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-75');
-                btn.classList.add('btn-generate');
-                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
-                
-                // 初始化 Page 4 按鈕
-                const btn2 = document.getElementById('genProposalBtn');
-                const bulkBtn = document.getElementById('bulkDownloadBtn');
-                
-                btn2.disabled = false;
-                btn2.classList.add('btn-generate');
-                btn2.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)';
-                
-                bulkBtn.disabled = false;
-                bulkBtn.classList.add('btn-generate');
+                const btn = document.getElementById('genContractBtn'); btn.disabled = false; btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-75'); btn.classList.add('btn-generate'); btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
+                const btn2 = document.getElementById('genProposalBtn'); const bulkBtn = document.getElementById('bulkDownloadBtn');
+                btn2.disabled = false; btn2.classList.add('btn-generate'); btn2.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)';
+                bulkBtn.disabled = false; bulkBtn.classList.add('btn-generate');
             }
-
-            // V1.0.45/V1.0.46: 確保 toggleType 在全域範圍可用後再呼叫
-            toggleType();
-            togglePayInputs(); 
-            toggleCost('dorm');
-            toggleCost('food');
-            toggleCost('trans');
-            
-            // 初始化 Page 3 相關邏輯
-            document.getElementById('is_head_office').checked = false;
-            toggleBranchFields(); 
-
-            const taxIdInput = document.getElementById('company_tax_id');
-            if (taxIdInput) {
-                taxIdInput.addEventListener('input', updateQueryButtonState);
-            }
-            document.getElementById('no_tax_id').checked = false;
-            toggleTaxIdFields(); 
-
-            const queryBtn = document.getElementById('queryBtn');
-            if (queryBtn) {
-                queryBtn.addEventListener('click', getCompanyInfo);
-            }
-            
-            // 預設顯示 Page 1
+            toggleType(); togglePayInputs(); toggleCost('dorm'); toggleCost('food'); toggleCost('trans');
+            document.getElementById('is_head_office').checked = false; toggleBranchFields(); 
+            const taxIdInput = document.getElementById('company_tax_id'); if (taxIdInput) taxIdInput.addEventListener('input', updateQueryButtonState);
+            document.getElementById('no_tax_id').checked = false; toggleTaxIdFields(); 
+            const queryBtn = document.getElementById('queryBtn'); if (queryBtn) queryBtn.addEventListener('click', getCompanyInfo);
             showPage('page-1');
-            
-            // 綁定 Page 2 學生資料輸入事件，確保 state 更新
             document.getElementById('student_container').addEventListener('input', collectStudentDataFromPage2);
         };
     </script>
