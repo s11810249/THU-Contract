@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.40)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.43)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,6 +12,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <!-- 新增 SheetJS 用於解析 Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- JSZip 用於 ZIP 打包 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
     <!-- 東海配色 -->
@@ -131,19 +133,19 @@
             flex-shrink: 0;
         }
 
-        /* V1.0.39: 學生刪除按鈕樣式 */
+        /* 學生刪除按鈕樣式 */
         .delete-student-btn {
             position: absolute; 
-            top: -12px; /* 覆蓋右上邊角 */
+            top: -12px; 
             right: -12px;
             width: 32px; 
             height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 9999px; /* 圓形 */
-            background-color: #fef2f2; /* red-50 */
-            color: #ef4444; /* red-500 */
+            border-radius: 9999px; 
+            background-color: #fef2f2; 
+            color: #ef4444; 
             transition: all 0.2s ease-out;
             z-index: 10;
             opacity: 0; /* 預設隱藏 */
@@ -152,7 +154,7 @@
 
         .student-wrapper:hover .delete-student-btn {
             opacity: 1; /* 靠近時顯示 */
-            background-color: #ef4444; /* red-500 */
+            background-color: #ef4444; 
             color: white;
             transform: scale(1.1);
         }
@@ -256,7 +258,7 @@
             color: #9ca3af; /* 預設文字顏色 */
             background-color: #f3f4f6;
             margin-right: 0.25rem;
-            flex-grow: 1; /* 1. 頁籤與下方卡片等寬 */
+            flex-grow: 1; 
             text-align: center;
         }
         .tab-button.active {
@@ -453,7 +455,6 @@
     </div>
 
     <!-- 主要表單 -->
-    <!-- 1. 修正: 移除 max-w-4xl，讓內容卡片可以佔滿整個 container 寬度 -->
     <main class="mx-auto px-4 mb-20 pt-24 max-w-7xl">
         
         <!-- 頁籤導航 (Tab Navigation) -->
@@ -478,7 +479,6 @@
         <form id="contractForm">
             
             <!-- ========== Page 1: 使用須知 (New Page) ========== -->
-            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
             <div id="page-1" class="page-content mt-4">
                 <div class="bg-white border border-blue-100 rounded-xl p-8 shadow-sm">
                     <div class="flex items-start gap-4">
@@ -512,7 +512,6 @@
             </div>
 
             <!-- ========== Page 2: 實習學生資料 ========== -->
-            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
             <div id="page-2" class="page-content hidden">
                 <!-- 卡片 2: 學生資料 (人數增減按鈕 + 標題靠左) -->
                 <div class="card">
@@ -561,7 +560,6 @@
             </div>
 
             <!-- ========== Page 3: 實習合約資料 (Contract Data) ========== -->
-            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
             <div id="page-3" class="page-content hidden">
                 <!-- 卡片 1: 機構資料 -->
                 <div class="card">
@@ -576,10 +574,10 @@
                             <span class="text-sm text-red-500 flex items-center">您可輸入統一編號後，點擊查詢按鈕，系統將自動帶入公司名稱、負責人與登記地址。資料來源為介接經濟部商工行政資料開放平台API，公示資料可能非最新，簽約前請再次確認所有資訊是否正確。</span>
                         </div>
                         
-                        <!-- Row 2 (Span 4): 統一編號輸入/查詢 (50%) V.S. 無設立字號核取方塊 (50%) -->
+                        <!-- Row 2 (Span 4): 統一編號輸入/查詢 (加寬至 60%) V.S. 無設立字號核取方塊 (40%) -->
                         <div class="md:col-span-4 flex flex-col md:flex-row gap-x-6 gap-y-4">
-                            <!-- Left 50% (Tax ID Input + Query) -->
-                            <div class="flex-1">
+                            <!-- Left (Tax ID Input + Query) - 加寬 -->
+                            <div class="w-full md:w-3/5">
                                 <label class="block text-sm font-bold text-gray-700 mb-2">統一編號（或相關營利事業登記、法人登記或設立字號）</label>
                                 <div id="tax_id_input_group" class="flex gap-2 items-center transition-opacity duration-300">
                                     <input type="text" id="company_tax_id" class="input-field w-32 md:w-48 flex-grow-0" placeholder="04231910" maxlength="15">
@@ -589,8 +587,8 @@
                                 </div>
                             </div>
                             
-                            <!-- Right 50% (New Checkbox) -->
-                            <div class="flex-1 self-end">
+                            <!-- Right (New Checkbox) - 縮窄 -->
+                            <div class="w-full md:w-2/5 self-end">
                                 <label class="block text-sm font-bold text-gray-700 mb-2 invisible md:visible"></label> 
                                 <label for="no_tax_id" class="flex items-center p-3 h-[42px] border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-100 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/50">
                                     <input type="checkbox" id="no_tax_id" onchange="toggleTaxIdFields()" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500">
@@ -860,17 +858,9 @@
                         <span class="animate-pulse">系統載入中...</span>
                     </button>
                 </div>
-                
-                <!-- 移除跳轉至計畫書資料連結 -->
-                <!-- <div class="flex justify-end mt-4">
-                    <button type="button" onclick="showPage('page-4')" class="text-sm text-thuBlue hover:text-thuGold transition">
-                         跳至計畫書資料 <i class="fa-solid fa-angles-right ml-1"></i>
-                    </button>
-                </div> -->
             </div>
 
             <!-- ========== Page 4: 實習計畫書產出 (Proposal Data) ========== -->
-            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
             <div id="page-4" class="page-content hidden">
                 <div class="card">
                     <div class="card-header">
@@ -884,6 +874,10 @@
                         <table class="w-full proposal-table border-collapse">
                             <thead>
                                 <tr>
+                                    <!-- 新增：選取欄 (Checkbox) -->
+                                    <th class="w-12 text-center">
+                                        <input type="checkbox" id="select_all_proposals" onclick="toggleSelectAll(this)" class="w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue">
+                                    </th>
                                     <th class="w-28">姓名 / 學號</th>
                                     <th class="w-24">系所 / 年級</th>
                                     <th class="w-36">輔導老師 <span class="text-red-500">*</span></th>
@@ -891,7 +885,8 @@
                                     <th class="w-24">學期 <span class="text-red-500">*</span></th>
                                     <th class="w-16">學分 <span class="text-red-500">*</span></th>
                                     <th class="w-40">實習類別 <span class="text-red-500">*</span></th>
-                                    <th>時數說明</th>
+                                    <th class="w-24">時數說明</th>
+                                    <th class="w-24 text-center">操作</th> <!-- 新增：下載個別計畫書 -->
                                 </tr>
                             </thead>
                             <tbody id="proposal_table_body">
@@ -905,13 +900,18 @@
                 </div>
                 
                 <!-- Page 4 專屬的產生按鈕 -->
-                <div class="flex justify-between items-center mt-12">
+                <div class="flex flex-col md:flex-row justify-between items-center mt-12 gap-4">
                     <button type="button" onclick="showPage('page-3')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                         <i class="fa-solid fa-arrow-left"></i> 上一步
                     </button>
                     
-                    <!-- Primary action button: 產生計畫書文件 -->
-                    <button type="button" onclick="generateProposalDoc()" id="genProposalBtn" class="btn-generate w-64 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3">
+                    <!-- 新增：打包下載選取計畫書 (ZIP) -->
+                    <button type="button" onclick="downloadSelectedProposals()" id="bulkDownloadBtn" class="btn-generate w-full md:w-80 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-file-zipper"></i> 打包下載選取計畫書 (ZIP)
+                    </button>
+
+                    <!-- Primary action button: 產生計畫書文件 (整批生成，但建議使用打包下載) -->
+                    <button type="button" onclick="generateProposalDoc()" id="genProposalBtn" class="btn-generate w-64 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3 hidden">
                         <i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)
                     </button>
                 </div>
@@ -932,7 +932,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.39 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.43 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -1042,6 +1042,8 @@
                     grade: gradeText, // V1.0.26: 帶入年級文字
                     raw_grade: gradeInput, // V1.0.26: 儲存原始數字
                     id: document.getElementById(`s_id_${i}`)?.value || "",
+                    // V1.0.42 新增：選取狀態
+                    isSelected: existingState.isSelected === undefined ? true : existingState.isSelected,
 
                     // Page 4 欄位 (保留 existingState 中的值)
                     teacher_name: existingState.teacher_name || "",
@@ -1049,7 +1051,7 @@
                     semester: existingState.semester || "",
                     credits: existingState.credits || "",
                     hours_exceeded_desc: existingState.hours_exceeded_desc || "",
-                    intern_type_select: existingState.intern_type_select || "" // V1.0.26: 單選值
+                    intern_type_select: existingState.intern_type_select || "" 
                 });
             }
             studentDataState = tempStudentData;
@@ -1146,8 +1148,6 @@
             }
 
             // 1. 從狀態中移除該學生 (使用 index)
-            // Note: studentDataState 已經包含了 Page 4 的資料
-            // 由於 indexToDelte 是 i，它會和 array index 一致
             studentDataState.splice(indexToDelete, 1);
             
             // 2. 更新人數
@@ -1193,8 +1193,11 @@
             // 6. 重置無設立字號狀態
             document.getElementById('no_tax_id').checked = false;
             toggleTaxIdFields();
+            
+            // 7. 重置 Page 4 選取狀態
+            studentDataState = studentDataState.map(s => ({...s, isSelected: true}));
 
-            // 7. 回到頂部並切換回 Page 1
+            // 8. 回到頂部並切換回 Page 1
             window.scrollTo(0, 0);
             showPage('page-1');
             showMsg("已清除所有表單資料。");
@@ -1301,8 +1304,52 @@
             collectStudentDataFromPage2();
         }
         
+        // V1.0.42 新增: 切換單一學生選取狀態
+        function toggleStudentSelection(index) {
+            if (studentDataState[index]) {
+                studentDataState[index].isSelected = !studentDataState[index].isSelected;
+            }
+            // 檢查是否需要更新全選按鈕狀態
+            updateSelectAllCheckbox();
+        }
+
+        // V1.0.42 新增: 全選/反選
+        function toggleSelectAll(checkbox) {
+            const isChecked = checkbox.checked;
+            studentDataState = studentDataState.map(s => ({
+                ...s,
+                isSelected: isChecked
+            }));
+            // 重新渲染表格以反映選取狀態
+            renderProposalTable(false);
+        }
+
+        // V1.0.42 新增: 更新全選核取方塊的狀態
+        function updateSelectAllCheckbox() {
+            const selectAll = document.getElementById('select_all_proposals');
+            if (!selectAll) return;
+
+            const totalStudents = studentDataState.length;
+            const selectedStudents = studentDataState.filter(s => s.isSelected).length;
+
+            if (totalStudents === 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            } else if (selectedStudents === totalStudents) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else if (selectedStudents > 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = true;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+        }
+
+
         // V1.0.25 變更: 渲染 Page 4 計畫書資料表格
-        function renderProposalTable() {
+        function renderProposalTable(restoreSelection = true) {
             const tableBody = document.getElementById('proposal_table_body');
             const studentCountDisplay = document.getElementById('proposal_student_count');
             const emptyMsg = document.getElementById('proposal_empty_msg');
@@ -1316,17 +1363,28 @@
 
             if (count === 0 || students.every(s => !s.name.trim() && !s.id.trim())) {
                 emptyMsg.classList.remove('hidden');
+                document.getElementById('select_all_proposals').disabled = true;
                 return;
             }
             emptyMsg.classList.add('hidden');
+            document.getElementById('select_all_proposals').disabled = false;
+
 
             students.forEach((s, i) => {
                 const tr = document.createElement('tr');
                 tr.id = `proposal_row_${i}`;
                 tr.className = "border-b border-gray-100 hover:bg-yellow-50/50 transition";
                 
-                // V1.0.26: 表格結構調整
+                // 檢查是否需要還原選取狀態 (在 renderStudents 時狀態可能變動，這裡需要確保表格選取狀態正確)
+                const isSelected = students[i].isSelected;
+
+                // V1.0.42: 表格結構新增選取欄和下載按鈕
                 tr.innerHTML = `
+                    <!-- 選取欄 -->
+                    <td class="text-center">
+                        <input type="checkbox" data-index="${i}" onchange="toggleStudentSelection(${i})" class="proposal-select-checkbox w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue" ${isSelected ? 'checked' : ''}>
+                    </td>
+
                     <!-- 姓名 / 學號 -->
                     <td class="text-center font-bold text-xs-force">
                         <div class="font-bold">${s.name}</div>
@@ -1365,6 +1423,13 @@
                     
                     <!-- 時數說明 -->
                     <td class="p-0 py-1"><input type="text" id="p_hours_exceeded_desc_${i}" data-field="hours_exceeded_desc" class="input-field p-1 text-sm h-8" value="${s.hours_exceeded_desc}" placeholder="選填"></td>
+                    
+                    <!-- 個別下載按鈕 -->
+                    <td class="text-center">
+                        <button type="button" onclick="downloadIndividualProposal(${i})" class="bg-thuGold text-thuBlue text-xs font-bold px-3 py-1.5 rounded hover:bg-thuGold/80 transition shadow-sm">
+                            <i class="fa-solid fa-download"></i> 下載
+                        </button>
+                    </td>
                 `;
                 tableBody.appendChild(tr);
 
@@ -1376,6 +1441,9 @@
                 document.getElementById(`p_intern_type_select_${i}`)?.addEventListener('change', updateProposalDataState);
                 document.getElementById(`p_hours_exceeded_desc_${i}`)?.addEventListener('input', updateProposalDataState);
             });
+            
+            // 更新全選按鈕狀態
+            updateSelectAllCheckbox();
         }
         
         // Page 4 輸入時更新 State (處理單選)
@@ -1398,6 +1466,186 @@
                     s.intern_type_select = selectEl.value;
                 }
             });
+        }
+        
+        // V1.0.42 新增: 單獨下載個別計畫書
+        async function downloadIndividualProposal(index) {
+            // 1. 執行驗證 (只針對當前學生)
+            if (!validateForm(true)) return;
+            
+            // 2. 獲取單個學生資料
+            const student = studentDataState[index];
+            if (!student || !student.name.trim()) {
+                 showModal("錯誤", "無法下載，該學生資料不完整或不存在。", 'error');
+                 return;
+            }
+            
+            await generateProposalFile(student);
+        }
+
+        // V1.0.42 新增: 打包下載選取計畫書 (ZIP)
+        async function downloadSelectedProposals() {
+            // 1. 執行驗證
+            if (!validateForm(true)) return;
+
+            const selectedStudents = studentDataState.filter(s => s.isSelected && s.name.trim());
+            if (selectedStudents.length === 0) {
+                 showModal("提示", "請至少選取一位學生。", 'warning');
+                 return;
+            }
+
+            const zip = new JSZip();
+            const originalBtnHtml = document.getElementById('bulkDownloadBtn').innerHTML;
+            
+            document.getElementById('bulkDownloadBtn').disabled = true;
+            document.getElementById('bulkDownloadBtn').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在打包 (${selectedStudents.length} 份)...`;
+            showMsg("正在打包計畫書...");
+
+            try {
+                // 獲取模板緩衝區
+                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
+                    if (!res.ok) throw new Error('找不到 template_plan.docx');
+                    return res.arrayBuffer();
+                });
+
+                let zip_template = new PizZip(arrayBuffer);
+                
+                const Docxtemplater = window.docxtemplater || docxtemplater;
+                
+                for (const student of selectedStudents) {
+                    // 為每個學生建立單獨的數據物件
+                    const data = {
+                        // 包含 Page 3 合約共用數據
+                        company_name: document.getElementById('company_name')?.value || "未填寫",
+                        company_address: document.getElementById('reg_address')?.value || "",
+                        // ... 其他 Page 3 數據 (通常計畫書只用到公司名稱) ...
+                        
+                        // 該學生專屬的數據
+                        students: [student], 
+                        
+                        // 頂層標籤 (使用該學生數據覆蓋)
+                        student_name: student.name,
+                        s1_name: student.name,
+                        teacher_name: student.teacher_name,
+                        course_name: student.course_name,
+                        semester: student.semester,
+                        credits: student.credits,
+                        hours_exceeded_desc: student.hours_exceeded_desc,
+                        intern_type_full: student.intern_type_select === 'full' ? '■' : '□',
+                        intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□',
+                        intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□',
+                        intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□',
+                        intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
+                    };
+
+                    // 複製模板 ZIP
+                    let docZip = new PizZip(arrayBuffer);
+
+                    // 清洗 XML
+                    const docFile = docZip.file("word/document.xml");
+                    if (docFile) {
+                        const raw = docFile.asText();
+                        const cleaned = cleanXML(raw);
+                        docZip.file("word/document.xml", cleaned);
+                    }
+
+                    // 渲染文件
+                    const doc = new Docxtemplater(docZip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                        delimiters: { start: '%%%', end: '%%%' },
+                        nullGetter: function(part) { return ""; }
+                    });
+                    doc.render(data);
+
+                    const out = doc.getZip().generate({ type: "nodebuffer" });
+                    const filename = `實習計畫書_${student.name}.docx`;
+                    zip.file(filename, out);
+                }
+
+                // 產生 ZIP 檔案
+                zip.generateAsync({ type: "blob" })
+                    .then(function(content) {
+                        saveAs(content, "學生實習計畫書_打包.zip");
+                        showMsg(`成功打包 ${selectedStudents.length} 份計畫書。`);
+                    });
+
+            } catch (error) {
+                showError("打包計畫書時發生錯誤，請檢查範本或學生資料。", error.message || error);
+            } finally {
+                document.getElementById('bulkDownloadBtn').disabled = false;
+                document.getElementById('bulkDownloadBtn').innerHTML = originalBtnHtml;
+            }
+        }
+
+        // 獨立函式：用於單獨產生計畫書文件 (供 downloadIndividualProposal 呼叫)
+        async function generateProposalFile(studentData) {
+            const tempBtn = document.getElementById('bulkDownloadBtn') || document.getElementById('genProposalBtn');
+            const originalBtnHtml = tempBtn.innerHTML;
+            
+            tempBtn.disabled = true;
+            tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`;
+
+            try {
+                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
+                    if (!res.ok) throw new Error('找不到 template_plan.docx');
+                    return res.arrayBuffer();
+                });
+
+                const data = {
+                    company_name: document.getElementById('company_name')?.value || "未填寫",
+                    company_address: document.getElementById('reg_address')?.value || "",
+                    
+                    students: [studentData],
+                    
+                    student_name: studentData.name,
+                    s1_name: studentData.name,
+                    teacher_name: studentData.teacher_name,
+                    course_name: studentData.course_name,
+                    semester: studentData.semester,
+                    credits: studentData.credits,
+                    hours_exceeded_desc: studentData.hours_exceeded_desc,
+                    intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□',
+                    intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□',
+                    intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□',
+                    intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□',
+                    intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
+                };
+                
+                let docZip = new PizZip(arrayBuffer);
+
+                // 清洗 XML
+                const docFile = docZip.file("word/document.xml");
+                if (docFile) {
+                    const raw = docFile.asText();
+                    const cleaned = cleanXML(raw);
+                    docZip.file("word/document.xml", cleaned);
+                }
+
+                const Docxtemplater = window.docxtemplater || docxtemplater;
+                const doc = new Docxtemplater(docZip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                    delimiters: { start: '%%%', end: '%%%' },
+                    nullGetter: function(part) { return ""; }
+                });
+
+                doc.render(data);
+                const out = doc.getZip().generate({
+                    type: "blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                });
+
+                const fname = `實習計畫書_${studentData.name}.docx`;
+                saveAs(out, fname);
+                showMsg(`成功生成 ${studentData.name} 的計畫書。`);
+
+            } catch (error) {
+                showError("生成個別計畫書錯誤：", error.message || error);
+            } finally {
+                tempBtn.disabled = false;
+                tempBtn.innerHTML = originalBtnHtml;
+            }
         }
 
 
@@ -1470,7 +1718,7 @@
             }
         }
 
-        // V1.0.17 新增: 處理無設立字號選項的連動邏輯
+        // 處理無設立字號選項的連動邏輯
         function toggleTaxIdFields() {
             const noTaxIdChecked = document.getElementById('no_tax_id').checked;
             const taxIdInput = document.getElementById('company_tax_id');
@@ -1496,7 +1744,7 @@
             }
         }
 
-        // V1.0.14/V1.0.17: 根據輸入內容鎖定/解鎖查詢按鈕 (如果「無設立字號」未勾選)
+        // 根據輸入內容鎖定/解鎖查詢按鈕 (如果「無設立字號」未勾選)
         function updateQueryButtonState() {
             const taxIdInput = document.getElementById('company_tax_id');
             const queryBtn = document.getElementById('queryBtn');
@@ -2035,115 +2283,198 @@
         }
         
         // V1.0.26 變更: 產生計畫書文件主流程 (範本名稱變更為 template_plan.docx)
+        // 此函式現在僅用於全批次產出按鈕 (已隱藏)，功能已被 downloadSelectedProposals 取代
         async function generateProposalDoc() {
-            if (!validateForm(true)) return; // 執行計畫書專屬驗證
+            // 此處保留原有的邏輯結構，但主要目的是打包下載選取項目
+            showModal("提示", "請改用「打包下載選取計畫書 (ZIP)」功能。", 'info');
+        }
+        
+        // V1.0.42 新增: 單獨下載個別計畫書
+        async function downloadIndividualProposal(index) {
+            // 1. 執行驗證 (只針對當前學生)
+            if (!validateForm(true)) return;
+            
+            // 2. 獲取單個學生資料
+            const student = studentDataState[index];
+            if (!student || !student.name.trim()) {
+                 showModal("錯誤", "無法下載，該學生資料不完整或不存在。", 'error');
+                 return;
+            }
+            
+            await generateProposalFile(student);
+        }
 
-            const btn = document.getElementById('genProposalBtn');
+        // V1.0.42 新增: 打包下載選取計畫書 (ZIP)
+        async function downloadSelectedProposals() {
+            // 1. 執行驗證
+            if (!validateForm(true)) return;
+
+            const selectedStudents = studentDataState.filter(s => s.isSelected && s.name.trim());
+            if (selectedStudents.length === 0) {
+                 showModal("提示", "請至少選取一位學生。", 'warning');
+                 return;
+            }
+
+            // 確保 JSZip 已載入
+            if (typeof JSZip === 'undefined') {
+                 showError("核心元件未載入", "ZIP 打包功能所需的核心元件 (JSZip) 未載入，請確認網路連線。");
+                 return;
+            }
+
+            const zip = new JSZip();
+            const bulkDownloadBtn = document.getElementById('bulkDownloadBtn');
+            const originalBtnHtml = bulkDownloadBtn.innerHTML;
+            
+            bulkDownloadBtn.disabled = true;
+            bulkDownloadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在打包 (${selectedStudents.length} 份)...`;
+            showMsg("正在打包計畫書...");
+
             try {
-                 if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined' || typeof saveAs === 'undefined') {
-                    showError("核心元件未載入，請確認網路連線。");
-                    return;
-                }
-                showMsg("處理中...");
-                btn.disabled = true;
-                btn.classList.remove('btn-generate'); 
-                btn.classList.add('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
+                // 獲取模板緩衝區
+                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
+                    if (!res.ok) throw new Error('找不到 template_plan.docx');
+                    return res.arrayBuffer();
+                });
+
+                const Docxtemplater = window.docxtemplater || docxtemplater;
                 
-                // 數據收集: 復用 generateDoc 內的數據收集邏輯
-                collectStudentDataFromPage2();
-                updateProposalDataState();
-                const data = {};
-                
-                // 這裡重新實現 data 收集，確保 Page 4 的數據優先
-                const sList = studentDataState.filter(s => s.name.trim());
-                const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                for (const student of selectedStudents) {
+                    // 1. 準備數據
+                    const data = {
+                        // 包含 Page 3 合約共用數據
+                        company_name: document.getElementById('company_name')?.value || "未填寫",
+                        company_address: document.getElementById('reg_address')?.value || "",
+                        // ... 其他 Page 3 數據
+                        
+                        // 該學生專屬的數據
+                        students: [{...student, letter: 'A'}], // 迴圈只跑一次，但需要用 students 結構
+                        
+                        // 頂層標籤 (使用該學生數據覆蓋)
+                        student_name: student.name,
+                        s1_name: student.name,
+                        teacher_name: student.teacher_name,
+                        course_name: student.course_name,
+                        semester: student.semester,
+                        credits: student.credits,
+                        hours_exceeded_desc: student.hours_exceeded_desc,
+                        intern_type_full: student.intern_type_select === 'full' ? '■' : '□',
+                        intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□',
+                        intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□',
+                        intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□',
+                        intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
+                    };
 
-                data.students = sList.map((s, index) => ({
-                    letter: alphabet[index] || (index + 1),
-                    name: s.name,
-                    dept: s.dept,
-                    grade: s.grade,
-                    raw_grade: s.raw_grade,
-                    id: s.id,
-                    teacher_name: s.teacher_name || "",
-                    course_name: s.course_name || "",
-                    semester: s.semester || "",
-                    credits: s.credits || "",
-                    hours_exceeded_desc: s.hours_exceeded_desc || "",
-                    
-                    // Page 4 - 實習類別 Checkboxes (for loop context - 根據單選結果映射)
-                    intern_type_full: s.intern_type_select === 'full' ? '■' : '□',
-                    intern_type_sem: s.intern_type_select === 'sem' ? '■' : '□',
-                    intern_type_winter: s.intern_type_select === 'winter' ? '■' : '□',
-                    intern_type_summer: s.intern_type_select === 'summer' ? '■' : '□',
-                    intern_type_term: s.intern_type_select === 'term' ? '■' : '□',
-                }));
-                data.s1_name = data.students[0]?.name || ""; // 確保檔名能使用
+                    // 2. 複製模板 ZIP 並渲染
+                    let docZip = new PizZip(arrayBuffer);
 
-                // 讀取 Proposal Template (Item 13)
-                let arrayBuffer;
-                try {
-                    const resp = await fetch('./template_plan.docx'); // NEW FILENAME
-                    if (!resp.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否存在於根目錄）');
-                    arrayBuffer = await resp.arrayBuffer();
-                } catch (e) {
-                    showError("讀取計畫書範本失敗：" + e.message);
-                    return;
-                }
-
-                // Docxtemplater 產生流程 (與 generateDoc 相同)
-                let zip = new PizZip(arrayBuffer);
-                // ... (Clean XML and Render logic)
-                try {
-                    const docFile = zip.file("word/document.xml");
+                    // 清洗 XML
+                    const docFile = docZip.file("word/document.xml");
                     if (docFile) {
                         const raw = docFile.asText();
                         const cleaned = cleanXML(raw);
-                        zip.file("word/document.xml", cleaned);
+                        docZip.file("word/document.xml", cleaned);
                     }
-                } catch (e) { console.warn("XML 清洗失敗，可能影響渲染", e); }
 
-
-                try {
-                    const Docxtemplater = window.docxtemplater || docxtemplater;
-                    const doc = new Docxtemplater(zip, {
+                    // 渲染文件
+                    const doc = new Docxtemplater(docZip, {
                         paragraphLoop: true,
                         linebreaks: true,
                         delimiters: { start: '%%%', end: '%%%' },
                         nullGetter: function(part) { return ""; }
                     });
-
                     doc.render(data);
-                    const out = doc.getZip().generate({
-                        type: "blob",
-                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+                    // 3. 取得二進制 buffer 並加入 ZIP
+                    const out = doc.getZip().generate({ type: "nodebuffer" });
+                    const filename = `實習計畫書_${student.name}.docx`;
+                    zip.file(filename, out);
+                }
+
+                // 4. 產生並下載 ZIP 檔案
+                zip.generateAsync({ type: "blob" })
+                    .then(function(content) {
+                        saveAs(content, "學生實習計畫書_打包.zip");
+                        showMsg(`成功打包 ${selectedStudents.length} 份計畫書。`);
                     });
 
-                    const fname = `東海大學實習計畫書_${(data.s1_name || '學生')}.docx`;
-                    saveAs(out, fname);
-                    showMsg("計畫書下載成功！");
-                } catch (error) {
-                    if (error && error.properties && error.properties.errors) {
-                        const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n");
-                        showError("計畫書標籤錯誤：", msgs);
-                    } else {
-                        showError("產生計畫書錯誤：", (error.message || error));
-                    }
-                }
-                
-
-            } catch (outer) {
-                console.error(outer);
-                showError('系統錯誤：', outer);
+            } catch (error) {
+                showError("打包計畫書時發生錯誤，請檢查範本或學生資料。", error.message || error);
             } finally {
-                // 無論成功或失敗，都重設按鈕狀態
-                btn.disabled = false;
-                btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none');
-                btn.classList.add('btn-generate');
-                btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)';
+                bulkDownloadBtn.disabled = false;
+                bulkDownloadBtn.innerHTML = originalBtnHtml;
             }
         }
+
+        // 獨立函式：用於單獨產生計畫書文件 (供 downloadIndividualProposal 呼叫)
+        async function generateProposalFile(studentData) {
+            const tempBtn = document.getElementById('bulkDownloadBtn') || document.getElementById('genProposalBtn');
+            const originalBtnHtml = tempBtn.innerHTML;
+            
+            tempBtn.disabled = true;
+            tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`;
+
+            try {
+                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
+                    if (!res.ok) throw new Error('找不到 template_plan.docx');
+                    return res.arrayBuffer();
+                });
+
+                const data = {
+                    company_name: document.getElementById('company_name')?.value || "未填寫",
+                    company_address: document.getElementById('reg_address')?.value || "",
+                    
+                    students: [studentData],
+                    
+                    student_name: studentData.name,
+                    s1_name: studentData.name,
+                    teacher_name: studentData.teacher_name,
+                    course_name: studentData.course_name,
+                    semester: studentData.semester,
+                    credits: studentData.credits,
+                    hours_exceeded_desc: studentData.hours_exceeded_desc,
+                    intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□',
+                    intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□',
+                    intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□',
+                    intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□',
+                    intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
+                };
+                
+                let docZip = new PizZip(arrayBuffer);
+
+                // 清洗 XML
+                const docFile = docZip.file("word/document.xml");
+                if (docFile) {
+                    const raw = docFile.asText();
+                    const cleaned = cleanXML(raw);
+                    docZip.file("word/document.xml", cleaned);
+                }
+
+                const Docxtemplater = window.docxtemplater || docxtemplater;
+                const doc = new Docxtemplater(docZip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                    delimiters: { start: '%%%', end: '%%%' },
+                    nullGetter: function(part) { return ""; }
+                });
+
+                doc.render(data);
+                const out = doc.getZip().generate({
+                    type: "blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                });
+
+                const fname = `實習計畫書_${studentData.name}.docx`;
+                saveAs(out, fname);
+                showMsg(`成功生成 ${studentData.name} 的計畫書。`);
+
+            } catch (error) {
+                showError("生成個別計畫書錯誤：", error.message || error);
+            } finally {
+                tempBtn.disabled = false;
+                tempBtn.innerHTML = originalBtnHtml;
+            }
+        }
+
 
         window.onload = function() {
             renderStudents();
@@ -2160,9 +2491,14 @@
                 
                 // 初始化 Page 4 按鈕
                 const btn2 = document.getElementById('genProposalBtn');
+                const bulkBtn = document.getElementById('bulkDownloadBtn');
+                
                 btn2.disabled = false;
                 btn2.classList.add('btn-generate');
                 btn2.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)';
+                
+                bulkBtn.disabled = false;
+                bulkBtn.classList.add('btn-generate');
             }
 
             toggleType();
