@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.53)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.54)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -943,7 +943,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.53 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.54 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -954,8 +954,8 @@
         // 全域變數，用於儲存學生基礎資料和 Page 4 輸入的資料
         let studentDataState = [];
         
-        // V1.0.53 新增: 計畫書範本的絕對 URL
-        const PROPOSAL_TEMPLATE_URL = 'https://s11810249.github.io/THU-Contract/template_plan.docx';
+        // V1.0.54 修正: 改回相對路徑，假設 template_plan.docx 放在同一目錄
+        const PROPOSAL_TEMPLATE_URL = './template_plan.docx';
 
         function autoJump(current, maxLen, nextId) {
             if (current.value.length >= maxLen) {
@@ -2180,9 +2180,9 @@
 
             try {
                 // 獲取模板緩衝區
-                // V1.0.53 修正: 使用絕對 URL
+                // V1.0.54 修正: 改回相對路徑
                 const arrayBuffer = await fetch(PROPOSAL_TEMPLATE_URL).then(res => {
-                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否已上傳至指定 URL）');
+                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否存在於同一目錄）');
                     return res.arrayBuffer();
                 });
 
@@ -2288,9 +2288,9 @@
             tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`;
 
             try {
-                // V1.0.53 修正: 使用絕對 URL
+                // V1.0.54 修正: 改回相對路徑
                 const arrayBuffer = await fetch(PROPOSAL_TEMPLATE_URL).then(res => {
-                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否已上傳至指定 URL）');
+                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否存在於同一目錄）');
                     return res.arrayBuffer();
                 });
 
