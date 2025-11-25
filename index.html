@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.52)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.53)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -943,7 +943,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.52 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.53 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -953,6 +953,9 @@
     <script>
         // 全域變數，用於儲存學生基礎資料和 Page 4 輸入的資料
         let studentDataState = [];
+        
+        // V1.0.53 新增: 計畫書範本的絕對 URL
+        const PROPOSAL_TEMPLATE_URL = 'https://s11810249.github.io/THU-Contract/template_plan.docx';
 
         function autoJump(current, maxLen, nextId) {
             if (current.value.length >= maxLen) {
@@ -1724,18 +1727,22 @@
 
 
             // =========================================================================
-            // 3. 計畫書資料檢查 (Page 4) - 如果 Page 2 學生資料完整，則強制檢查 Page 4 必填
+            // 3. 計畫書資料檢查 (Page 4) - 只在生成計畫書時才檢查
             // =========================================================================
             
-            // 只有在 Page 2 資料完整且準備生成文件時，才檢查 Page 4 必填
-            if (students.length > 0 && studentErrorCount === 0 && (isProposal || students.every(s => s.name.trim()))) {
+            // V1.0.53 修正: 只有 isProposal 為 true 時，才進行 Page 4 必填檢查
+            if (isProposal && students.length > 0 && studentErrorCount === 0) {
                 let proposalErrorCount = 0;
-                students.forEach((s, i) => {
+                // 我們只檢查被選取的學生
+                const selectedStudents = students.filter(s => s.isSelected);
+                
+                selectedStudents.forEach((s, i) => {
                     const fields = ['teacher_name', 'course_name', 'semester', 'credits'];
                     let studentHasError = false;
 
                     fields.forEach(field => {
-                        const input = document.getElementById(`p_${field}_${i}`);
+                        // 注意：這裡必須使用實際的 DOM ID，即使是 selectedStudents 也是從 DOM 獲取的
+                        const input = document.getElementById(`p_${field}_${s.index}`);
                         if (!input || !input.value.trim()) {
                             input?.classList.add('input-error');
                             studentHasError = true;
@@ -1743,13 +1750,13 @@
                     });
                     
                     // 檢查實習類別
-                    const selectEl = document.getElementById(`p_intern_type_select_${i}`);
+                    const selectEl = document.getElementById(`p_intern_type_select_${s.index}`);
                     if (!selectEl || !selectEl.value.trim()) {
                         selectEl?.classList.add('input-error');
-                        document.getElementById(`p_type_error_${i}`).textContent = '請選擇';
+                        document.getElementById(`p_type_error_${s.index}`).textContent = '請選擇';
                         studentHasError = true;
                     } else {
-                        document.getElementById(`p_type_error_${i}`).textContent = '';
+                        document.getElementById(`p_type_error_${s.index}`).textContent = '';
                     }
 
                     if (studentHasError) {
@@ -1759,7 +1766,7 @@
                 });
 
                 if (proposalErrorCount > 0) {
-                    errorMsg += `• 學生實習計畫書 (Page 4) 共有 ${proposalErrorCount} 位學生的必填欄位未填寫。\n`;
+                    errorMsg += `• 學生實習計畫書 (Page 4) 共有 ${proposalErrorCount} 位選取的學生的必填欄位未填寫。\n`;
                 }
             }
 
@@ -1893,6 +1900,7 @@
 
         // 產生合約文件主流程
         async function generateDoc() {
+            // V1.0.53 修正: validateForm(false) 不再檢查 Page 4
             if (!validateForm(false)) return;
 
             const btn = document.getElementById('genContractBtn');
@@ -1943,9 +1951,10 @@
                     data.student_name = sList[0]?.name + (sCount > 1 ? " 等" : "");
                     
                     // 核心：準備 Loop 用的 students 陣列
-                    const alphabet = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']; // 合約中可能使用中文序號
+                    // V1.0.53 修正: 改為使用英文字母 A, B, C...
+                    const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']; 
                     data.students = sList.map((s, index) => ({
-                        letter: alphabet[index] || (index + 1), // 迴圈中的變數 letter (使用中文數字)
+                        letter: alphabet[index] || (index + 1), // 迴圈中的變數 letter (使用英文字母)
                         name: s.name, 
                         dept: s.dept,
                         grade: s.grade,
@@ -2171,8 +2180,9 @@
 
             try {
                 // 獲取模板緩衝區
-                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
-                    if (!res.ok) throw new Error('找不到 template_plan.docx');
+                // V1.0.53 修正: 使用絕對 URL
+                const arrayBuffer = await fetch(PROPOSAL_TEMPLATE_URL).then(res => {
+                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否已上傳至指定 URL）');
                     return res.arrayBuffer();
                 });
 
@@ -2278,8 +2288,9 @@
             tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`;
 
             try {
-                const arrayBuffer = await fetch('./template_plan.docx').then(res => {
-                    if (!res.ok) throw new Error('找不到 template_plan.docx');
+                // V1.0.53 修正: 使用絕對 URL
+                const arrayBuffer = await fetch(PROPOSAL_TEMPLATE_URL).then(res => {
+                    if (!res.ok) throw new Error('找不到 template_plan.docx（請確認檔案是否已上傳至指定 URL）');
                     return res.arrayBuffer();
                 });
 
