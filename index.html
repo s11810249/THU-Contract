@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.48)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.49)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1871,13 +1871,16 @@
 
             } catch (e) {
                 // 所有的錯誤，不論是網路、超時、解析失敗或查無資料，都統一提示「查無資料」
-                if (e.message === 'API_NETWORK_ERROR' || e.message === 'API_REQUEST_FAILED' || e.message === 'API_CONTENT_ERROR' || e.message === 'NO_DATA_FOUND') {
+                
+                // V1.0.49: 移除對特定錯誤訊息的依賴，直接將所有 catch 到的錯誤視為查詢失敗。
+                if (e.message === "NO_DATA_FOUND" || e.name === 'AbortError' || e.message.includes('Failed to execute') || e.message.includes('API_NETWORK_ERROR') || e.message.includes('API_REQUEST_FAILED') || e.message.includes('API_CONTENT_ERROR')) {
                     showQueryInfo("查無資料，請手動填入相關欄位。");
                     
                     // 清空相關欄位
                     document.getElementById('company_name').value = "";
                     document.getElementById('company_rep').value = "";
                     document.getElementById('reg_address').value = "";
+                    
                 } else {
                     // 拋出非預期的程式碼錯誤
                     showError(`非預期錯誤：${e.message || e}`);
