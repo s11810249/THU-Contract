@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.56 Debug)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.61 Debug)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -62,13 +62,12 @@
             background-color: #fef2f2 !important;
         }
         
-        /* Plan Table Textarea Style for Page 4 */
         .proposal-textarea {
             resize: vertical;
-            min-height: 4.5rem; /* 約三行的高度 */
-            line-height: 1.25rem;
+            min-height: 4.5rem;
+            line-height: 1.5rem;
             padding: 0.5rem 0.75rem;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
         }
 
         /* 移除數字輸入框的上下箭頭 */
@@ -79,18 +78,18 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 日期群組 - 強化置中 */
+        /* 日期群組 */
         .date-group {
             display: flex;
             align-items: center;
-            justify-content: center; /* 水平置中 */
+            justify-content: center;
             background: white;
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             padding: 0.4rem;
             transition: all 0.2s ease;
             overflow: hidden;
-            height: 42px; /* 確保與 input-field 相同高度 */
+            height: 42px;
         }
         .date-group:focus-within {
             border-color: #002E5D;
@@ -98,7 +97,7 @@
         }
         .date-input {
             border: none;
-            text-align: center !important; /* 文字置中 */
+            text-align: center !important;
             width: 100%;
             min-width: 2.5rem;
             outline: none;
@@ -110,14 +109,14 @@
         }
         .date-sep { color: #9ca3af; font-weight: bold; padding: 0 0.1rem; user-select: none; flex-shrink: 0; }
         
-        /* 修正年級輸入框的樣式，使其與 input-field 等高 */
+        /* 年級輸入框 */
         .grade-input-group {
             display: flex;
             align-items: center;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
             background-color: white;
-            height: 42px; /* 確保與 input-field 相同的高度 */
+            height: 42px;
         }
         .grade-input-group:focus-within {
             outline: none;
@@ -126,7 +125,7 @@
         }
         .grade-input-field {
             border: none;
-            padding: 0 0.1rem; /* 調整內邊距 */
+            padding: 0 0.1rem;
             text-align: center !important;
             flex-grow: 1;
             outline: none;
@@ -142,7 +141,7 @@
             flex-shrink: 0;
         }
 
-        /* 學生刪除按鈕樣式 */
+        /* 學生刪除按鈕 */
         .delete-student-btn {
             position: absolute; 
             top: -12px; 
@@ -157,17 +156,15 @@
             color: #ef4444; 
             transition: all 0.2s ease-out;
             z-index: 10;
-            opacity: 0; /* 預設隱藏 */
+            opacity: 0;
             cursor: pointer;
         }
-
         .student-wrapper:hover .delete-student-btn {
-            opacity: 1; /* 靠近時顯示 */
+            opacity: 1;
             background-color: #ef4444; 
             color: white;
             transform: scale(1.1);
         }
-
 
         /* 卡片樣式 */
         .card { 
@@ -203,7 +200,6 @@
             margin-right: 0.75rem;
             border-radius: 2px;
         }
-        /* 隱藏 */
         .hidden { display: none; }
         
         /* 狀態/錯誤訊息 */
@@ -234,7 +230,7 @@
         }
         .fade-in { animation: fadeIn 0.3s ease-out; }
         
-        /* 查詢按鈕樣式 */
+        /* 查詢按鈕 */
         .btn-query {
             background-color: #C6A87C;
             color: #002E5D;
@@ -257,26 +253,25 @@
             box-shadow: none !important;
         }
 
-        /* 頁籤樣式 */
+        /* 頁籤 */
         .tab-button {
             padding: 0.75rem 1.5rem;
             font-weight: 700;
             border-radius: 0.5rem 0.5rem 0 0;
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
-            color: #9ca3af; /* 預設文字顏色 */
+            color: #9ca3af;
             background-color: #f3f4f6;
             margin-right: 0.25rem;
             flex-grow: 1; 
             text-align: center;
         }
         .tab-button.active {
-            color: #002E5D; /* 啟用文字顏色 */
+            color: #002E5D;
             background-color: white;
-            border-color: #002E5D; /* 啟用底部顏色 */
+            border-color: #002E5D;
             box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
         }
-        /* 讓頁籤容器的背景延伸到邊緣，實現等寬視覺效果 */
         .tab-container {
             border-bottom: 1px solid #d1d5db;
             background-color: #f3f4f6;
@@ -286,55 +281,25 @@
             z-index: 20;
         }
 
-
-        /* Page 4: Table Styles */
-        .proposal-table th, .proposal-table td {
-            padding: 0.75rem 0.5rem;
-            vertical-align: top; /* 調整為頂部對齊，配合 textarea */
-            font-size: 0.85rem;
-            white-space: nowrap; /* 防止標題換行 */
-        }
-        .proposal-table th {
-            text-align: left;
-            background-color: #f9fafb;
-            color: #374151;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        .proposal-table tr:nth-child(even) {
-            background-color: #ffffff;
-        }
-        .proposal-table tr:nth-child(odd) {
-            background-color: #fefefe;
-        }
-        .non-editable {
-            background-color: #e5e7eb !important;
-            color: #4b5563;
-            font-weight: 500;
-            border: 1px solid #d1d5db;
-        }
-        .text-xs-force {
-            font-size: 0.75rem !important;
-        }
-        
-        /* 導航按鈕樣式 */
+        /* 導航按鈕 */
         .nav-button {
-            background-color: #f0f4ff; /* 淺藍色背景 */
-            color: #002E5D; /* 東海藍文字 */
+            background-color: #f0f4ff;
+            color: #002E5D;
             border: none;
             transition: all 0.2s;
-            height: 48px; /* 統一高度 */
-            font-weight: 600; /* 加粗 */
+            height: 48px;
+            font-weight: 600;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         .nav-button:hover:not(:disabled) {
-            background-color: #e3e9ff; /* 懸停時顏色稍深 */
+            background-color: #e3e9ff;
             color: #002E5D;
             transform: translateY(-1px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        /* 文件產出按鈕樣式 (New style for genContractBtn/genProposalBtn) */
+        /* 文件產出按鈕 */
         .btn-generate {
-            height: 64px; /* Primary Action Button Height */
+            height: 64px;
             background: linear-gradient(135deg, #002E5D 0%, #004080 100%);
             box-shadow: 0 4px 6px -1px rgba(0, 46, 93, 0.3), 0 2px 4px -1px rgba(0, 46, 93, 0.1);
             transition: all 0.3s ease;
@@ -355,7 +320,7 @@
             box-shadow: none;
         }
         
-        /* 卡片式 Radio 樣式 (實習待遇) */
+        /* 卡片式 Radio */
         .pay-option-label {
             position: relative;
             display: flex;
@@ -363,7 +328,7 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            border: 1px solid #e5e7eb; /* 修正: 使用 1px 邊框 */
+            border: 1px solid #e5e7eb;
             border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
@@ -372,12 +337,11 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
         .pay-option-label:hover {
-            background-color: #f9fafb; /* gray-50 */
-            border-color: #cbd5e1; /* gray-300 */
+            background-color: #f9fafb;
+            border-color: #cbd5e1;
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
-        
         .radio-card-input {
             position: absolute;
             opacity: 0;
@@ -385,21 +349,18 @@
             height: 0;
         }
         
-        /* 1. 無 (灰色系) */
         .pay-option-none:has(input:checked) { border-color: #475569; background-color: #f1f5f9; box-shadow: 0 0 0 1px #475569; }
         .pay-option-none .pay-option-icon { color: #94a3b8; }
         .pay-option-none:has(input:checked) .pay-option-icon { color: #475569; }
         .pay-option-none:has(input:checked) .pay-option-text { color: #0f172a; }
 
-        /* 2. 獎學金 (金色系) */
         .pay-option-scholar:has(input:checked) { border-color: #b45309; background-color: #fffbeb; box-shadow: 0 0 0 1px #b45309; }
         .pay-option-scholar .pay-option-icon { color: #d97706; }
         .pay-option-scholar:has(input:checked) .pay-option-icon { color: #b45309; }
         .pay-option-scholar:has(input:checked) .pay-option-text { color: #78350f; }
 
-        /* 3. 實習津貼 (深藍色系 - 改為東海藍) */
         .pay-option-allowance:has(input:checked) { border-color: #002E5D; background-color: #f0f9ff; box-shadow: 0 0 0 1px #002E5D; }
-        .pay-option-allowance .pay-option-icon { color: #1e40af; } /* blue-800 */
+        .pay-option-allowance .pay-option-icon { color: #1e40af; }
         .pay-option-allowance:has(input:checked) .pay-option-icon { color: #002E5D; }
         .pay-option-allowance:has(input:checked) .pay-option-text { color: #002E5D; }
 
@@ -413,7 +374,7 @@
             color: #64748b;
         }
 
-        /* DEBUG 上傳按鈕樣式 */
+        /* DEBUG 上傳按鈕 */
         .debug-upload-label {
             display: inline-flex;
             align-items: center;
@@ -437,6 +398,14 @@
         .debug-status.show {
             display: inline;
         }
+        
+        /* Page 4 新樣式 */
+        .student-proposal-card {
+            transition: all 0.3s ease;
+        }
+        .student-proposal-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
     </style>
 </head>
 <body>
@@ -451,7 +420,6 @@
     <!-- 錯誤訊息彈窗 -->
     <div id="error-modal">
         <div id="error-content">
-            <!-- 給予 ID 方便 JS 動態修改標題和顏色 -->
             <h3 id="modal-header-title" class="text-xl font-bold text-red-600 mb-4 flex items-center gap-2">
                 <i id="modal-header-icon" class="fa-solid fa-circle-exclamation"></i> 發生錯誤
             </h3>
@@ -464,19 +432,17 @@
         </div>
     </div>
 
-    <!-- Header (深色背景) -->
+    <!-- Header -->
     <div class="fixed top-0 left-0 w-full bg-thuBlue z-50 shadow-md">
         <div class="max-w-4xl mx-auto px-4 md:px-8 h-[80px] flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <img src="https://www.thu.edu.tw/upload/pagepic_upload/logo_w.svg" alt="THU Logo" class="h-10 w-auto">
                 <div class="flex flex-col justify-center text-white">
-                    <!-- 標題修改為 文件產生器 -->
                     <div class="text-lg md:text-xl font-bold tracking-wide leading-tight">學生校外實習文件產生器</div>
                     <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">Internship Document Generation System (Debug Mode)</div>
                 </div>
             </div>
             
-            <!-- 右上角連結區 -->
             <div class="hidden md:flex gap-3 text-sm">
                 <a href="https://aca.thu.edu.tw/web/isac/page.php?scid=112&sid=103" target="_blank" class="flex items-center gap-2 px-4 py-2 border border-thuGold text-thuGold rounded-full hover:bg-thuGold hover:text-thuBlue transition-all duration-200 font-medium">
                     <i class="fa-solid fa-link"></i> 實習中心網頁
@@ -491,7 +457,7 @@
     <!-- 主要表單 -->
     <main class="mx-auto px-4 mb-20 pt-24 max-w-7xl">
         
-        <!-- 頁籤導航 (Tab Navigation) -->
+        <!-- 頁籤導航 -->
         <div class="tab-container max-w-4xl mx-auto">
             <div class="flex border-b border-gray-300 px-0">
                 <button class="tab-button active" data-page="page-1" onclick="showPage('page-1')">
@@ -526,18 +492,16 @@
                                     <ul class="list-disc list-outside ml-4 mt-1 space-y-1 text-sm">
                                         <li class="font-bold text-thuBlue">步驟 1 (Page 2)：填寫所有實習學生的基本資料。</li>
                                         <li class="font-bold text-thuBlue">步驟 2 (Page 3)：填寫實習機構、期間、待遇等合約必要資料。</li>
-                                        <li class="font-bold text-thuBlue">步驟 3 (Page 4)：針對每位學生，在表格中填寫計畫書所需的課程與老師資料。</li>
+                                        <li class="font-bold text-thuBlue">步驟 3 (Page 4)：針對每位學生，填寫課程與老師資料（支援複製功能）。</li>
                                     </ul>
                                 </li>
-                                <li>所有資料輸入完畢後，您可以在 **Page 3 (實習合約內容)** 產出合約文件，並在 **Page 4 (學生實習計畫書)** 產出計畫書文件。</li>
+                                <li>所有資料輸入完畢後，您可以在 **Page 3** 產出合約，並在 **Page 4** 產出計畫書。</li>
                                 <li>所有運算皆在您的瀏覽器完成，不會上傳任何個資。</li>
-                                <li>如有任何系統反饋，歡迎寄信至 <a href="mailto:s11810249@thu.edu.tw" class="text-blue-600 hover:underline">s11810249@thu.edu.tw</a>！</li>
                             </ol>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 頁面導航 -->
                 <div class="flex justify-end mt-6">
                     <button type="button" onclick="showPage('page-2')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                         下一步 <i class="fa-solid fa-arrow-right"></i>
@@ -595,7 +559,6 @@
                     <div class="card-header">
                         <div class="flex items-center">
                              <span class="card-header-title">乙方：實習機構資料 (Page 3/4)</span>
-                             <!-- DEBUG: Contract Template Upload -->
                              <label class="debug-upload-label">
                                 <i class="fa-solid fa-wrench"></i> 測試合約範本
                                 <input type="file" accept=".docx" class="hidden" onchange="handleDebugUpload(event, 'contract')">
@@ -778,6 +741,15 @@
                             </div>
                             <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col gap-6 fade-in">
                                 <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider w-fit">勞資型</span>
+                                <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400 shadow-sm text-xs text-gray-600 leading-relaxed">
+                                    <div class="font-bold text-orange-600 mb-2 flex items-center gap-1 text-sm">
+                                        <i class="fa-solid fa-scale-balanced"></i> 勞動部基本工資公告
+                                    </div>
+                                    <ul class="list-disc list-inside space-y-1.5">
+                                        <li><span class="font-bold text-gray-800">115年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">29,500</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">196</span> 元。(勞動部114年10月21日公告)</li>
+                                        <li><span class="font-bold text-gray-800">114年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">28,590</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">190</span> 元。(勞動部113年9月19日公告)</li>
+                                    </ul>
+                                </div>
                                 <div>
                                     <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額 (月薪)</label>
                                     <div class="relative w-full md:w-64">
@@ -851,7 +823,6 @@
                     <div class="card-header">
                         <div class="flex items-center">
                             <span class="card-header-title">學生實習計畫書 (Page 4/4)</span>
-                             <!-- DEBUG: Proposal Template Upload -->
                              <label class="debug-upload-label">
                                 <i class="fa-solid fa-wrench"></i> 測試計畫書範本
                                 <input type="file" accept=".docx" class="hidden" onchange="handleDebugUpload(event, 'proposal')">
@@ -863,27 +834,23 @@
                         </div>
                     </div>
                     
-                    <div class="p-4 overflow-x-auto">
-                        <table class="w-full proposal-table border-collapse">
-                            <thead>
-                                <tr>
-                                    <th class="w-12 text-center">
-                                        <input type="checkbox" id="select_all_proposals" onclick="toggleSelectAll(this)" class="w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue">
-                                    </th>
-                                    <th class="w-28">姓名 / 學號</th>
-                                    <th class="w-24">系所 / 年級</th>
-                                    <th class="w-36">輔導老師 <span class="text-red-500">*</span></th>
-                                    <th class="w-72">課程名稱 <span class="text-red-500">*</span></th>
-                                    <th class="w-24">學期 <span class="text-red-500">*</span></th>
-                                    <th class="w-16">學分 <span class="text-red-500">*</span></th>
-                                    <th class="w-40">實習類別 <span class="text-red-500">*</span></th>
-                                    <th class="w-24">時數說明</th>
-                                    <th class="w-24 text-center">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="proposal_table_body"></tbody>
-                        </table>
+                    <div class="p-6 bg-white">
+                        <div class="flex items-center justify-between mb-4 px-2">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="select_all_proposals" onclick="toggleSelectAll(this)" class="w-5 h-5 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue cursor-pointer">
+                                <label for="select_all_proposals" class="ml-3 text-sm font-bold text-gray-600 cursor-pointer select-none">全選所有學生</label>
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                <i class="fa-regular fa-lightbulb mr-1"></i> 點擊卡片可展開/收合填寫
+                            </div>
+                        </div>
+
+                        <!-- 改用列表容器 -->
+                        <div id="proposal_list_container" class="space-y-4">
+                            <!-- Dynamic cards inserted here by JS -->
+                        </div>
                     </div>
+
                     <div id="proposal_empty_msg" class="p-8 text-center text-gray-500 hidden">
                         請先返回「實習學生資料」頁面填寫學生人數。
                     </div>
@@ -898,9 +865,8 @@
                         <i class="fa-solid fa-file-zipper"></i> 打包下載選取計畫書 (ZIP)
                     </button>
 
-                    <button type="button" onclick="generateProposalDoc()" id="genProposalBtn" class="btn-generate w-64 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3 hidden">
-                        <i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)
-                    </button>
+                    <!-- 隱藏的舊按鈕 -->
+                    <button type="button" onclick="generateProposalDoc()" id="genProposalBtn" class="hidden"></button>
                 </div>
             </div>
         </form>
@@ -911,7 +877,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.56 (Debug Mode) | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.61 (Debug Mode) | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -921,7 +887,6 @@
     <script>
         let studentDataState = [];
         
-        // --- 核心工具：清洗 XML (解決 ReferenceError 問題) ---
         function cleanXML(xml) {
             if (!xml) return "";
             const pattern = /%%%[^%]+%%%/g;
@@ -930,7 +895,6 @@
             });
         }
 
-        // --- DEBUG: 上傳測試範本 ---
         let debugContractBuffer = null;
         let debugProposalBuffer = null;
 
@@ -951,7 +915,6 @@
             reader.readAsArrayBuffer(file);
         }
         
-        // 取得範本 (優先使用 Debug)
         async function getTemplateBuffer(type) {
             if (type === 'contract' && debugContractBuffer) return debugContractBuffer;
             if (type === 'proposal' && debugProposalBuffer) return debugProposalBuffer;
@@ -1027,7 +990,20 @@
             document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
             if (pageId === 'page-4') {
                 collectStudentDataFromPage2();
-                renderProposalTable();
+                renderProposalList(); 
+            }
+        }
+        
+        // V1.0.61: Ensure toggleExpand is globally accessible
+        window.toggleExpand = function(index) {
+            const body = document.getElementById(`proposal_body_${index}`);
+            const chevron = document.getElementById(`chevron_${index}`);
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                body.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
             }
         }
         
@@ -1047,7 +1023,12 @@
                     raw_grade: gradeInput,
                     id: document.getElementById(`s_id_${i}`)?.value || "",
                     isSelected: existingState.isSelected === undefined ? true : existingState.isSelected,
+                    
+                    // Page 4 Fields
                     teacher_name: existingState.teacher_name || "",
+                    teacher_contact: existingState.teacher_contact || "", // V1.0.61 Added
+                    industry_teacher: existingState.industry_teacher || "", 
+                    industry_contact: existingState.industry_contact || "", 
                     course_name: existingState.course_name || "",
                     semester: existingState.semester || "",
                     credits: existingState.credits || "",
@@ -1058,6 +1039,7 @@
             studentDataState = tempStudentData;
         }
 
+        // Page 2 渲染 (No changes)
         function renderStudents() {
             const count = Number(document.getElementById('student_count').value) || 1;
             const c = document.getElementById('student_container');
@@ -1130,7 +1112,7 @@
             input.value = val;
             document.getElementById('student_count_display').innerText = val + " 人";
             renderStudents();
-            renderProposalTable();
+            renderProposalList();
         }
         
         function deleteStudent(indexToDelete) {
@@ -1144,9 +1126,10 @@
             document.getElementById('student_count').value = currentCount;
             document.getElementById('student_count_display').innerText = currentCount + " 人";
             renderStudents();
-            renderProposalTable();
+            renderProposalList();
         }
 
+        // Excel logic (No changes)
         function downloadExcelTemplate() {
             const data = [['姓名', '學號', '系所', '年級'], ['王小明', 'S1181000', '法律系', '四'], ['陳小華', 'S1181001', '社會系', '三']];
             const ws = XLSX.utils.aoa_to_sheet(data);
@@ -1190,7 +1173,7 @@
                         if(gradeInput) gradeInput.value = s.grade;
                     });
                     collectStudentDataFromPage2();
-                    renderProposalTable();
+                    renderProposalList();
                     showMsg(`成功匯入 ${validStudents.length} 筆學生資料！`);
                     event.target.value = '';
                 } catch (error) {
@@ -1269,12 +1252,13 @@
         function toggleStudentSelection(index) {
             if (studentDataState[index]) studentDataState[index].isSelected = !studentDataState[index].isSelected;
             updateSelectAllCheckbox();
+            renderProposalList(false); // Re-render to update button text
         }
 
         function toggleSelectAll(checkbox) {
             const isChecked = checkbox.checked;
             studentDataState = studentDataState.map(s => ({ ...s, isSelected: isChecked }));
-            renderProposalTable(false);
+            renderProposalList(false);
         }
 
         function updateSelectAllCheckbox() {
@@ -1288,15 +1272,49 @@
             else { selectAll.checked = false; selectAll.indeterminate = false; }
         }
 
-        function renderProposalTable(restoreSelection = true) {
-            const tableBody = document.getElementById('proposal_table_body');
+        // V1.0.61: 優化版複製功能 (含新增欄位)
+        function copyPlanToSelected(sourceIndex) {
+            updateProposalDataState(); 
+
+            const source = studentDataState[sourceIndex];
+            const targets = studentDataState.filter(s => s.isSelected && s.index !== sourceIndex);
+
+            if (targets.length === 0) {
+                showModal('操作提示', '請先勾選其他想要套用此資料的學生 (核取方塊)。', 'info');
+                return;
+            }
+
+            const confirmMsg = `確定要將「${source.name}」的計畫書資料 (老師、課程、學分等) 複製給勾選的 ${targets.length} 位同學嗎？\n\n注意：這將覆蓋他們原本的資料。`;
+            if (!confirm(confirmMsg)) return;
+
+            targets.forEach(target => {
+                target.teacher_name = source.teacher_name;
+                target.teacher_contact = source.teacher_contact; // V1.0.61 Copied
+                target.industry_teacher = source.industry_teacher;
+                target.industry_contact = source.industry_contact; 
+                target.course_name = source.course_name;
+                target.semester = source.semester;
+                target.credits = source.credits;
+                target.intern_type_select = source.intern_type_select;
+                target.hours_exceeded_desc = source.hours_exceeded_desc;
+            });
+
+            renderProposalList(false); 
+            showMsg(`已成功複製資料給 ${targets.length} 位學生！`);
+        }
+
+        // V1.0.61: 收合式列表渲染 (含新增欄位)
+        function renderProposalList(restoreSelection = true) {
+            const container = document.getElementById('proposal_list_container');
             const studentCountDisplay = document.getElementById('proposal_student_count');
             const emptyMsg = document.getElementById('proposal_empty_msg');
-            collectStudentDataFromPage2();
+            
+            if(restoreSelection) collectStudentDataFromPage2(); 
+            
             const students = studentDataState;
             const count = students.length;
             studentCountDisplay.textContent = count;
-            tableBody.innerHTML = '';
+            container.innerHTML = '';
 
             if (count === 0 || students.every(s => !s.name.trim() && !s.id.trim())) {
                 emptyMsg.classList.remove('hidden');
@@ -1306,67 +1324,138 @@
             emptyMsg.classList.add('hidden');
             document.getElementById('select_all_proposals').disabled = false;
 
+            const selectedCount = students.filter(s => s.isSelected).length;
+
             students.forEach((s, i) => {
-                const tr = document.createElement('tr');
-                tr.id = `proposal_row_${i}`;
-                tr.className = "border-b border-gray-100 hover:bg-yellow-50/50 transition";
-                const isSelected = students[i].isSelected;
+                const copyBtnText = selectedCount > 0 
+                    ? `複製給勾選的 ${s.isSelected ? selectedCount - 1 : selectedCount} 位` 
+                    : `複製資料給...`;
+                
+                const card = document.createElement('div');
+                card.className = "student-proposal-card bg-white border border-gray-200 rounded-lg overflow-hidden mb-4";
+                card.id = `proposal_row_${i}`; 
 
-                tr.innerHTML = `
-                    <td class="text-center">
-                        <input type="checkbox" data-index="${i}" onchange="toggleStudentSelection(${i})" class="proposal-select-checkbox w-4 h-4 text-thuBlue bg-gray-100 border-gray-300 rounded focus:ring-thuBlue" ${isSelected ? 'checked' : ''}>
-                    </td>
-                    <td class="text-center font-bold text-xs-force">
-                        <div class="font-bold">${s.name}</div>
-                        <div class="text-gray-500">${s.id}</div>
-                    </td>
-                    <td class="text-xs-force">
-                        <div>${s.dept}</div>
-                        <div class="text-gray-500">${s.grade}</div>
-                    </td>
-                    <td class="p-0 py-1"><input type="text" id="p_teacher_name_${i}" data-field="teacher_name" class="input-field p-1 text-sm h-8" value="${s.teacher_name}" placeholder="姓名"></td>
-                    <td class="p-0 py-1">
-                        <textarea id="p_course_name_${i}" data-field="course_name" class="input-field proposal-textarea text-sm" placeholder="課程名稱 (可換行填寫)">${s.course_name}</textarea>
-                    </td>
-                    <td class="p-0 py-1"><input type="text" id="p_semester_${i}" data-field="semester" class="input-field p-1 text-sm h-8" value="${s.semester}" placeholder="113-1"></td>
-                    <td class="p-0 py-1"><input type="number" id="p_credits_${i}" data-field="credits" class="input-field p-1 text-sm h-8" value="${s.credits}" placeholder="3"></td>
-                    <td>
-                        <select id="p_intern_type_select_${i}" data-field="intern_type_select" class="input-field text-xs-force h-8 p-1">
-                            <option value="" disabled selected>請選擇</option>
-                            <option value="full" ${s.intern_type_select === 'full' ? 'selected' : ''}>整學年</option>
-                            <option value="sem" ${s.intern_type_select === 'sem' ? 'selected' : ''}>整學期</option>
-                            <option value="winter" ${s.intern_type_select === 'winter' ? 'selected' : ''}>寒假實習</option>
-                            <option value="summer" ${s.intern_type_select === 'summer' ? 'selected' : ''}>暑假實習</option>
-                            <option value="term" ${s.intern_type_select === 'term' ? 'selected' : ''}>學期期間實習</option>
-                        </select>
-                        <div class="text-red-500 font-bold text-xs-force mt-1" id="p_type_error_${i}"></div>
-                    </td>
-                    <td class="p-0 py-1">
-                        <textarea id="p_hours_exceeded_desc_${i}" data-field="hours_exceeded_desc" class="input-field proposal-textarea text-sm" placeholder="選填">${s.hours_exceeded_desc}</textarea>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" onclick="downloadIndividualProposal(${i})" class="bg-thuGold text-thuBlue text-xs font-bold px-3 py-1.5 rounded hover:bg-thuGold/80 transition shadow-sm">
-                            <i class="fa-solid fa-download"></i> 下載
-                        </button>
-                    </td>
+                card.innerHTML = `
+                    <!-- Header (Collapsed) -->
+                    <div class="flex items-center justify-between p-4 bg-gray-50 cursor-pointer select-none border-b border-transparent hover:bg-blue-50/30 transition-colors" onclick="toggleExpand(${i})">
+                        <div class="flex items-center gap-4 flex-grow overflow-hidden">
+                            <div class="flex items-center justify-center w-8 shrink-0" onclick="event.stopPropagation()">
+                                <input type="checkbox" data-index="${i}" onchange="toggleStudentSelection(${i})" class="w-5 h-5 text-thuBlue bg-white border-gray-300 rounded focus:ring-thuBlue cursor-pointer" ${s.isSelected ? 'checked' : ''}>
+                            </div>
+                            <div class="flex flex-col truncate">
+                                <div class="text-base font-bold text-gray-800 flex items-center gap-2">
+                                    ${s.name || '<span class="text-gray-400 italic">未命名</span>'} 
+                                    <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-mono">${s.id}</span>
+                                </div>
+                                <div class="text-xs text-gray-500 truncate">${s.dept} | ${s.grade}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex items-center gap-2 shrink-0" onclick="event.stopPropagation()">
+                             <button type="button" onclick="copyPlanToSelected(${i})" class="hidden md:flex bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-indigo-200 transition items-center gap-1 border border-indigo-200" title="將此學生的資料複製給勾選的同學">
+                                <i class="fa-regular fa-copy"></i> ${copyBtnText}
+                             </button>
+                             <button type="button" onclick="downloadIndividualProposal(${i})" class="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-1">
+                                <i class="fa-solid fa-file-word"></i> 下載計畫書
+                             </button>
+                             <div class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-thuBlue transition-colors">
+                                 <i class="fa-solid fa-chevron-down transition-transform duration-300" id="chevron_${i}"></i>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Body (Expanded Form) -->
+                    <div id="proposal_body_${i}" class="hidden border-t border-gray-100 p-6 bg-white">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <!-- 1. 老師資訊區塊 -->
+                            <div class="lg:col-span-3 bg-blue-50/60 p-5 rounded-xl border border-blue-100">
+                                <h4 class="text-sm font-bold text-thuBlue mb-4 flex items-center gap-2">
+                                    <span class="w-1 h-4 bg-thuBlue rounded-full"></span>
+                                    指導老師資訊
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 mb-1">校方輔導老師姓名 <span class="text-red-500">*</span></label>
+                                        <input type="text" id="p_teacher_name_${i}" class="input-field text-sm" value="${s.teacher_name}" placeholder="姓名">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 mb-1">校方輔導老師聯絡方式</label>
+                                        <input type="text" id="p_teacher_contact_${i}" class="input-field text-sm" value="${s.teacher_contact}" placeholder="電話或分機">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 mb-1">業界老師姓名</label>
+                                        <input type="text" id="p_industry_teacher_${i}" class="input-field text-sm" value="${s.industry_teacher}" placeholder="姓名 (選填)">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 mb-1">業界老師聯絡方式</label>
+                                        <input type="text" id="p_industry_contact_${i}" class="input-field text-sm" value="${s.industry_contact}" placeholder="電話或分機 (選填)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. 課程基本資料 -->
+                            <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">實習課程名稱 <span class="text-red-500">*</span></label>
+                                    <textarea id="p_course_name_${i}" class="input-field proposal-textarea text-sm" placeholder="課程名稱">${s.course_name}</textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">開課學期 <span class="text-red-500">*</span></label>
+                                    <input type="text" id="p_semester_${i}" class="input-field text-sm" value="${s.semester}" placeholder="例：113-1">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">實習學分 <span class="text-red-500">*</span></label>
+                                    <input type="number" id="p_credits_${i}" class="input-field text-sm" value="${s.credits}" placeholder="3">
+                                </div>
+                            </div>
+
+                            <!-- 3. 類別與時數 -->
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">實習類別 <span class="text-red-500">*</span></label>
+                                    <select id="p_intern_type_select_${i}" class="input-field text-sm h-[42px]">
+                                        <option value="" disabled selected>請選擇</option>
+                                        <option value="full" ${s.intern_type_select === 'full' ? 'selected' : ''}>整學年</option>
+                                        <option value="sem" ${s.intern_type_select === 'sem' ? 'selected' : ''}>整學期</option>
+                                        <option value="winter" ${s.intern_type_select === 'winter' ? 'selected' : ''}>寒假實習</option>
+                                        <option value="summer" ${s.intern_type_select === 'summer' ? 'selected' : ''}>暑假實習</option>
+                                        <option value="term" ${s.intern_type_select === 'term' ? 'selected' : ''}>學期期間實習</option>
+                                    </select>
+                                    <div class="text-red-500 font-bold text-xs mt-1" id="p_type_error_${i}"></div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">時數說明 (特殊情況)</label>
+                                    <textarea id="p_hours_exceeded_desc_${i}" class="input-field proposal-textarea text-sm" placeholder="若時數有特殊安排請說明">${s.hours_exceeded_desc}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 `;
-                tableBody.appendChild(tr);
+                container.appendChild(card);
 
+                // 綁定事件 (新增的欄位也要綁定)
                 document.getElementById(`p_teacher_name_${i}`)?.addEventListener('input', updateProposalDataState);
+                document.getElementById(`p_teacher_contact_${i}`)?.addEventListener('input', updateProposalDataState); // V1.0.61 Added
+                document.getElementById(`p_industry_teacher_${i}`)?.addEventListener('input', updateProposalDataState);
+                document.getElementById(`p_industry_contact_${i}`)?.addEventListener('input', updateProposalDataState);
                 document.getElementById(`p_course_name_${i}`)?.addEventListener('input', updateProposalDataState);
                 document.getElementById(`p_semester_${i}`)?.addEventListener('input', updateProposalDataState);
                 document.getElementById(`p_credits_${i}`)?.addEventListener('input', updateProposalDataState);
                 document.getElementById(`p_intern_type_select_${i}`)?.addEventListener('change', updateProposalDataState);
                 document.getElementById(`p_hours_exceeded_desc_${i}`)?.addEventListener('input', updateProposalDataState);
             });
+            
             updateSelectAllCheckbox();
         }
 
         function updateProposalDataState() {
             studentDataState.forEach((s, i) => {
                 const row = document.getElementById(`proposal_row_${i}`);
-                if (!row) return;
-                ['teacher_name', 'semester', 'credits'].forEach(f => {
+                if (!row) return; // 確保該列存在
+                
+                ['teacher_name', 'teacher_contact', 'industry_teacher', 'industry_contact', 'semester', 'credits'].forEach(f => {
                     const input = document.getElementById(`p_${f}_${i}`);
                     if (input) s[f] = input.value;
                 });
@@ -1400,7 +1489,7 @@
             let errorMsg = "";
             document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200'));
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-            document.querySelectorAll('.text-red-500.font-bold.text-xs-force').forEach(el => el.textContent = '');
+            document.querySelectorAll('.text-red-500.font-bold.text-xs').forEach(el => el.textContent = '');
             
             const students = studentDataState;
             let studentErrorCount = 0;
@@ -1660,7 +1749,17 @@
                 const Docxtemplater = window.docxtemplater || docxtemplater;
 
                 for (const student of selectedStudents) {
-                    const data = { ...commonData, students: [{...student, letter: 'A'}], student_name: student.name, s1_name: student.name, id: student.id, dept: student.dept, grade: student.grade, teacher_name: student.teacher_name, course_name: student.course_name, semester: student.semester, credits: student.credits, hours_exceeded_desc: student.hours_exceeded_desc, intern_type_full: student.intern_type_select === 'full' ? '■' : '□', intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□', intern_type_term: student.intern_type_select === 'term' ? '■' : '□', };
+                    const data = { 
+                        ...commonData, 
+                        students: [{...student, letter: 'A'}], 
+                        student_name: student.name, s1_name: student.name, id: student.id, dept: student.dept, grade: student.grade,
+                        teacher_name: student.teacher_name, 
+                        teacher_contact: student.teacher_contact, // V1.0.61 Added
+                        industry_teacher: student.industry_teacher, // 新增
+                        industry_contact: student.industry_contact, // 新增
+                        course_name: student.course_name, semester: student.semester, credits: student.credits, hours_exceeded_desc: student.hours_exceeded_desc,
+                        intern_type_full: student.intern_type_select === 'full' ? '■' : '□', intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□', intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
+                    };
 
                     let docZip = new PizZip(arrayBuffer.slice(0));
                     const docFile = docZip.file("word/document.xml");
@@ -1668,7 +1767,7 @@
 
                     const doc = new Docxtemplater(docZip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
                     doc.render(data);
-                    const out = doc.getZip().generate({ type: "nodebuffer" });
+                    const out = doc.getZip().generate({ type: "uint8array" });
                     zip.file(`實習計畫書_${student.name}.docx`, out);
                 }
 
@@ -1703,7 +1802,11 @@
                     company_name: companyName, company_address: regAddr, plan_intern_location: planLoc,
                     s_y, s_m, s_d, e_y, e_m, e_d,
                     students: [studentData], student_name: studentData.name, s1_name: studentData.name, id: studentData.id, dept: studentData.dept, grade: studentData.grade,
-                    teacher_name: studentData.teacher_name, course_name: studentData.course_name, semester: studentData.semester, credits: studentData.credits, hours_exceeded_desc: studentData.hours_exceeded_desc,
+                    teacher_name: studentData.teacher_name, 
+                    teacher_contact: studentData.teacher_contact, // V1.0.61 Added
+                    industry_teacher: studentData.industry_teacher, // 新增
+                    industry_contact: studentData.industry_contact, // 新增
+                    course_name: studentData.course_name, semester: studentData.semester, credits: studentData.credits, hours_exceeded_desc: studentData.hours_exceeded_desc,
                     intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□', intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□', intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
                 };
                 
