@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.49)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.52)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -943,7 +943,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.48 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.52 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -995,8 +995,15 @@
                 iconClass += 'fa-circle-info';
             }
 
-            icon.className = iconClass;
-            header.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+            // 修正: 確保 icon 元素存在才設定 className
+            if (icon) {
+                icon.className = iconClass;
+            }
+            // 標題應該一直存在，但保險起見也更新
+            if (header) {
+                 header.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+            }
+            
             content.textContent = message;
             modal.style.display = 'flex';
         }
@@ -1016,7 +1023,7 @@
         });
 
         // ----------------------------------------------------
-        // V1.0.47 修正: 將 Page 專屬/核心函式移到全域 (解決 ReferenceError)
+        // V1.0.47/V1.0.51: 核心函式定義 (全部移到頂層)
         // ----------------------------------------------------
 
         // V1.0.25 變更: 頁面切換邏輯
@@ -1763,19 +1770,6 @@
             return isValid;
         }
 
-        // 移除 cleanXML 函數，改為依賴模板中穩定的 Docxtemplater Hashtag 語法。
-        function cleanXML(xmlStr) {
-             // 替換打勾符號為實心方塊
-            xmlStr = xmlStr.replace(/☑/g, '■'); 
-            
-            // 僅執行最基本的 XML 清除，不進行複雜的標籤修復
-            try {
-                xmlStr = xmlStr.replace(/<w:(proofErr|gramE|lang|bookmarkStart|bookmarkEnd|rsid[^ >]*)[^>]*\/?>/g, "");
-                xmlStr = xmlStr.replace(/<w:del[^>]*>[\s\S]*?<\/w:del>/g, "");
-                xmlStr = xmlStr.replace(/<w:ins[^>]*>/g, "").replace(/<\/w:ins>/g, "");
-                return xmlStr;
-            } catch (e) { console.warn('cleanXML failed', e); return xmlStr; }
-        }
 
         // 透過統一編號查詢公司資料並自動填入表單
         async function getCompanyInfo() {
@@ -1872,8 +1866,7 @@
             } catch (e) {
                 // 所有的錯誤，不論是網路、超時、解析失敗或查無資料，都統一提示「查無資料」
                 
-                // V1.0.49: 移除對特定錯誤訊息的依賴，直接將所有 catch 到的錯誤視為查詢失敗。
-                if (e.message === "NO_DATA_FOUND" || e.name === 'AbortError' || e.message.includes('Failed to execute') || e.message.includes('API_NETWORK_ERROR') || e.message.includes('API_REQUEST_FAILED') || e.message.includes('API_CONTENT_ERROR')) {
+                if (e.name === 'AbortError' || e.message.includes('Failed to fetch') || e.message.includes('Failed to execute') || e.message.includes('API_NETWORK_ERROR') || e.message.includes('API_REQUEST_FAILED') || e.message.includes('API_CONTENT_ERROR') || e.message.includes('NO_DATA_FOUND')) {
                     showQueryInfo("查無資料，請手動填入相關欄位。");
                     
                     // 清空相關欄位
@@ -2185,11 +2178,25 @@
 
                 const Docxtemplater = window.docxtemplater || docxtemplater;
                 
-                // 準備 Page 3 合約共用數據
+                // Page 3: 機構共用數據
+                const companyName = document.getElementById('company_name')?.value || "未填寫";
+                const regAddr = document.getElementById('reg_address')?.value || "";
+                const branchName = document.getElementById('branch_name')?.value || "";
+
                 const commonData = {
-                    company_name: document.getElementById('company_name')?.value || "未填寫",
-                    company_address: document.getElementById('reg_address')?.value || "",
-                    // ... 其他 Page 3 數據
+                    company_name: companyName,
+                    company_address: regAddr,
+                    
+                    // V1.0.50 新增：計畫書專用地點 (總公司名 + 分公司名)
+                    plan_intern_location: branchName.trim()
+                        ? `${companyName} (${branchName})`
+                        : companyName,
+                    
+                    // 其他 Page 3 數據
+                    company_tax_id: document.getElementById('no_tax_id').checked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "未填寫"),
+                    company_rep: document.getElementById('company_rep')?.value || "未填寫",
+                    company_title: document.getElementById('company_title')?.value || "未填寫",
+                    // 這裡只列出 Plan 中需要的，避免不必要的數據傳輸
                 };
 
                 for (const student of selectedStudents) {
@@ -2203,6 +2210,11 @@
                         // 頂層標籤 (使用該學生數據覆蓋)
                         student_name: student.name,
                         s1_name: student.name,
+                        
+                        // Page 2/4 頂層標籤
+                        id: student.id,
+                        dept: student.dept,
+                        grade: student.grade,
                         teacher_name: student.teacher_name,
                         course_name: student.course_name,
                         semester: student.semester,
@@ -2213,6 +2225,7 @@
                         intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□',
                         intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□',
                         intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
+                        
                     };
 
                     // 2. 複製模板 ZIP 並渲染
@@ -2270,14 +2283,30 @@
                     return res.arrayBuffer();
                 });
 
+                // Page 3: 機構共用數據
+                const companyName = document.getElementById('company_name')?.value || "未填寫";
+                const regAddr = document.getElementById('reg_address')?.value || "";
+                const branchName = document.getElementById('branch_name')?.value || "";
+
                 const data = {
-                    company_name: document.getElementById('company_name')?.value || "未填寫",
-                    company_address: document.getElementById('reg_address')?.value || "",
+                    company_name: companyName,
+                    company_address: regAddr,
                     
+                    // V1.0.50 新增：計畫書專用地點 (總公司名 + 分公司名)
+                    plan_intern_location: branchName.trim()
+                        ? `${companyName} (${branchName})`
+                        : companyName,
+
+                    // 學生數據 (計畫書為單一學生)
                     students: [studentData],
                     
+                    // 頂層標籤 (使用該學生數據覆蓋)
                     student_name: studentData.name,
                     s1_name: studentData.name,
+                    id: studentData.id,
+                    dept: studentData.dept,
+                    grade: studentData.grade,
+
                     teacher_name: studentData.teacher_name,
                     course_name: studentData.course_name,
                     semester: studentData.semester,
@@ -2367,219 +2396,6 @@
             window.scrollTo(0, 0);
             showPage('page-1');
             showMsg("已清除所有表單資料。");
-        }
-
-
-        // 根據輸入內容鎖定/解鎖查詢按鈕 (如果「無設立字號」未勾選)
-        function updateQueryButtonState() {
-            const taxIdInput = document.getElementById('company_tax_id');
-            const queryBtn = document.getElementById('queryBtn');
-            const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-
-            // 如果已經勾選「無設立字號」，則強制按鈕禁用，並直接返回
-            if (noTaxIdChecked) {
-                 queryBtn.disabled = true;
-                 queryBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                 return;
-            }
-
-            const taxId = taxIdInput.value.trim();
-            
-            // 檢查是否為 exactly 8 digits
-            const isTaxId = /^\d{8}$/.test(taxId);
-
-            if (isTaxId) {
-                queryBtn.disabled = false;
-                queryBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                queryBtn.disabled = true;
-                queryBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-
-        // 驗證表單 (V1.0.25: 分為合約 Page 3 和計畫書 Page 4 檢查)
-        function validateForm(isProposal = false) {
-            let isValid = true;
-            let errorMsg = "";
-            
-            // 清除上次的錯誤標記
-            document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200'));
-            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-            document.querySelectorAll('.text-red-500.font-bold.text-xs-force').forEach(el => el.textContent = '');
-            
-            // =========================================================================
-            // 1. 學生基礎資料檢查 (Page 2)
-            // =========================================================================
-            const students = studentDataState;
-            let studentErrorCount = 0;
-            
-            students.forEach((s, i) => {
-                const prefix = `s_`;
-                const fields = [
-                    { id: `${prefix}name_${i}`, name: '姓名' },
-                    { id: `${prefix}id_${i}`, name: '學號' },
-                    { id: `${prefix}dept_${i}`, name: '系所' },
-                    { id: `${prefix}grade_${i}`, name: '年級' }
-                ];
-                
-                fields.forEach(field => {
-                    const el = document.getElementById(field.id);
-                    // 注意：這裡檢查的是原始輸入值，避免檢查帶有「年級」文字的 grade 
-                    let value = el ? el.value.trim() : ''; 
-                    
-                    if (!value) {
-                        el?.classList.add('input-error');
-                        isValid = false;
-                        studentErrorCount++;
-                    }
-                });
-            });
-
-            if (studentErrorCount > 0) {
-                errorMsg += `• 實習學生資料 (Page 2) 共有 ${studentErrorCount} 個必填欄位未填寫。\n`;
-            }
-
-            // 如果只生成計畫書，則跳過合約部分的檢查，並強制要求計畫書欄位完整
-            if (!isProposal) {
-                
-                // =========================================================================
-                // 2. 合約資料檢查 (Page 3)
-                // =========================================================================
-
-                // 檢查機構必填欄位
-                const requiredFields = [
-                    { id: 'company_name', name: '機構全銜' },
-                    { id: 'company_rep', name: '代表人姓名' },
-                    { id: 'company_title', name: '代表人職稱' },
-                    { id: 'reg_address', name: '公司登記地址' }
-                ];
-
-                requiredFields.forEach(field => {
-                    const el = document.getElementById(field.id);
-                    if (!el || !el.value.trim()) {
-                        el.classList.add('input-error');
-                        isValid = false;
-                        errorMsg += `• 請填寫 ${field.name}\n`;
-                    }
-                });
-
-                // 檢查分公司地址（如果沒有勾選總公司）
-                if (!document.getElementById('is_head_office').checked) {
-                    const branchFields = [
-                        { id: 'branch_name', name: '實習單位/分公司名稱' },
-                        { id: 'branch_addr', name: '實際實習地址' }
-                    ];
-                    branchFields.forEach(field => {
-                        const el = document.getElementById(field.id);
-                        if (!el || !el.value.trim()) {
-                            el.classList.add('input-error');
-                            isValid = false;
-                            errorMsg += `• 請填寫 ${field.name}\n`;
-                        }
-                    });
-                }
-
-                // 檢查實習期間
-                const dateFields = ['start_y', 'start_m', 'start_d', 'end_y', 'end_m', 'end_d'];
-                dateFields.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (!el || !el.value.trim()) {
-                        el.classList.add('input-error');
-                        isValid = false;
-                        errorMsg += `• 請填寫完整的實習期間\n`;
-                    }
-                });
-                
-                // 檢查實習類型 (卡片 4)
-                const contractType = document.querySelector('input[name="contract_type"]:checked');
-                if (!contractType) {
-                    document.getElementById('type-section').classList.add('bg-red-50', 'border-red-200');
-                    isValid = false;
-                    errorMsg += "• 請選擇實習類型\n";
-                } else {
-                    // 檢查薪資待遇
-                    if (contractType.value === 'learn') {
-                        const payOpt = document.querySelector('input[name="pay_opt_learn"]:checked');
-                        if (!payOpt) {
-                            document.getElementById('pay-section').classList.add('bg-red-50', 'border-red-200');
-                            isValid = false;
-                            errorMsg += "• 請選擇學習型給付項目\n";
-                        } else if (payOpt.value !== 'none') {
-                            const amt = document.getElementById('learn_amount');
-                            if (!amt.value || Number(amt.value) <= 0) {
-                                amt.classList.add('input-error');
-                                isValid = false;
-                                errorMsg += "• 請輸入獎學金/津貼金額 (須大於 0)\n";
-                            }
-                        }
-                    } else if (contractType.value === 'work') {
-                        const amt = document.getElementById('work_amount');
-                        if (!amt.value || Number(amt.value) <= 0) {
-                            amt.classList.add('input-error');
-                            isValid = false;
-                            errorMsg += "• 請輸入薪資金額 (須大於 0)\n";
-                        }
-                    }
-                }
-
-                // 檢查福利項目 (卡片 4)
-                ['dorm', 'food', 'trans'].forEach(p => {
-                    const val = document.getElementById(p + '_opt').value;
-                    if (!val) {
-                        document.getElementById('welfare-section').classList.add('bg-red-50', 'border-red-200');
-                        isValid = false;
-                        errorMsg += `• 請選擇${p==='dorm'?'住宿':p==='food'?'膳食':'交通'}福利\n`;
-                    }
-                });
-            }
-
-
-            // =========================================================================
-            // 3. 計畫書資料檢查 (Page 4) - 如果 Page 2 學生資料完整，則強制檢查 Page 4 必填
-            // =========================================================================
-            
-            // 只有在 Page 2 資料完整且準備生成文件時，才檢查 Page 4 必填
-            if (students.length > 0 && studentErrorCount === 0 && (isProposal || students.every(s => s.name.trim()))) {
-                let proposalErrorCount = 0;
-                students.forEach((s, i) => {
-                    const fields = ['teacher_name', 'course_name', 'semester', 'credits'];
-                    let studentHasError = false;
-
-                    fields.forEach(field => {
-                        const input = document.getElementById(`p_${field}_${i}`);
-                        if (!input || !input.value.trim()) {
-                            input?.classList.add('input-error');
-                            studentHasError = true;
-                        }
-                    });
-                    
-                    // 檢查實習類別
-                    const selectEl = document.getElementById(`p_intern_type_select_${i}`);
-                    if (!selectEl || !selectEl.value.trim()) {
-                        selectEl?.classList.add('input-error');
-                        document.getElementById(`p_type_error_${i}`).textContent = '請選擇';
-                        studentHasError = true;
-                    } else {
-                        document.getElementById(`p_type_error_${i}`).textContent = '';
-                    }
-
-                    if (studentHasError) {
-                        proposalErrorCount++;
-                        isValid = false;
-                    }
-                });
-
-                if (proposalErrorCount > 0) {
-                    errorMsg += `• 學生實習計畫書 (Page 4) 共有 ${proposalErrorCount} 位學生的必填欄位未填寫。\n`;
-                }
-            }
-
-
-            if (!isValid) {
-                showError("請修正以下錯誤：\n" + errorMsg);
-            }
-            return isValid;
         }
 
 
