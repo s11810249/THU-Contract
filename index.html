@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.37)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.39)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <!-- 新增 SheetJS 用於解析 Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
     <!-- 東海配色 -->
@@ -425,10 +427,11 @@
     </div>
 
     <!-- 主要表單 -->
-    <main class="max-w-4xl mx-auto px-4 mb-20 pt-24">
+    <!-- 1. 修正: 移除 max-w-4xl，讓內容卡片可以佔滿整個 container 寬度 -->
+    <main class="mx-auto px-4 mb-20 pt-24 max-w-7xl">
         
         <!-- 頁籤導航 (Tab Navigation) -->
-        <div class="tab-container">
+        <div class="tab-container max-w-4xl mx-auto">
             <div class="flex border-b border-gray-300 px-0">
                 <button class="tab-button active" data-page="page-1" onclick="showPage('page-1')">
                     <i class="fa-solid fa-circle-info mr-2"></i> 1. 使用須知
@@ -449,7 +452,7 @@
         <form id="contractForm">
             
             <!-- ========== Page 1: 使用須知 (New Page) ========== -->
-            <div id="page-1" class="page-content mt-4">
+            <div id="page-1" class="page-content mt-4 max-w-4xl mx-auto">
                 <div class="bg-white border border-blue-100 rounded-xl p-8 shadow-sm">
                     <div class="flex items-start gap-4">
                         <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
@@ -482,7 +485,7 @@
             </div>
 
             <!-- ========== Page 2: 實習學生資料 ========== -->
-            <div id="page-2" class="page-content hidden">
+            <div id="page-2" class="page-content hidden max-w-4xl mx-auto">
                 <!-- 卡片 2: 學生資料 (人數增減按鈕 + 標題靠左) -->
                 <div class="card">
                     <div class="card-header">
@@ -499,6 +502,20 @@
                         </div>
                         <input type="hidden" id="student_count" value="1">
                     </div>
+                    
+                    <!-- V1.0.38 新增: 匯入 Excel 區域 -->
+                    <div class="px-8 pt-4 flex justify-end">
+                         <input type="file" id="upload_excel" accept=".xlsx, .xls" class="hidden" onchange="handleExcelUpload(event)">
+                         <div class="flex gap-2">
+                             <button type="button" onclick="downloadExcelTemplate()" class="text-sm text-gray-500 hover:text-thuBlue underline mr-2">
+                                 <i class="fa-solid fa-download"></i> 下載範本
+                             </button>
+                             <button type="button" onclick="document.getElementById('upload_excel').click()" class="bg-green-600 text-white px-3 py-1.5 rounded text-sm font-bold hover:bg-green-700 transition flex items-center gap-1">
+                                 <i class="fa-solid fa-file-excel"></i> 匯入 Excel
+                             </button>
+                         </div>
+                    </div>
+                    
                     <div class="p-8">
                         <div id="student_container" class="space-y-6"></div>
                     </div>
@@ -516,7 +533,7 @@
             </div>
 
             <!-- ========== Page 3: 實習合約資料 (Contract Data) ========== -->
-            <div id="page-3" class="page-content hidden">
+            <div id="page-3" class="page-content hidden max-w-4xl mx-auto">
                 <!-- 卡片 1: 機構資料 -->
                 <div class="card">
                     <div class="card-header">
@@ -691,11 +708,11 @@
                                 <i class="fa-solid fa-arrow-up mr-2 animate-bounce"></i> 請先選擇上方「實習類型」以解鎖此區塊
                             </div>
 
-                            <!-- 學習型面板 -->
+                            <!-- 學習型面板 (RESTORING card layout) -->
                             <div id="panel_learn" class="bg-green-50 p-6 rounded-xl border border-green-200 hidden fade-in">
                                 <span class="text-[10px] font-black text-green-700 bg-green-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">學習型</span>
                                 
-                                <!-- 卡片式選項 -->
+                                <!-- 卡片式選項 (RESTORED) -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                     <label class="pay-option-label pay-option-none">
                                         <input type="radio" name="pay_opt_learn" value="none" onchange="togglePayInputs()" class="radio-card-input">
@@ -724,11 +741,11 @@
                                 </div>
                             </div>
 
-                            <!-- 勞資型面板 (FIXED: 恢復 gap-6，移除子元素 margin) -->
+                            <!-- 勞資型面板 (FIXED: Restored old structure without extra margins) -->
                             <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col gap-6 fade-in">
                                 <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider w-fit">勞資型</span>
                                 
-                                <div>
+                                <div> <!-- REVERTED: No margin bottom here -->
                                     <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額 (月薪)</label>
                                     <div class="relative w-full md:w-64">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
@@ -824,10 +841,10 @@
             </div>
 
             <!-- ========== Page 4: 實習計畫書產出 (Proposal Data) ========== -->
-            <div id="page-4" class="page-content hidden">
+            <div id="page-4" class="page-content hidden max-w-4xl mx-auto">
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-header-title">實習計畫書：每位學生之課程與指導老師資料 (Page 4/4)</span>
+                        <span class="card-header-title">學生實習計畫書：每位學生之課程與指導老師資料 (Page 4/4)</span>
                         <div class="text-xs font-medium text-gray-500">
                             學生人數：<span id="proposal_student_count">1</span> 人 (連動 Page 2)
                         </div>
@@ -885,7 +902,7 @@
             <div class="flex flex-col items-center justify-center gap-1">
                 <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
                 <p class="text-[9px] text-gray-500">
-                    系統版本 V1.0.37 | 網頁製作：張博堯 | Powered by Google Gemini
+                    系統版本 V1.0.39 | 網頁製作：張博堯 | Powered by Google Gemini
                 </p>
             </div>
         </div>
@@ -1007,6 +1024,109 @@
             }
             studentDataState = tempStudentData;
         }
+        
+        // V1.0.38: Excel upload functions
+        function downloadExcelTemplate() {
+            const data = [
+                ['姓名', '學號', '系所', '年級'],
+                ['王小明', 'S1181000', '法律系', '四'],
+                ['陳小華', 'S1181001', '社會系', '三']
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "學生名單");
+            XLSX.writeFile(wb, "學生名單範本.xlsx");
+        }
+
+        function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // 轉換為 JSON，header: 1 表示輸出為二維陣列
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    
+                    // 移除標題列
+                    if (jsonData.length > 0) jsonData.shift();
+                    
+                    // 過濾空行並格式化數據
+                    const validStudents = jsonData.filter(row => row.length > 0 && row[0]).map(row => ({
+                        name: row[0] || "",
+                        id: row[1] || "",
+                        dept: row[2] || "",
+                        grade: row[3] || "" // 假設 Excel 填寫的是數字 '四' 或 '4'
+                    }));
+
+                    if (validStudents.length === 0) {
+                        showError("Excel 檔案中沒有有效的學生資料。");
+                        return;
+                    }
+
+                    // 更新人數
+                    document.getElementById('student_count').value = validStudents.length;
+                    document.getElementById('student_count_display').innerText = validStudents.length + " 人";
+                    
+                    // 重新渲染欄位
+                    renderStudents();
+                    
+                    // 填入數據
+                    validStudents.forEach((s, i) => {
+                        const nameInput = document.getElementById(`s_name_${i}`);
+                        const idInput = document.getElementById(`s_id_${i}`);
+                        const deptInput = document.getElementById(`s_dept_${i}`);
+                        const gradeInput = document.getElementById(`s_grade_${i}`);
+                        
+                        if(nameInput) nameInput.value = s.name;
+                        if(idInput) idInput.value = s.id;
+                        if(deptInput) deptInput.value = s.dept;
+                        if(gradeInput) gradeInput.value = s.grade;
+                    });
+
+                    // 更新全域狀態
+                    collectStudentDataFromPage2();
+                    // 更新 Page 4 表格
+                    renderProposalTable();
+                    
+                    showMsg(`成功匯入 ${validStudents.length} 筆學生資料！`);
+                    
+                    // 重置 input 讓同個檔案可以再次觸發 change 事件
+                    event.target.value = '';
+
+                } catch (error) {
+                    console.error(error);
+                    showError("Excel 解析失敗，請確認格式是否正確。\n" + error.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // V1.0.39 新增: 刪除學生功能
+        function deleteStudent(indexToDelete) {
+            let currentCount = Number(document.getElementById('student_count').value);
+            if (currentCount <= 1) {
+                showModal("無法刪除", "至少需要保留一位學生。", 'warning');
+                return;
+            }
+
+            // 1. 從狀態中移除該學生 (使用 index)
+            studentDataState.splice(indexToDelete, 1);
+            
+            // 2. 更新人數
+            currentCount -= 1;
+            document.getElementById('student_count').value = currentCount;
+            document.getElementById('student_count_display').innerText = currentCount + " 人";
+            
+            // 3. 重新渲染 Page 2 的欄位和 Page 4 的表格
+            renderStudents();
+            renderProposalTable();
+        }
 
         // 重置表單 (移除 window.confirm)
         function resetForm() {
@@ -1070,34 +1190,40 @@
             if (count > currentChildren) {
                 for (let i = currentChildren; i < count; i++) {
                     const wrapper = document.createElement('div');
+                    // V1.0.39: 為每個學生新增 data-index 屬性和刪除按鈕
                     wrapper.className = "p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
+                    wrapper.setAttribute('data-index', i);
                     
                     // V1.0.28: 4 欄佈局，獨立標籤
                     wrapper.innerHTML = `
                         <div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">
                             學生 ${i+1}
                         </div>
+                        <!-- V1.0.39: 刪除按鈕 -->
+                        <button type="button" onclick="deleteStudent(${i})" class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-all z-10" aria-label="刪除學生 ${i+1}">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-4 mt-2">
                             <!-- 姓名 (Col 1) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">姓名 <span class="text-red-500">*</span></label>
-                                <input type="text" id="s_name_${i}" class="input-field" oninput="collectStudentDataFromPage2()">
+                                <input type="text" id="s_name_${i}" class="input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.name || ''}">
                             </div>
                             <!-- 學號 (Col 2) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">學號 <span class="text-red-500">*</span></label>
-                                <input type="text" id="s_id_${i}" class="input-field" placeholder="例：S1181000" oninput="collectStudentDataFromPage2()">
+                                <input type="text" id="s_id_${i}" class="input-field" placeholder="例：S1181000" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.id || ''}">
                             </div>
                             <!-- 系所 (Col 3) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">系所 <span class="text-red-500">*</span></label>
-                                <input type="text" id="s_dept_${i}" class="input-field" placeholder="例：法律系" oninput="collectStudentDataFromPage2()">
+                                <input type="text" id="s_dept_${i}" class="input-field" placeholder="例：法律系" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.dept || ''}">
                             </div>
                             <!-- 年級 (Col 4 - 使用 grade-input-group 確保等高) -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">年級 <span class="text-red-500">*</span></label>
                                 <div class="grade-input-group w-full">
-                                    <input type="text" id="s_grade_${i}" class="grade-input-field" placeholder="例：四" oninput="collectStudentDataFromPage2()">
+                                    <input type="text" id="s_grade_${i}" class="grade-input-field" placeholder="例：四" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.raw_grade || ''}">
                                     <span class="grade-suffix">年級</span>
                                 </div>
                             </div>
@@ -1110,6 +1236,9 @@
                     c.removeChild(c.lastChild);
                 }
             }
+            
+            // V1.0.39: 確保新增學生時，如果狀態有殘留的 Page 4 數據，能夠正確合併
+            collectStudentDataFromPage2();
         }
         
         // V1.0.25 變更: 渲染 Page 4 計畫書資料表格
@@ -1165,11 +1294,11 @@
                     <td>
                         <select id="p_intern_type_select_${i}" data-field="intern_type_select" class="input-field text-xs-force h-8 p-1">
                             <option value="" disabled selected>請選擇</option>
-                            <option value="full">整學年</option>
-                            <option value="sem">整學期</option>
-                            <option value="winter">寒假實習</option>
-                            <option value="summer">暑假實習</option>
-                            <option value="term">學期期間實習</option>
+                            <option value="full" ${s.intern_type_select === 'full' ? 'selected' : ''}>整學年</option>
+                            <option value="sem" ${s.intern_type_select === 'sem' ? 'selected' : ''}>整學期</option>
+                            <option value="winter" ${s.intern_type_select === 'winter' ? 'selected' : ''}>寒假實習</option>
+                            <option value="summer" ${s.intern_type_select === 'summer' ? 'selected' : ''}>暑假實習</option>
+                            <option value="term" ${s.intern_type_select === 'term' ? 'selected' : ''}>學期期間實習</option>
                         </select>
                         <div class="text-red-500 font-bold text-xs-force mt-1" id="p_type_error_${i}"></div>
                     </td>
@@ -1179,28 +1308,13 @@
                 `;
                 tableBody.appendChild(tr);
 
-                // 重新載入 Page 4 數據
-                const studentState = studentDataState[i];
-                if (studentState) {
-                    // 填入單行輸入框
-                    const fields = ['teacher_name', 'course_name', 'semester', 'credits', 'hours_exceeded_desc'];
-                    fields.forEach(field => {
-                        const input = document.getElementById(`p_${field}_${i}`);
-                        if (input) input.value = studentState[field] || '';
-                    });
-                    
-                    // 填入 Dropdown
-                    const selectEl = document.getElementById(`p_intern_type_select_${i}`);
-                    if (selectEl) {
-                        selectEl.value = studentState.intern_type_select || '';
-                    }
-                }
-            });
-
-            // 綁定事件監聽器，確保 Page 4 的輸入能更新到 State
-            document.querySelectorAll('#page-4 input, #page-4 select').forEach(input => {
-                input.addEventListener('input', updateProposalDataState);
-                input.addEventListener('change', updateProposalDataState);
+                // 綁定事件監聽器，確保 Page 4 的輸入能更新到 State (只在迴圈內綁定，確保事件正確)
+                document.getElementById(`p_teacher_name_${i}`)?.addEventListener('input', updateProposalDataState);
+                document.getElementById(`p_course_name_${i}`)?.addEventListener('input', updateProposalDataState);
+                document.getElementById(`p_semester_${i}`)?.addEventListener('input', updateProposalDataState);
+                document.getElementById(`p_credits_${i}`)?.addEventListener('input', updateProposalDataState);
+                document.getElementById(`p_intern_type_select_${i}`)?.addEventListener('change', updateProposalDataState);
+                document.getElementById(`p_hours_exceeded_desc_${i}`)?.addEventListener('input', updateProposalDataState);
             });
         }
         
@@ -1626,7 +1740,7 @@
                 queryBtn.classList.add('btn-query');
                 queryBtn.innerHTML = originalQueryBtnHtml;
                 
-                if (typeof PizZip !== 'undefined' && typeof window.docxtemplater !== 'undefined') {
+                if (typeof PizZip !== 'undefined' || typeof window.docxtemplater !== 'undefined') {
                      btn.disabled = false;
                      btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'shadow-none', 'opacity-75');
                      btn.classList.add('btn-generate');
