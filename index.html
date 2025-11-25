@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.39)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.40)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -129,6 +129,32 @@
             font-size: 1rem;
             font-weight: 500;
             flex-shrink: 0;
+        }
+
+        /* V1.0.39: 學生刪除按鈕樣式 */
+        .delete-student-btn {
+            position: absolute; 
+            top: -12px; /* 覆蓋右上邊角 */
+            right: -12px;
+            width: 32px; 
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px; /* 圓形 */
+            background-color: #fef2f2; /* red-50 */
+            color: #ef4444; /* red-500 */
+            transition: all 0.2s ease-out;
+            z-index: 10;
+            opacity: 0; /* 預設隱藏 */
+            cursor: pointer;
+        }
+
+        .student-wrapper:hover .delete-student-btn {
+            opacity: 1; /* 靠近時顯示 */
+            background-color: #ef4444; /* red-500 */
+            color: white;
+            transform: scale(1.1);
         }
 
 
@@ -452,7 +478,8 @@
         <form id="contractForm">
             
             <!-- ========== Page 1: 使用須知 (New Page) ========== -->
-            <div id="page-1" class="page-content mt-4 max-w-4xl mx-auto">
+            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
+            <div id="page-1" class="page-content mt-4">
                 <div class="bg-white border border-blue-100 rounded-xl p-8 shadow-sm">
                     <div class="flex items-start gap-4">
                         <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
@@ -485,7 +512,8 @@
             </div>
 
             <!-- ========== Page 2: 實習學生資料 ========== -->
-            <div id="page-2" class="page-content hidden max-w-4xl mx-auto">
+            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
+            <div id="page-2" class="page-content hidden">
                 <!-- 卡片 2: 學生資料 (人數增減按鈕 + 標題靠左) -->
                 <div class="card">
                     <div class="card-header">
@@ -533,7 +561,8 @@
             </div>
 
             <!-- ========== Page 3: 實習合約資料 (Contract Data) ========== -->
-            <div id="page-3" class="page-content hidden max-w-4xl mx-auto">
+            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
+            <div id="page-3" class="page-content hidden">
                 <!-- 卡片 1: 機構資料 -->
                 <div class="card">
                     <div class="card-header">
@@ -841,7 +870,8 @@
             </div>
 
             <!-- ========== Page 4: 實習計畫書產出 (Proposal Data) ========== -->
-            <div id="page-4" class="page-content hidden max-w-4xl mx-auto">
+            <!-- V1.0.39: 移除 max-w-4xl 保持外層 main 的 max-w-7xl 寬度 -->
+            <div id="page-4" class="page-content hidden">
                 <div class="card">
                     <div class="card-header">
                         <span class="card-header-title">學生實習計畫書：每位學生之課程與指導老師資料 (Page 4/4)</span>
@@ -1116,6 +1146,8 @@
             }
 
             // 1. 從狀態中移除該學生 (使用 index)
+            // Note: studentDataState 已經包含了 Page 4 的資料
+            // 由於 indexToDelte 是 i，它會和 array index 一致
             studentDataState.splice(indexToDelete, 1);
             
             // 2. 更新人數
@@ -1181,17 +1213,26 @@
             renderProposalTable();
         }
 
-        // 渲染學生欄位 (Page 2 - V1.0.28 4欄佈局)
+        // 渲染學生欄位 (Page 2 - V1.0.28 4欄佈局, V1.0.39 刪除按鈕)
         function renderStudents() {
             const count = Number(document.getElementById('student_count').value) || 1;
             const c = document.getElementById('student_container');
             
+            // 先保存舊的 input 數據到狀態中
+            collectStudentDataFromPage2();
+
+            // 移除多餘的元素
+            while (c.children.length > count) {
+                c.removeChild(c.lastChild);
+            }
+
+            // 創建或更新元素
             const currentChildren = c.children.length;
             if (count > currentChildren) {
                 for (let i = currentChildren; i < count; i++) {
                     const wrapper = document.createElement('div');
-                    // V1.0.39: 為每個學生新增 data-index 屬性和刪除按鈕
-                    wrapper.className = "p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
+                    // V1.0.39: 為每個學生新增 data-index 屬性和刪除按鈕 (使用 student-wrapper 類名來定義 hover 樣式)
+                    wrapper.className = "student-wrapper p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
                     wrapper.setAttribute('data-index', i);
                     
                     // V1.0.28: 4 欄佈局，獨立標籤
@@ -1199,8 +1240,8 @@
                         <div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">
                             學生 ${i+1}
                         </div>
-                        <!-- V1.0.39: 刪除按鈕 -->
-                        <button type="button" onclick="deleteStudent(${i})" class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-all z-10" aria-label="刪除學生 ${i+1}">
+                        <!-- V1.0.39: 刪除按鈕，通過 CSS 實現 hover 效果 -->
+                        <button type="button" onclick="deleteStudent(${i})" class="delete-student-btn" aria-label="刪除學生 ${i+1}">
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-4 mt-2">
@@ -1231,13 +1272,32 @@
                     `;
                     c.appendChild(wrapper);
                 }
-            } else if (count < currentChildren) {
-                while (c.children.length > count) {
-                    c.removeChild(c.lastChild);
-                }
-            }
+            } 
             
-            // V1.0.39: 確保新增學生時，如果狀態有殘留的 Page 4 數據，能夠正確合併
+            // 重新整理學生列表時，確保現有元素的 data-index 和內容正確
+            const currentWrappers = c.querySelectorAll('.student-wrapper');
+            currentWrappers.forEach((wrapper, index) => {
+                wrapper.setAttribute('data-index', index);
+                // 更新標題的數字 (學生 1, 學生 2...)
+                const titleEl = wrapper.querySelector('.absolute.-top-3.-left-2');
+                if (titleEl) {
+                    titleEl.innerHTML = `學生 ${index + 1}`;
+                }
+                
+                // 更新刪除按鈕的 index
+                const deleteBtn = wrapper.querySelector('.delete-student-btn');
+                if (deleteBtn) {
+                    deleteBtn.setAttribute('onclick', `deleteStudent(${index})`);
+                    deleteBtn.setAttribute('aria-label', `刪除學生 ${index + 1}`);
+                }
+
+                // V1.0.39: 重新賦值（因為 splice 會改變索引）
+                document.getElementById(`s_name_${index}`).value = studentDataState[index]?.name || '';
+                document.getElementById(`s_id_${index}`).value = studentDataState[index]?.id || '';
+                document.getElementById(`s_dept_${index}`).value = studentDataState[index]?.dept || '';
+                document.getElementById(`s_grade_${index}`).value = studentDataState[index]?.raw_grade || '';
+            });
+            
             collectStudentDataFromPage2();
         }
         
