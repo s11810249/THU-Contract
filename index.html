@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>東海大學學生校外實習文件產生器 (V1.0.65 Layout Polish)</title>
+    <title>東海大學學生校外實習文件產生器 (V1.0.66 UI Polish)</title>
 
     <!-- 核心函式庫 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -40,208 +40,127 @@
             scroll-behavior: smooth;
         }
         
-        /* 通用輸入框樣式 */
+        /* 通用輸入框 */
         .input-field {
-            background-color: white;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            padding: 0.6rem 0.8rem;
-            width: 100%;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+            background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.6rem 0.8rem; width: 100%; font-size: 1rem; transition: all 0.2s ease;
         }
-        .input-field:focus {
-            outline: none;
-            border-color: #002E5D;
-            box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1);
-        }
-        .input-error {
-            border-color: #ef4444 !important;
-            background-color: #fef2f2 !important;
-        }
+        .input-field:focus { outline: none; border-color: #002E5D; box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1); }
+        .input-error { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
         
-        .proposal-textarea {
-            resize: vertical;
-            min-height: 4.5rem;
-            line-height: 1.5rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.95rem;
-        }
-
-        /* 移除數字輸入框的上下箭頭 */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .proposal-textarea { resize: vertical; min-height: 4.5rem; line-height: 1.5rem; padding: 0.5rem 0.75rem; font-size: 0.95rem; }
+        
+        /* 移除數字輸入框箭頭 */
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 日期群組 */
+        /* 日期群組 (移除 AutoJump 後簡化樣式) */
         .date-group, .grade-input-group {
             display: flex; align-items: center; justify-content: center;
             background: white; border: 1px solid #d1d5db; border-radius: 0.5rem;
             padding: 0.4rem; transition: all 0.2s ease; overflow: hidden; height: 42px;
         }
-        .date-group:focus-within, .grade-input-group:focus-within {
-            border-color: #002E5D; box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1);
-        }
-        .date-input, .grade-input-field {
-            border: none; text-align: center !important; width: 100%; outline: none;
-            font-size: 1rem; color: #374151; background: transparent; padding: 0; height: 100%;
-        }
+        .date-group:focus-within, .grade-input-group:focus-within { border-color: #002E5D; box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.1); }
+        .date-input, .grade-input-field { border: none; text-align: center !important; width: 100%; outline: none; font-size: 1rem; color: #374151; background: transparent; padding: 0; height: 100%; }
         .date-input { min-width: 2.5rem; }
         .grade-input-field { padding: 0 0.1rem; flex-grow: 1; }
         .date-sep { color: #9ca3af; font-weight: bold; padding: 0 0.1rem; user-select: none; flex-shrink: 0; }
         .grade-suffix { color: #374151; padding-right: 0.8rem; font-size: 1rem; font-weight: 500; flex-shrink: 0; }
 
-        /* 學生刪除按鈕 */
-        .delete-student-btn {
-            position: absolute; top: -12px; right: -12px; width: 32px; height: 32px;
-            display: flex; align-items: center; justify-content: center; border-radius: 9999px; 
-            background-color: #fef2f2; color: #ef4444; transition: all 0.2s ease-out;
-            z-index: 10; opacity: 0; cursor: pointer;
-        }
+        .delete-student-btn { position: absolute; top: -12px; right: -12px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background-color: #fef2f2; color: #ef4444; transition: all 0.2s ease-out; z-index: 10; opacity: 0; cursor: pointer; }
         .student-wrapper:hover .delete-student-btn { opacity: 1; background-color: #ef4444; color: white; transform: scale(1.1); }
 
-        /* 卡片樣式 */
-        .card { 
-            background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-            border: 1px solid #e5e7eb; overflow: hidden; margin-bottom: 2rem; transition: border-color 0.3s;
-        }
-        .card-header { 
-            padding: 1.25rem 2rem; background-color: #ffffff; border-bottom: 1px solid #f3f4f6; 
-            color: #002E5D; font-weight: 700; font-size: 1.125rem; display: flex; align-items: center; justify-content: space-between; 
-        }
+        .card { background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb; overflow: hidden; margin-bottom: 2rem; transition: border-color 0.3s; }
+        .card-header { padding: 1.25rem 2rem; background-color: #ffffff; border-bottom: 1px solid #f3f4f6; color: #002E5D; font-weight: 700; font-size: 1.125rem; display: flex; align-items: center; justify-content: space-between; }
         .card-header-title { display: flex; align-items: center; }
-        .card-header-title::before {
-            content: ''; display: inline-block; width: 5px; height: 1.2rem; background-color: #C6A87C; margin-right: 0.75rem; border-radius: 2px;
-        }
+        .card-header-title::before { content: ''; display: inline-block; width: 5px; height: 1.2rem; background-color: #C6A87C; margin-right: 0.75rem; border-radius: 2px; }
         .hidden { display: none; }
         
-        /* 狀態/錯誤訊息 */
         #status-bar { display: none; position: fixed; bottom: 80px; right: 20px; background: #333; color: white; padding: 8px 16px; border-radius: 6px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 0.9rem; }
         #lib-error { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; z-index: 9999; font-weight: bold; }
         #error-modal, #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
         #error-content, #confirm-content { background: white; padding: 2rem; border-radius: 1rem; max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto; }
         pre { white-space: pre-wrap; word-break: break-word; }
 
-        footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1f2937; color: #9ca3af; text-align: center; padding: 1rem 0; font-size: 0.75rem; z-index: 50; border-top: 3px solid #C6A87C;
-        }
+        footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1f2937; color: #9ca3af; text-align: center; padding: 1rem 0; font-size: 0.75rem; z-index: 50; border-top: 3px solid #C6A87C; }
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* 按鈕樣式 */
-        .btn-query {
-            background-color: #C6A87C; color: #002E5D; font-weight: bold; border-radius: 0.375rem;
-            padding: 0.6rem 1.25rem; transition: all 0.2s ease; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
+        .btn-query { background-color: #C6A87C; color: #002E5D; font-weight: bold; border-radius: 0.375rem; padding: 0.6rem 1.25rem; transition: all 0.2s ease; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
         .btn-query:hover:not(:disabled) { background-color: #b3976e; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .btn-query-loading { background: linear-gradient(135deg, #002E5D30 0%, #00408030 100%) !important; color: #002E5D !important; cursor: not-allowed !important; box-shadow: none !important; }
 
-        .nav-button {
-            background-color: #f0f4ff; color: #002E5D; border: none; transition: all 0.2s; height: 48px; font-weight: 600; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
+        .nav-button { background-color: #f0f4ff; color: #002E5D; border: none; transition: all 0.2s; height: 48px; font-weight: 600; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
         .nav-button:hover:not(:disabled) { background-color: #e3e9ff; color: #002E5D; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         
-        .btn-generate {
-            height: 64px; background: linear-gradient(135deg, #002E5D 0%, #004080 100%); box-shadow: 0 4px 6px -1px rgba(0, 46, 93, 0.3), 0 2px 4px -1px rgba(0, 46, 93, 0.1); transition: all 0.3s ease; color: white;
-        }
+        .btn-generate { height: 64px; background: linear-gradient(135deg, #002E5D 0%, #004080 100%); box-shadow: 0 4px 6px -1px rgba(0, 46, 93, 0.3), 0 2px 4px -1px rgba(0, 46, 93, 0.1); transition: all 0.3s ease; color: white; }
         .btn-generate:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 46, 93, 0.3), 0 4px 6px -2px rgba(0, 46, 93, 0.1); background: linear-gradient(135deg, #003366 0%, #0055aa 100%); }
         .btn-generate:active:not(:disabled) { transform: translateY(0); }
         .btn-generate:disabled { background: #9ca3af; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* 頁籤 - 修改為固定樣式 */
-        .tab-button { 
-            padding: 0.75rem 1.5rem; 
-            font-weight: 700; 
-            border-radius: 0.5rem 0.5rem 0 0; 
-            transition: all 0.3s; 
-            border-bottom: 3px solid transparent; 
-            color: #9ca3af; 
-            background-color: transparent; 
-            margin-right: 0.25rem; 
-            flex-grow: 1; 
-            text-align: center; 
-        }
-        .tab-button.active { 
-            color: #002E5D; 
-            background-color: white; 
-            border-color: #002E5D; 
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05); 
-        }
+        /* 頁籤 */
+        .tab-button { padding: 0.75rem 1.5rem; font-weight: 700; border-radius: 0.5rem 0.5rem 0 0; transition: all 0.3s; border-bottom: 3px solid transparent; color: #9ca3af; background-color: transparent; margin-right: 0.25rem; flex-grow: 1; text-align: center; }
+        .tab-button.active { color: #002E5D; background-color: white; border-color: #002E5D; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05); }
 
-        /* 多選下拉框樣式 (模擬) */
+        /* 選項卡片通用樣式 */
+        .option-card-label { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; background-color: white; height: 100%; min-height: 80px; }
+        .option-card-label:hover { background-color: #f9fafb; border-color: #94a3b8; }
+        .option-card-label:has(input:checked) { border-color: #002E5D; background-color: #eff6ff; box-shadow: 0 0 0 1px #002E5D; }
+        .option-card-label:has(input:checked) .option-icon { color: #002E5D; }
+        .option-card-label:has(input:checked) .option-text { color: #002E5D; }
+        .option-icon { font-size: 1.5rem; margin-bottom: 0.25rem; color: #94a3b8; transition: color 0.2s; }
+        .option-text { font-size: 0.875rem; font-weight: bold; color: #64748b; }
+        .radio-card-input, .radio-hidden { position: absolute; opacity: 0; width: 0; height: 0; }
+
+        /* 福利選項 (較小) */
+        .welfare-option { padding: 0.6rem 1rem; flex-direction: row; gap: 0.5rem; min-height: auto; width: auto; flex: 1; }
+        .welfare-option .option-icon { font-size: 1rem; margin-bottom: 0; }
+        
+        /* Pay Type Specific Colors */
+        .opt-learn:has(input:checked) { border-color: #16a34a; background-color: #f0fdf4; box-shadow: 0 0 0 1px #16a34a; }
+        .opt-learn:has(input:checked) .option-icon, .opt-learn:has(input:checked) .option-text { color: #15803d; }
+        .opt-work:has(input:checked) { border-color: #ea580c; background-color: #fff7ed; box-shadow: 0 0 0 1px #ea580c; }
+        .opt-work:has(input:checked) .option-icon, .opt-work:has(input:checked) .option-text { color: #c2410c; }
+
+        /* Sub-option Card (Small) */
+        .sub-option-label { display: flex; align-items: center; justify-content: center; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; background: white; height: 100%; gap: 0.5rem; }
+        .sub-option-label:hover { background-color: #f9fafb; }
+        .sub-option-label:has(input:checked) { border-color: #002E5D; background-color: #f0f9ff; color: #002E5D; font-weight: bold; box-shadow: 0 0 0 1px #002E5D; }
+
+        /* Multi-Select */
         .multi-select-dropdown { position: relative; }
-        .multi-select-trigger {
-            cursor: pointer; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.6rem 0.8rem; min-height: 42px; display: flex; align-items: center; justify-content: space-between;
-        }
-        .multi-select-content {
-            position: absolute; top: 100%; left: 0; width: 100%; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 50; margin-top: 4px; max-height: 250px; overflow-y: auto; display: none;
-        }
+        .multi-select-trigger { cursor: pointer; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.6rem 0.8rem; min-height: 42px; display: flex; align-items: center; justify-content: space-between; }
+        .multi-select-content { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 50; margin-top: 4px; max-height: 250px; overflow-y: auto; display: none; }
         .multi-select-content.open { display: block; }
         .course-checkbox-item { padding: 0.5rem 0.75rem; display: flex; align-items: flex-start; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid #f3f4f6; }
         .course-checkbox-item:last-child { border-bottom: none; }
         .course-checkbox-item:hover { background-color: #f9fafb; }
         .course-checkbox-item input { margin-top: 0.3rem; margin-right: 0.75rem; }
 
-        /* Debug Button */
         .debug-upload-label { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #6b7280; cursor: pointer; transition: color 0.2s; margin-left: 1rem; }
         .debug-upload-label:hover { color: #002E5D; }
         .debug-status { font-size: 0.75rem; font-weight: bold; color: #16a34a; margin-left: 0.5rem; display: none; }
         .debug-status.show { display: inline; }
-        
-        /* Page 4 Card */
         .student-proposal-card { transition: all 0.3s ease; }
         .student-proposal-card:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        
-        /* Radio Styles */
-        .pay-option-label { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 0.75rem; cursor: pointer; transition: all 0.2s; background-color: white; height: 100%; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-        .pay-option-label:hover { background-color: #f9fafb; border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .radio-card-input { position: absolute; opacity: 0; width: 0; height: 0; }
-        .pay-option-none:has(input:checked) { border-color: #475569; background-color: #f1f5f9; }
-        .pay-option-none:has(input:checked) .pay-option-icon { color: #475569; }
-        .pay-option-none:has(input:checked) .pay-option-text { color: #0f172a; }
-        .pay-option-scholar:has(input:checked) { border-color: #b45309; background-color: #fffbeb; }
-        .pay-option-scholar:has(input:checked) .pay-option-icon { color: #b45309; }
-        .pay-option-scholar:has(input:checked) .pay-option-text { color: #78350f; }
-        .pay-option-allowance:has(input:checked) { border-color: #002E5D; background-color: #f0f9ff; }
-        .pay-option-allowance:has(input:checked) .pay-option-icon { color: #002E5D; }
-        .pay-option-allowance:has(input:checked) .pay-option-text { color: #002E5D; }
-        .pay-option-icon { font-size: 2rem; margin-bottom: 0.5rem; transition: color 0.2s; color: #94a3b8; }
-        .pay-option-text { font-weight: bold; color: #64748b; }
     </style>
 </head>
 <body>
 
-    <div id="lib-error">
-        ⚠️ 系統偵測到核心元件未載入成功！可能是網路阻擋了 CDN。<br>
-        請嘗試使用手機網路或更換瀏覽器。錯誤元件：<span id="missing-lib"></span>
-    </div>
-
+    <div id="lib-error">⚠️ 系統偵測到核心元件未載入成功！可能是網路阻擋了 CDN。</div>
     <div id="status-bar">準備就緒</div>
 
-    <!-- 錯誤訊息彈窗 -->
     <div id="error-modal">
         <div id="error-content">
-            <h3 id="modal-header-title" class="text-xl font-bold text-red-600 mb-4 flex items-center gap-2">
-                <i id="modal-header-icon" class="fa-solid fa-circle-exclamation"></i> 發生錯誤
-            </h3>
-            <div class="bg-gray-50 p-4 rounded border border-gray-200 mb-6">
-                <pre id="error-details" class="text-sm text-gray-800 font-mono"></pre>
-            </div>
-            <div class="flex justify-end">
-                <button id="err-close" class="bg-gray-200 text-gray-700 px-6 py-2 rounded font-bold hover:bg-gray-300 transition">關閉</button>
-            </div>
+            <h3 id="modal-header-title" class="text-xl font-bold text-red-600 mb-4 flex items-center gap-2"><i id="modal-header-icon" class="fa-solid fa-circle-exclamation"></i> 發生錯誤</h3>
+            <div class="bg-gray-50 p-4 rounded border border-gray-200 mb-6"><pre id="error-details" class="text-sm text-gray-800 font-mono"></pre></div>
+            <div class="flex justify-end"><button id="err-close" class="bg-gray-200 text-gray-700 px-6 py-2 rounded font-bold hover:bg-gray-300 transition">關閉</button></div>
         </div>
     </div>
 
-    <!-- 確認視窗 -->
     <div id="confirm-modal">
         <div id="confirm-content">
-            <h3 class="text-xl font-bold text-thuBlue mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-circle-question"></i> 操作確認
-            </h3>
-            <div class="bg-blue-50 p-4 rounded border border-blue-200 mb-6">
-                <pre id="confirm-details" class="text-sm text-gray-800 font-mono whitespace-pre-wrap"></pre>
-            </div>
+            <h3 class="text-xl font-bold text-thuBlue mb-4 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> 操作確認</h3>
+            <div class="bg-blue-50 p-4 rounded border border-blue-200 mb-6"><pre id="confirm-details" class="text-sm text-gray-800 font-mono whitespace-pre-wrap"></pre></div>
             <div class="flex justify-end gap-3">
                 <button id="confirm-cancel" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg font-bold hover:bg-gray-300 transition">取消</button>
                 <button id="confirm-ok" class="bg-thuBlue text-white px-5 py-2 rounded-lg font-bold hover:bg-blue-800 transition shadow-md">確定執行</button>
@@ -249,7 +168,6 @@
         </div>
     </div>
 
-    <!-- 修正 Header: w-full, 項目分散對齊 -->
     <div class="fixed top-0 left-0 w-full bg-thuBlue z-50 shadow-md">
         <div class="w-full px-4 md:px-8 h-[80px] flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -259,78 +177,49 @@
                     <div class="text-xs text-thuGold opacity-90 font-sans leading-tight mt-0.5">Internship Document Generation System (Debug Mode)</div>
                 </div>
             </div>
-            
             <div class="hidden md:flex gap-3 text-sm">
-                <a href="https://aca.thu.edu.tw/web/isac/page.php?scid=112&sid=103" target="_blank" class="flex items-center gap-2 px-4 py-2 border border-thuGold text-thuGold rounded-full hover:bg-thuGold hover:text-thuBlue transition-all duration-200 font-medium">
-                    <i class="fa-solid fa-link"></i> 實習中心網頁
-                </a>
-                <a href="https://www.thu.edu.tw/" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-white text-thuBlue rounded-full hover:bg-gray-100 shadow-sm transition-all duration-200 font-medium">
-                    <i class="fa-solid fa-house"></i> 東海大學首頁
-                </a>
+                <a href="https://aca.thu.edu.tw/web/isac/page.php?scid=112&sid=103" target="_blank" class="flex items-center gap-2 px-4 py-2 border border-thuGold text-thuGold rounded-full hover:bg-thuGold hover:text-thuBlue transition-all duration-200 font-medium"><i class="fa-solid fa-link"></i> 實習中心網頁</a>
+                <a href="https://www.thu.edu.tw/" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-white text-thuBlue rounded-full hover:bg-gray-100 shadow-sm transition-all duration-200 font-medium"><i class="fa-solid fa-house"></i> 東海大學首頁</a>
             </div>
         </div>
     </div>
 
     <main class="mx-auto mb-20 pt-24">
-        
-        <!-- 修正頁籤容器: 使用全寬 sticky 背景，內容置中 -->
-        <div class="sticky top-[80px] z-40 bg-[#f3f4f6] w-full border-b border-gray-300 pt-4 mb-6 shadow-sm">
+        <div class="sticky top-[80px] z-40 bg-[#f3f4f6] w-full border-b border-gray-300 pt-4 mb-10 shadow-sm">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex -mb-px">
-                    <button class="tab-button active" data-page="page-1" onclick="showPage('page-1')">
-                        <i class="fa-solid fa-circle-info mr-2"></i> 1. 使用須知
-                    </button>
-                    <button class="tab-button" data-page="page-2" onclick="showPage('page-2')">
-                        <i class="fa-solid fa-users mr-2"></i> 2. 實習學生資料
-                    </button>
-                    <button class="tab-button" data-page="page-3" onclick="showPage('page-3')">
-                        <i class="fa-solid fa-file-contract mr-2"></i> 3. 實習合約內容
-                    </button>
-                    <button class="tab-button" data-page="page-4" onclick="showPage('page-4')">
-                        <i class="fa-regular fa-file-lines mr-2"></i> 4. 學生實習計畫書
-                    </button>
+                    <button class="tab-button active" data-page="page-1" onclick="showPage('page-1')"><i class="fa-solid fa-circle-info mr-2"></i> 1. 使用須知</button>
+                    <button class="tab-button" data-page="page-2" onclick="showPage('page-2')"><i class="fa-solid fa-users mr-2"></i> 2. 實習學生資料</button>
+                    <button class="tab-button" data-page="page-3" onclick="showPage('page-3')"><i class="fa-solid fa-file-contract mr-2"></i> 3. 實習合約內容</button>
+                    <button class="tab-button" data-page="page-4" onclick="showPage('page-4')"><i class="fa-solid fa-book mr-2"></i> 4. 學生實習計畫書</button>
                 </div>
             </div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4">
             <form id="contractForm">
-                
-                <!-- ========== Page 1 ========== -->
+                <!-- Page 1 -->
                 <div id="page-1" class="page-content mt-4">
                     <div class="bg-white border border-blue-100 rounded-xl p-8 shadow-sm">
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                                <i class="fa-solid fa-lightbulb text-xl"></i>
-                            </div>
+                            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-lightbulb text-xl"></i></div>
                             <div class="flex-1">
                                 <h3 class="text-lg font-bold text-gray-800 mb-3">系統操作流程與說明</h3>
                                 <ol class="text-base text-gray-600 leading-relaxed list-decimal list-outside ml-4 space-y-3">
-                                    <li>**請依序完成以下步驟：**
-                                        <ul class="list-disc list-outside ml-4 mt-1 space-y-1 text-sm">
-                                            <li class="font-bold text-thuBlue">步驟 1 (Page 2)：填寫所有實習學生的基本資料。</li>
-                                            <li class="font-bold text-thuBlue">步驟 2 (Page 3)：填寫實習機構、期間、待遇等合約必要資料。</li>
-                                            <li class="font-bold text-thuBlue">步驟 3 (Page 4)：建立實習課程資料庫，並為每位學生進行選課。</li>
-                                        </ul>
-                                    </li>
-                                    <li>所有資料輸入完畢後，您可以在 **Page 3** 產出合約，並在 **Page 4** 產出計畫書。</li>
+                                    <li>請依序完成步驟 1~3 的資料填寫。</li>
                                     <li>所有運算皆在您的瀏覽器完成，不會上傳任何個資。</li>
                                 </ol>
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-end mt-6">
-                        <button type="button" onclick="showPage('page-2')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
-                            下一步 <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
+                    <div class="flex justify-end mt-6"><button type="button" onclick="showPage('page-2')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">下一步 <i class="fa-solid fa-arrow-right"></i></button></div>
                 </div>
 
-                <!-- ========== Page 2 ========== -->
+                <!-- Page 2 -->
                 <div id="page-2" class="page-content hidden">
                     <div class="card">
                         <div class="card-header">
-                            <span class="card-header-title mr-4">實習學生資料 (Page 2/4)</span>
+                            <span class="card-header-title mr-4">實習學生資料</span>
                             <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
                                 <button type="button" onclick="changeStudentCount(-1)" class="w-8 h-8 flex items-center justify-center rounded-md text-gray-600 hover:bg-white hover:shadow-sm hover:text-thuBlue transition-all"><i class="fa-solid fa-minus"></i></button>
                                 <div class="w-16 text-center text-sm font-bold text-thuBlue" id="student_count_display">1 人</div>
@@ -345,9 +234,7 @@
                                  <button type="button" onclick="document.getElementById('upload_excel').click()" class="bg-green-600 text-white px-3 py-1.5 rounded text-sm font-bold hover:bg-green-700 transition flex items-center gap-1"><i class="fa-solid fa-file-excel"></i> 匯入 Excel</button>
                              </div>
                         </div>
-                        <div class="p-8">
-                            <div id="student_container" class="space-y-6"></div>
-                        </div>
+                        <div class="p-8"><div id="student_container" class="space-y-6"></div></div>
                     </div>
                     <div class="flex justify-between mt-6">
                         <button type="button" onclick="showPage('page-1')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-arrow-left"></i> 上一步</button>
@@ -355,33 +242,16 @@
                     </div>
                 </div>
 
-                <!-- ========== Page 3 ========== -->
+                <!-- Page 3 -->
                 <div id="page-3" class="page-content hidden">
                     <div class="card">
                         <div class="card-header">
-                            <div class="flex items-center">
-                                 <span class="card-header-title">乙方：實習機構資料 (Page 3/4)</span>
-                                 <label class="debug-upload-label"><i class="fa-solid fa-wrench"></i> 測試合約範本<input type="file" accept=".docx" class="hidden" onchange="handleDebugUpload(event, 'contract')"></label>
-                                 <span id="debug_contract_status" class="debug-status"><i class="fa-solid fa-check"></i> 已載入</span>
-                            </div>
+                            <div class="flex items-center"><span class="card-header-title">乙方：實習機構資料</span><label class="debug-upload-label"><i class="fa-solid fa-wrench"></i> 測試合約範本<input type="file" accept=".docx" class="hidden" onchange="handleDebugUpload(event, 'contract')"></label><span id="debug_contract_status" class="debug-status"><i class="fa-solid fa-check"></i> 已載入</span></div>
                         </div>
                         <div class="p-8 grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-6">
-                            <div class="md:col-span-4 mb-2"><span class="text-sm text-red-500 flex items-center">您可輸入統一編號後，點擊查詢按鈕，系統將自動帶入公司名稱、負責人與登記地址。</span></div>
                             <div class="md:col-span-4 flex flex-col md:flex-row gap-x-6 gap-y-4">
-                                <div class="w-full md:w-[65%]">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">統一編號</label>
-                                    <div id="tax_id_input_group" class="flex gap-2 items-center transition-opacity duration-300">
-                                        <input type="text" id="company_tax_id" class="input-field flex-grow" placeholder="04231910" maxlength="15">
-                                        <button type="button" id="queryBtn" class="btn-query flex items-center gap-2 opacity-50 cursor-not-allowed whitespace-nowrap" disabled><i class="fa-solid fa-magnifying-glass"></i> 自動查詢</button>
-                                    </div>
-                                </div>
-                                <div class="w-full md:w-[35%] self-end">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2 invisible md:visible"></label> 
-                                    <label for="no_tax_id" class="flex items-center p-3 h-[42px] border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-100 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/50">
-                                        <input type="checkbox" id="no_tax_id" onchange="toggleTaxIdFields()" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500">
-                                        <span class="ml-2 text-base font-medium text-gray-800 select-none whitespace-normal">實習機構未申請設立字號</span>
-                                    </label>
-                                </div>
+                                <div class="w-full md:w-[65%]"><label class="block text-sm font-bold text-gray-700 mb-2">統一編號</label><div id="tax_id_input_group" class="flex gap-2 items-center transition-opacity duration-300"><input type="text" id="company_tax_id" class="input-field flex-grow" placeholder="04231910" maxlength="15" onkeydown="handleTaxIdKey(event)"><button type="button" id="queryBtn" class="btn-query flex items-center gap-2 opacity-50 cursor-not-allowed whitespace-nowrap" disabled><i class="fa-solid fa-magnifying-glass"></i> 自動查詢</button></div></div>
+                                <div class="w-full md:w-[35%] self-end"><label class="flex items-center p-3 h-[42px] border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-100 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/50"><input type="checkbox" id="no_tax_id" onchange="toggleTaxIdFields()" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500"><span class="ml-2 text-base font-medium text-gray-800 select-none whitespace-normal">實習機構未申請設立字號</span></label></div>
                             </div>
                             <div class="md:col-span-4"><label class="block text-sm font-bold text-gray-700 mb-2">機構全銜 (法定名稱) <span class="text-red-500">*</span></label><input type="text" id="company_name" class="input-field" placeholder="例：國泰世華商業銀行股份有限公司"></div>
                             <div class="md:col-span-2"><label class="block text-sm font-bold text-gray-700 mb-2">代表人姓名 <span class="text-red-500">*</span></label><input type="text" id="company_rep" class="input-field"></div>
@@ -401,119 +271,111 @@
                     <div class="card">
                         <div class="card-header"><span class="card-header-title">實習期間與時間</span></div>
                         <div class="p-8 space-y-8">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3">1. 實習期間</label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習開始 (民國年/月/日)</span>
-                                        <div class="date-group">
-                                            <input type="number" id="start_y" class="date-input w-16 text-thuBlue" placeholder="113" oninput="autoJump(this, 3, 'start_m')"><span class="date-sep">/</span>
-                                            <input type="number" id="start_m" class="date-input w-12" placeholder="07" oninput="autoJump(this, 2, 'start_d')"><span class="date-sep">/</span>
-                                            <input type="number" id="start_d" class="date-input w-12" placeholder="01" oninput="autoJump(this, 2, 'end_y')"> 
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習結束 (民國年/月/日)</span>
-                                        <div class="date-group">
-                                            <input type="number" id="end_y" class="date-input w-16 text-thuBlue" placeholder="114" oninput="autoJump(this, 3, 'end_m')"><span class="date-sep">/</span>
-                                            <input type="number" id="end_m" class="date-input w-12" placeholder="06" oninput="autoJump(this, 2, 'end_d')"><span class="date-sep">/</span>
-                                            <input type="number" id="end_d" class="date-input w-12" placeholder="30">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div><span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習開始</span><div class="date-group"><input type="number" id="start_y" class="date-input w-16 text-thuBlue" placeholder="113"><span class="date-sep">/</span><input type="number" id="start_m" class="date-input w-12" placeholder="07"><span class="date-sep">/</span><input type="number" id="start_d" class="date-input w-12" placeholder="01"></div></div>
+                                <div><span class="text-xs font-bold text-gray-500 mb-2 block uppercase tracking-wide text-center">實習結束</span><div class="date-group"><input type="number" id="end_y" class="date-input w-16 text-thuBlue" placeholder="114"><span class="date-sep">/</span><input type="number" id="end_m" class="date-input w-12" placeholder="06"><span class="date-sep">/</span><input type="number" id="end_d" class="date-input w-12" placeholder="30"></div></div>
                             </div>
-                            <div class="border-t border-gray-200 pt-8">
-                                <label class="block text-sm font-bold text-gray-700 mb-3">2. 每日實習時間</label>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
-                                    <div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">每日開始</span><input type="time" id="daily_start" value="09:00" class="input-field bg-white border-gray-300"></div>
-                                    <div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">每日結束</span><input type="time" id="daily_end" value="18:00" class="input-field bg-white border-gray-300"></div>
-                                    <div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">共計(小時)</span><input type="number" id="daily_hours" value="8" step="0.5" class="input-field bg-white border-gray-300"></div>
-                                </div>
-                            </div>
+                            <div class="border-t border-gray-200 pt-8"><div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-lg border border-gray-200"><div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">每日開始</span><input type="time" id="daily_start" class="input-field"></div><div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">每日結束</span><input type="time" id="daily_end" class="input-field"></div><div><span class="text-xs font-bold text-gray-400 uppercase mb-1 block">共計(小時)</span><input type="number" id="daily_hours" step="0.5" class="input-field"></div></div></div>
                         </div>
                     </div>
 
                     <div class="card" id="card-conditions">
                         <div class="card-header"><span class="card-header-title">實習類型與待遇福利</span></div>
-                        <div class="p-8 space-y-8">
-                            <div id="type-section" class="p-4 rounded-lg border border-transparent transition-all">
-                                <label class="block text-lg font-bold text-thuBlue mb-3">1. 請選擇實習類型 <span class="text-red-500 text-sm">*必填</span></label>
+                        <div class="p-8 space-y-10">
+                            <div>
+                                <label class="block text-lg font-bold text-thuBlue mb-4">1. 實習類型 <span class="text-red-500 text-sm">*</span></label>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <label class="relative flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-thuBlue has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-thuBlue h-full">
-                                        <input type="radio" name="contract_type" value="learn" onchange="toggleType()" class="w-5 h-5 text-thuBlue border-gray-300 focus:ring-thuBlue">
-                                        <div class="ml-4">
-                                            <i class="fa-solid fa-book-open text-2xl text-thuBlue opacity-30 absolute right-4 top-4"></i>
-                                            <span class="block text-base font-bold text-gray-900">一般型 (學習型)</span>
-                                            <span class="block text-xs text-gray-500 mt-1">單純學習訓練，無僱傭關係</span>
-                                        </div>
-                                    </label>
-                                    <label class="relative flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all hover:bg-gray-50 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50/50 has-[:checked]:ring-1 has-[:checked]:ring-orange-500 h-full">
-                                        <input type="radio" name="contract_type" value="work" onchange="toggleType()" class="w-5 h-5 text-orange-600 border-gray-300 focus:ring-orange-500">
-                                        <div class="ml-4">
-                                            <i class="fa-solid fa-briefcase text-2xl text-orange-600 opacity-30 absolute right-4 top-4"></i>
-                                            <span class="block text-base font-bold text-gray-900">工作型 (勞資型)</span>
-                                            <span class="block text-xs text-gray-500 mt-1">具僱傭關係，適用勞基法</span>
-                                        </div>
-                                    </label>
+                                    <label class="option-card-label"><input type="radio" name="contract_type" value="learn" onchange="toggleType()" class="radio-card-input"><i class="fa-solid fa-book option-icon"></i><span class="option-text text-lg">一般型 (學習型)</span><span class="text-xs text-gray-400 mt-1">單純學習訓練</span></label>
+                                    <label class="option-card-label"><input type="radio" name="contract_type" value="work" onchange="toggleType()" class="radio-card-input"><i class="fa-solid fa-briefcase option-icon"></i><span class="option-text text-lg">工作型 (勞資型)</span><span class="text-xs text-gray-400 mt-1">具僱傭關係</span></label>
                                 </div>
                             </div>
-
-                            <div id="pay-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
-                                <label class="block text-lg font-bold text-thuBlue mb-3">2. 實習待遇與給付 <span class="text-red-500 text-sm">*必填</span></label>
-                                <div id="panel_initial" class="flex items-center justify-center p-8 bg-yellow-50 rounded-xl border-2 border-dashed border-yellow-200 text-yellow-700 font-bold shadow-sm">
-                                    <i class="fa-solid fa-arrow-up mr-2 animate-bounce"></i> 請先選擇上方「實習類型」以解鎖此區塊
-                                </div>
-                                <div id="panel_learn" class="bg-green-50 p-6 rounded-xl border border-green-200 hidden fade-in">
+                            <div id="pay-section" class="border-t border-gray-200 pt-8">
+                                <label class="block text-lg font-bold text-thuBlue mb-4">2. 待遇給付 <span class="text-red-500 text-sm">*</span></label>
+                                <div id="panel_initial" class="p-8 bg-yellow-50 rounded-xl border-2 border-dashed border-yellow-200 text-center text-yellow-700 font-bold">請先選擇上方「實習類型」</div>
+                                <div id="panel_learn" class="hidden space-y-6">
                                     <span class="text-[10px] font-black text-green-700 bg-green-200 px-2 py-1 rounded uppercase tracking-wider mb-4 inline-block">學習型</span>
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                                        <label class="pay-option-label pay-option-none">
-                                            <input type="radio" name="pay_opt_learn" value="none" onchange="togglePayInputs()" class="radio-card-input">
-                                            <i class="fa-regular fa-circle-xmark pay-option-icon"></i><span class="pay-option-text text-sm">無</span>
-                                        </label>
-                                        <label class="pay-option-label pay-option-scholar">
-                                            <input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()" class="radio-card-input">
-                                            <i class="fa-solid fa-graduation-cap pay-option-icon"></i><span class="pay-option-text text-sm">獎學金</span>
-                                        </label>
-                                        <label class="pay-option-label pay-option-allowance">
-                                            <input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()" class="radio-card-input">
-                                            <i class="fa-solid fa-hand-holding-dollar pay-option-icon"></i><span class="pay-option-text text-sm">實習津貼</span>
-                                        </label>
+                                        <label class="option-card-label opt-learn"><input type="radio" name="pay_opt_learn" value="none" onchange="togglePayInputs()" class="radio-card-input"><i class="fa-solid fa-ban option-icon"></i><span class="option-text">無</span></label>
+                                        <label class="option-card-label opt-learn"><input type="radio" name="pay_opt_learn" value="scholar" onchange="togglePayInputs()" class="radio-card-input"><i class="fa-solid fa-graduation-cap option-icon"></i><span class="option-text">獎學金</span></label>
+                                        <label class="option-card-label opt-learn"><input type="radio" name="pay_opt_learn" value="allowance" onchange="togglePayInputs()" class="radio-card-input"><i class="fa-solid fa-hand-holding-dollar option-icon"></i><span class="option-text">實習津貼</span></label>
                                     </div>
-                                    <div id="learn_amt_box" class="hidden transition-all">
-                                        <label class="block text-xs font-bold text-green-800 mb-2 uppercase">每月給付總額</label>
-                                        <div class="relative w-full md:w-64">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
-                                            <input type="number" id="learn_amount" placeholder="0" class="input-field pl-12 pr-8 text-right border-green-300 focus:border-green-600 focus:ring-green-600 font-mono text-lg">
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div>
+                                    <div id="learn_pay_details" class="hidden bg-green-50 p-5 rounded-lg border border-green-200">
+                                        <div class="flex flex-col md:flex-row gap-6">
+                                            <div class="w-full md:w-1/2">
+                                                <label class="block text-xs font-bold text-green-800 mb-2 uppercase">給付方式</label>
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <label class="sub-option-label"><input type="radio" name="pay_method_learn" value="total" class="radio-hidden" onchange="togglePayInputs()" checked><i class="fa-solid fa-sack-dollar"></i> <span>總額給付</span></label>
+                                                    <label class="sub-option-label"><input type="radio" name="pay_method_learn" value="monthly" class="radio-hidden" onchange="togglePayInputs()"><i class="fa-regular fa-calendar-check"></i> <span>按月給付</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="w-full md:w-1/2">
+                                                <label id="learn_amt_label" class="block text-xs font-bold text-green-800 mb-2 uppercase">給付金額 (總額)</label>
+                                                <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div><input type="number" id="learn_amount" placeholder="0" class="input-field pl-12 pr-8 text-right border-green-300 focus:border-green-600 font-mono text-lg"><div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div id="panel_work" class="bg-orange-50 p-6 rounded-xl border border-orange-200 hidden flex flex-col gap-6 fade-in">
+                                <div id="panel_work" class="hidden space-y-6">
                                     <span class="text-[10px] font-black text-orange-700 bg-orange-200 px-2 py-1 rounded uppercase tracking-wider w-fit">勞資型</span>
-                                    <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400 shadow-sm text-xs text-gray-600 leading-relaxed">
-                                        <div class="font-bold text-orange-600 mb-2 flex items-center gap-1 text-sm"><i class="fa-solid fa-scale-balanced"></i> 勞動部基本工資公告</div>
+                                    <!-- 法規公告 (改為置頂顯示全部) -->
+                                    <div class="bg-white p-4 rounded-lg border-l-4 border-orange-400 shadow-sm text-xs text-gray-600 leading-relaxed mb-4">
+                                        <div class="font-bold text-orange-600 mb-2 flex items-center gap-1 text-sm"><i class="fa-solid fa-scale-balanced"></i> 勞動部基本工資調整公告</div>
                                         <ul class="list-disc list-inside space-y-1.5">
-                                            <li><span class="font-bold text-gray-800">115年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">29,500</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">196</span> 元。(勞動部114年10月21日公告)</li>
-                                            <li><span class="font-bold text-gray-800">114年1月1日起：</span>每月最低工資調整為 <span class="text-red-600 font-bold">28,590</span> 元，每小時最低工資調整為 <span class="text-red-600 font-bold">190</span> 元。(勞動部113年9月19日公告)</li>
+                                            <li><span class="font-bold text-gray-800">115年1月1日起：</span>月薪 <span class="text-red-600 font-bold">29,500</span> 元 / 時薪 <span class="text-red-600 font-bold">196</span> 元。</li>
+                                            <li><span class="font-bold text-gray-800">114年1月1日起：</span>月薪 <span class="text-red-600 font-bold">28,590</span> 元 / 時薪 <span class="text-red-600 font-bold">190</span> 元。</li>
                                         </ul>
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額 (月薪)</label>
-                                        <div class="relative w-full md:w-64">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div>
-                                            <input type="number" id="work_amount" placeholder="27470" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 focus:ring-orange-500 font-mono text-lg">
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div>
+                                    <div class="bg-orange-50 p-6 rounded-xl border border-orange-200 flex flex-col md:flex-row gap-6">
+                                        <div class="w-full md:w-1/2">
+                                            <label class="block text-xs font-bold text-orange-800 mb-2 uppercase">計薪方式</label>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <label class="sub-option-label"><input type="radio" name="wage_type_work" value="monthly" class="radio-hidden" onchange="toggleWorkWageType()" checked><i class="fa-solid fa-calendar-days"></i> <span>月薪</span></label>
+                                                <label class="sub-option-label"><input type="radio" name="wage_type_work" value="hourly" class="radio-hidden" onchange="toggleWorkWageType()"><i class="fa-regular fa-clock"></i> <span>時薪</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="w-full md:w-1/2">
+                                            <label id="work_amt_label" class="block text-xs font-bold text-orange-800 mb-2 uppercase">薪資金額 (月薪)</label>
+                                            <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 font-bold">NT$</div><input type="number" id="work_amount" placeholder="28590" class="input-field pl-12 pr-8 text-right border-orange-300 focus:border-orange-500 font-mono text-lg"><div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 font-bold">元</div></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="welfare-section" class="border-t border-gray-200 pt-6 p-4 rounded-lg border border-transparent transition-all">
-                                <label class="block text-lg font-bold text-thuBlue mb-3">3. 福利項目 <span class="text-red-500 text-sm">*必填</span></label>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div><label class="text-sm font-bold text-gray-600 mb-1 block">住宿</label><select id="dorm_opt" onchange="toggleCost('dorm')" class="input-field mb-2"><option value="" disabled selected>請選擇</option><option value="none">無</option><option value="free">免費提供</option><option value="paid">付費提供</option></select><div id="dorm_cost_wrapper" class="hidden relative"><input id="dorm_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono"></div></div>
-                                    <div><label class="text-sm font-bold text-gray-600 mb-1 block">膳食</label><select id="food_opt" onchange="toggleCost('food')" class="input-field mb-2"><option value="" disabled selected>請選擇</option><option value="none">無</option><option value="free">免費提供</option><option value="paid">付費提供</option></select><div id="food_cost_wrapper" class="hidden relative"><input id="food_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono"></div></div>
-                                    <div><label class="text-sm font-bold text-gray-600 mb-1 block">交通</label><select id="trans_opt" onchange="toggleCost('trans')" class="input-field mb-2"><option value="" disabled selected>請選擇</option><option value="none">無</option><option value="free">免費提供</option><option value="paid">付費提供</option><option value="subsidy">交通津貼</option></select><div id="trans_cost_wrapper" class="hidden relative"><input id="trans_cost" type="number" placeholder="0" class="input-field pl-10 pr-8 text-right mt-1 font-mono"></div></div>
+                            
+                            <!-- 3. 福利項目 (重新設計) -->
+                            <div id="welfare-section" class="border-t border-gray-200 pt-8">
+                                <label class="block text-lg font-bold text-thuBlue mb-6">3. 福利項目 <span class="text-red-500 text-sm">*必填</span></label>
+                                <div class="space-y-8">
+                                    <!-- 住宿 -->
+                                    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center border-b border-gray-100 pb-6">
+                                        <div class="w-28 font-bold text-gray-700 shrink-0 flex items-center gap-2 text-base"><i class="fa-solid fa-bed text-thuGold text-lg"></i> 住宿</div>
+                                        <div class="flex flex-wrap gap-3 grow">
+                                            <label class="option-card-label welfare-option"><input type="radio" name="dorm_opt" value="none" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-circle-xmark option-icon"></i><span class="option-text text-sm">無</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="dorm_opt" value="free" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-gift option-icon"></i><span class="option-text text-sm">免費提供</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="dorm_opt" value="paid" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-file-invoice-dollar option-icon"></i><span class="option-text text-sm">付費提供</span></label>
+                                        </div>
+                                        <div id="dorm_cost_box" class="hidden w-full md:w-48 relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-xs font-bold">NT$</div><input type="number" id="dorm_cost" placeholder="金額/月" class="input-field h-12 pl-10 text-right font-mono"></div>
+                                    </div>
+                                    <!-- 膳食 -->
+                                    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center border-b border-gray-100 pb-6">
+                                        <div class="w-28 font-bold text-gray-700 shrink-0 flex items-center gap-2 text-base"><i class="fa-solid fa-utensils text-thuGold text-lg"></i> 膳食</div>
+                                        <div class="flex flex-wrap gap-3 grow">
+                                            <label class="option-card-label welfare-option"><input type="radio" name="food_opt" value="none" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-circle-xmark option-icon"></i><span class="option-text text-sm">無</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="food_opt" value="free" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-gift option-icon"></i><span class="option-text text-sm">免費提供</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="food_opt" value="paid" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-file-invoice-dollar option-icon"></i><span class="option-text text-sm">付費提供</span></label>
+                                        </div>
+                                        <div id="food_cost_box" class="hidden w-full md:w-48 relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-xs font-bold">NT$</div><input type="number" id="food_cost" placeholder="金額/餐" class="input-field h-12 pl-10 text-right font-mono"></div>
+                                    </div>
+                                    <!-- 交通 -->
+                                    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                                        <div class="w-28 font-bold text-gray-700 shrink-0 flex items-center gap-2 text-base"><i class="fa-solid fa-bus text-thuGold text-lg"></i> 交通</div>
+                                        <div class="grid grid-cols-2 md:flex flex-wrap gap-3 grow w-full">
+                                            <label class="option-card-label welfare-option"><input type="radio" name="trans_opt" value="none" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-circle-xmark option-icon"></i><span class="option-text text-sm">無</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="trans_opt" value="free" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-bus option-icon"></i><span class="option-text text-sm">交通車(免費)</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="trans_opt" value="paid" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-ticket option-icon"></i><span class="option-text text-sm">交通車(付費)</span></label>
+                                            <label class="option-card-label welfare-option"><input type="radio" name="trans_opt" value="subsidy" onchange="toggleWelfare()" class="radio-card-input"><i class="fa-solid fa-coins option-icon"></i><span class="option-text text-sm">交通津貼</span></label>
+                                        </div>
+                                        <div id="trans_cost_box" class="hidden w-full md:w-48"><div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 text-xs font-bold">NT$</div><input type="number" id="trans_cost" placeholder="金額" class="input-field h-12 pl-10 text-right font-mono"></div><div id="trans_hint" class="text-xs text-gray-400 mt-1 text-right"></div></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -525,53 +387,26 @@
                     </div>
                 </div>
 
-                <!-- ========== Page 4: 實習計畫書 (Left: Course DB, Right: Students) ========== -->
+                <!-- Page 4 -->
                 <div id="page-4" class="page-content hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        
-                        <!-- LEFT COL: Course Database (Sticky) -->
                         <div class="lg:col-span-4 lg:sticky lg:top-24 h-fit">
                             <div class="card bg-white border border-blue-200 shadow-sm">
-                                <div class="card-header bg-blue-50 py-3">
-                                    <span class="card-header-title text-thuBlue text-base"><i class="fa-solid fa-database mr-2"></i> 課程資料庫</span>
-                                </div>
+                                <div class="card-header bg-blue-50 py-3"><span class="card-header-title text-thuBlue text-base"><i class="fa-solid fa-book mr-2"></i> 課程資料庫</span></div>
                                 <div class="p-4">
                                     <div class="grid grid-cols-2 gap-3 mb-3">
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 mb-1">開課學年</label>
-                                            <input type="number" id="new_course_year" class="input-field text-sm h-9" placeholder="113">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 mb-1">開課學期</label>
-                                            <select id="new_course_sem" class="input-field text-sm h-9 py-1">
-                                                <option value="1">1 (上)</option>
-                                                <option value="2">2 (下)</option>
-                                                <option value="3">暑期</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-span-2">
-                                            <label class="block text-xs font-bold text-gray-500 mb-1">課程名稱</label>
-                                            <input type="text" id="new_course_name" class="input-field text-sm h-9" placeholder="例：企業實習(一)">
-                                        </div>
+                                        <div><label class="block text-xs font-bold text-gray-500 mb-1">開課學年</label><input type="number" id="new_course_year" class="input-field text-sm h-9" placeholder="113"></div>
+                                        <div><label class="block text-xs font-bold text-gray-500 mb-1">開課學期</label><select id="new_course_sem" class="input-field text-sm h-9 py-1"><option value="" disabled selected>請選擇</option><option value="1">1 (上)</option><option value="2">2 (下)</option><option value="3">暑期</option></select></div>
+                                        <div class="col-span-2"><label class="block text-xs font-bold text-gray-500 mb-1">課程名稱</label><input type="text" id="new_course_name" class="input-field text-sm h-9" placeholder="例：企業實習(一)"></div>
                                         <div class="col-span-2 flex items-end gap-2">
-                                            <div class="w-1/2">
-                                                <label class="block text-xs font-bold text-gray-500 mb-1">學分</label>
-                                                <input type="number" id="new_course_credits" class="input-field text-sm h-9" placeholder="3">
-                                            </div>
-                                            <button type="button" onclick="addCourse()" class="w-1/2 bg-sky-600 text-white font-bold h-9 rounded-md hover:bg-sky-700 transition shadow-sm flex items-center justify-center gap-1 text-sm">
-                                                <i class="fa-solid fa-plus"></i> 新增
-                                            </button>
+                                            <div class="w-1/2"><label class="block text-xs font-bold text-gray-500 mb-1">學分</label><input type="number" id="new_course_credits" class="input-field text-sm h-9" placeholder="3"></div>
+                                            <button type="button" onclick="addCourse()" class="w-1/2 bg-blue-600 text-white font-bold h-9 rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg flex items-center justify-center gap-1 text-sm"><i class="fa-solid fa-plus-circle"></i> 新增</button>
                                         </div>
                                     </div>
-                                    
-                                    <div id="course_list_display" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-                                        <div class="text-center text-gray-400 text-xs py-4 border border-dashed border-gray-300 rounded">請輸入上方資料並新增</div>
-                                    </div>
+                                    <div id="course_list_display" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1"><div class="text-center text-gray-400 text-xs py-4 border border-dashed border-gray-300 rounded">請輸入上方資料並新增</div></div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- RIGHT COL: Student List -->
                         <div class="lg:col-span-8">
                             <div class="card">
                                 <div class="card-header py-3">
@@ -584,13 +419,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <div class="p-4 bg-gray-50 min-h-[200px]">
                                     <div class="flex items-center justify-between mb-3 px-1">
-                                        <div class="flex items-center">
-                                            <input type="checkbox" id="select_all_proposals" onclick="toggleSelectAll(this)" class="w-4 h-4 text-thuBlue bg-white border-gray-300 rounded focus:ring-thuBlue cursor-pointer">
-                                            <label for="select_all_proposals" class="ml-2 text-sm font-bold text-gray-600 cursor-pointer select-none">全選</label>
-                                        </div>
+                                        <div class="flex items-center"><input type="checkbox" id="select_all_proposals" onclick="toggleSelectAll(this)" class="w-4 h-4 text-thuBlue bg-white border-gray-300 rounded focus:ring-thuBlue cursor-pointer"><label for="select_all_proposals" class="ml-2 text-sm font-bold text-gray-600 cursor-pointer select-none">全選</label></div>
                                         <div class="text-xs text-gray-400"><i class="fa-regular fa-lightbulb mr-1"></i> 點擊卡片展開</div>
                                     </div>
                                     <div id="proposal_list_container" class="space-y-3"></div>
@@ -598,902 +429,433 @@
                                 <div id="proposal_empty_msg" class="p-8 text-center text-gray-500 hidden">請先返回 Page 2 填寫學生資料。</div>
                             </div>
                         </div>
-
                     </div>
-                    
                     <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-4">
                         <button type="button" onclick="showPage('page-3')" class="nav-button w-40 px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-arrow-left"></i> 上一步</button>
                         <button type="button" onclick="downloadSelectedProposals()" id="bulkDownloadBtn" class="btn-generate w-full md:w-80 px-6 py-5 rounded-full font-bold text-lg flex items-center justify-center gap-3"><i class="fa-solid fa-file-zipper"></i> 打包下載選取計畫書 (ZIP)</button>
-                        <button type="button" onclick="generateProposalDoc()" id="genProposalBtn" class="hidden"></button>
                     </div>
                 </div>
             </form>
         </div>
     </main>
 
-    <footer>
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col items-center justify-center gap-1">
-                <p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p>
-                <p class="text-[9px] text-gray-500">系統版本 V1.0.65 (Layout Polish) | 網頁製作：張博堯 | Powered by Google Gemini</p>
-            </div>
-        </div>
-    </footer>
+    <footer><div class="container mx-auto px-4"><div class="flex flex-col items-center justify-center gap-1"><p class="font-bold text-white tracking-wide text-[10px]">&copy; 2025 東海大學實習與學生成就中心 Internship and Student Achievement Center, Tunghai University. All Rights Reserved.</p><p class="text-[9px] text-gray-500">系統版本 V1.0.66 (Final Polish) | 網頁製作：張博堯 | Powered by Google Gemini</p></div></div></footer>
 
     <script>
-        let studentDataState = [];
-        let courseListState = []; 
+        let studentDataState = []; let courseListState = [];
+        let debugContractBuffer = null; let debugProposalBuffer = null;
 
-        function cleanXML(xml) {
-            if (!xml) return "";
-            const pattern = /%%%[^%]+%%%/g;
-            return xml.replace(pattern, function(match) { return match.replace(/<\/?[^>]+(>|$)/g, ""); });
-        }
-
-        let debugContractBuffer = null;
-        let debugProposalBuffer = null;
-
-        function handleDebugUpload(event, type) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if(type === 'contract') {
-                    debugContractBuffer = e.target.result;
-                    document.getElementById('debug_contract_status').classList.add('show');
-                } else {
-                    debugProposalBuffer = e.target.result;
-                    document.getElementById('debug_proposal_status').classList.add('show');
-                }
-                showMsg("測試範本載入成功，請進行文件產出");
-            };
-            reader.readAsArrayBuffer(file);
-        }
-        
-        async function getTemplateBuffer(type) {
-            if (type === 'contract' && debugContractBuffer) return debugContractBuffer;
-            if (type === 'proposal' && debugProposalBuffer) return debugProposalBuffer;
-            const url = type === 'contract' ? './template.docx' : './template_plan.docx';
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error(`找不到 ${url}（請確認檔案是否存在於根目錄）`);
-            return await resp.arrayBuffer();
-        }
-
-        function autoJump(current, maxLen, nextId) {
-            if (current.value.length >= maxLen) { const next = document.getElementById(nextId); if (next) next.focus(); }
-        }
-
-        function showMsg(msg) {
-            const el = document.getElementById('status-bar'); el.innerText = msg; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 4000);
-        }
-
-        function showModal(title, message, style = 'error') { 
-            const modal = document.getElementById('error-modal');
-            const content = document.getElementById('error-details');
-            const header = document.getElementById('modal-header-title');
-            const icon = document.getElementById('modal-header-icon');
-            header.classList.remove('text-red-600', 'text-yellow-600', 'text-blue-600', 'text-gray-600');
-            let iconClass = 'fa-solid ';
-            if (style === 'error') { header.classList.add('text-red-600'); iconClass += 'fa-circle-exclamation'; }
-            else if (style === 'info') { header.classList.add('text-blue-600'); iconClass += 'fa-circle-info'; }
-            else if (style === 'warning') { header.classList.add('text-yellow-600'); iconClass += 'fa-triangle-exclamation'; }
-            else { header.classList.add('text-gray-600'); iconClass += 'fa-circle-info'; }
-            if (icon) icon.className = iconClass;
-            if (header) header.innerHTML = `<i class="${iconClass}"></i> ${title}`;
-            content.textContent = message; modal.style.display = 'flex';
-        }
-
-        function showConfirm(title, message, onConfirm) {
-            const modal = document.getElementById('confirm-modal');
-            const content = document.getElementById('confirm-details');
-            content.textContent = message;
-            modal.style.display = 'flex';
-            
-            const okBtn = document.getElementById('confirm-ok');
-            const cancelBtn = document.getElementById('confirm-cancel');
-            
-            const newOk = okBtn.cloneNode(true);
-            const newCancel = cancelBtn.cloneNode(true);
-            okBtn.parentNode.replaceChild(newOk, okBtn);
-            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-            
-            newOk.addEventListener('click', () => {
-                modal.style.display = 'none';
-                if (typeof onConfirm === 'function') onConfirm();
-            });
-            newCancel.addEventListener('click', () => { modal.style.display = 'none'; });
-        }
-
+        function cleanXML(xml) { if (!xml) return ""; const pattern = /%%%[^%]+%%%/g; return xml.replace(pattern, function(match) { return match.replace(/<\/?[^>]+(>|$)/g, ""); }); }
+        function handleDebugUpload(event, type) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { if(type === 'contract') { debugContractBuffer = e.target.result; document.getElementById('debug_contract_status').classList.add('show'); } else { debugProposalBuffer = e.target.result; document.getElementById('debug_proposal_status').classList.add('show'); } showMsg("測試範本載入成功"); }; reader.readAsArrayBuffer(file); }
+        async function getTemplateBuffer(type) { if (type === 'contract' && debugContractBuffer) return debugContractBuffer; if (type === 'proposal' && debugProposalBuffer) return debugProposalBuffer; const url = type === 'contract' ? './template.docx' : './template_plan.docx'; const resp = await fetch(url); if (!resp.ok) throw new Error(`找不到 ${url}`); return await resp.arrayBuffer(); }
+        function showMsg(msg) { const el = document.getElementById('status-bar'); el.innerText = msg; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 4000); }
+        function showModal(title, message, style = 'error') { const m=document.getElementById('error-modal'), c=document.getElementById('error-details'), h=document.getElementById('modal-header-title'), i=document.getElementById('modal-header-icon'); h.className='text-xl font-bold mb-4 flex items-center gap-2 '+(style==='error'?'text-red-600':(style==='info'?'text-blue-600':'text-yellow-600')); i.className='fa-solid '+(style==='error'?'fa-circle-exclamation':(style==='info'?'fa-circle-info':'fa-triangle-exclamation')); h.innerHTML=`<i class="${i.className}"></i> ${title}`; c.textContent = message; m.style.display = 'flex'; }
+        function showConfirm(title, message, onConfirm) { const m=document.getElementById('confirm-modal'), c=document.getElementById('confirm-details'), ok=document.getElementById('confirm-ok'), ca=document.getElementById('confirm-cancel'); c.textContent=message; m.style.display='flex'; const nok=ok.cloneNode(true), nca=ca.cloneNode(true); ok.parentNode.replaceChild(nok, ok); ca.parentNode.replaceChild(nca, ca); nok.addEventListener('click', ()=>{m.style.display='none'; if(typeof onConfirm==='function') onConfirm();}); nca.addEventListener('click', ()=>m.style.display='none'); }
         function showError(details) { showModal('發生錯誤', details, 'error'); }
         function showQueryInfo(message) { showModal('提示', message, 'warning'); }
         document.getElementById('err-close').addEventListener('click', () => { document.getElementById('error-modal').style.display = 'none'; });
-
-        function showPage(pageId) {
-            const pages = document.querySelectorAll('.page-content');
-            const tabs = document.querySelectorAll('.tab-button');
-            pages.forEach(page => page.classList.add('hidden'));
-            tabs.forEach(tab => tab.classList.remove('active'));
-            document.getElementById(pageId).classList.remove('hidden');
-            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-            if (pageId === 'page-4') {
-                collectStudentDataFromPage2();
-                renderProposalList();
-                renderCourseList();
-            }
-        }
         
-        // V1.0.65: Added getCompanyInfo (with polished error message)
-        async function getCompanyInfo() {
-            const taxIdInput = document.getElementById('company_tax_id');
-            const taxId = taxIdInput.value.trim();
-            const originalApiURL = `https://data.gcis.nat.gov.tw/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq ${taxId}&$skip=0&$top=1`;
-            const apiURL = `https://corsproxy.io/?${encodeURIComponent(originalApiURL)}`;
-            const queryBtn = document.getElementById('queryBtn');
-            const originalQueryBtnHtml = queryBtn.innerHTML;
-
-            try {
-                queryBtn.disabled = true; queryBtn.classList.add('btn-query-loading');
-                queryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 查詢中...';
-                let response; const maxRetries = 3; const timeoutDuration = 10000;
-                for (let i = 0; i < maxRetries; i++) {
-                    try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
-                        response = await fetch(apiURL, { signal: controller.signal });
-                        clearTimeout(timeoutId);
-                        if (response.ok) break; 
-                    } catch (error) { if (i === maxRetries - 1) throw new Error("API_NETWORK_ERROR"); await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); }
-                }
-
-                if (!response || !response.ok) throw new Error("API_REQUEST_FAILED");
-                const contentType = response.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) throw new Error("API_CONTENT_ERROR");
-                const data = await response.json();
-                if (!data || data.length === 0) throw new Error("NO_DATA_FOUND");
-
-                const company = data[0];
-                document.getElementById('company_name').value = company.Company_Name || "";
-                document.getElementById('company_rep').value = company.Responsible_Name || "";
-                document.getElementById('reg_address').value = company.Company_Location || "";
-                document.getElementById('branch_name').value = ""; document.getElementById('branch_addr').value = "";
-                document.getElementById('no_tax_id').checked = false; toggleTaxIdFields(); 
-                showMsg(`「 ${company.Company_Name} 」公司資料已自動填入。`);
-
-            } catch (e) {
-                console.error(e); // Log for dev
-                showQueryInfo("查無資料，請手動填入相關欄位。"); // User friendly message
-            } finally {
-                queryBtn.classList.remove('btn-query-loading'); queryBtn.innerHTML = originalQueryBtnHtml; updateQueryButtonState();
-            }
-        }
-
-        function addCourse() {
-            const name = document.getElementById('new_course_name').value.trim();
-            const year = document.getElementById('new_course_year').value.trim();
-            const sem = document.getElementById('new_course_sem').value;
-            const credits = parseFloat(document.getElementById('new_course_credits').value);
-
-            if (!name || !year || !sem || isNaN(credits)) {
-                showModal("欄位不完整", "請填寫完整的課程資訊。", 'warning');
-                return;
-            }
-
-            const newCourse = { id: Date.now(), name: name, year: year, semester: sem, credits: credits };
-            courseListState.push(newCourse);
-            
-            document.getElementById('new_course_name').value = '';
-            document.getElementById('new_course_credits').value = '';
-            
-            renderCourseList();
-            renderProposalList(false); 
-        }
-
-        function removeCourse(id) {
-            courseListState = courseListState.filter(c => c.id !== id);
-            studentDataState.forEach(s => {
-                if (s.selectedCourses) s.selectedCourses = s.selectedCourses.filter(cId => cId !== id);
-            });
-            renderCourseList();
-            renderProposalList(false);
-        }
-
-        function renderCourseList() {
-            const container = document.getElementById('course_list_display');
-            if (courseListState.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-400 text-xs py-4 border border-dashed border-gray-300 rounded">尚未建立任何課程，請由上方新增</div>';
-                return;
-            }
-            container.innerHTML = courseListState.map(c => `
-                <div class="flex items-center justify-between bg-white p-2 border border-gray-200 rounded shadow-sm">
-                    <div class="text-xs">
-                        <span class="font-bold text-gray-700">${c.year}-${c.semester}</span>
-                        <span class="mx-1 text-gray-300">|</span>
-                        <span class="font-bold text-thuBlue">${c.name}</span>
-                        <span class="mx-1 text-gray-300">|</span>
-                        <span class="font-mono bg-yellow-100 px-1.5 py-0.5 rounded text-yellow-800">${c.credits}學分</span>
-                    </div>
-                    <button onclick="removeCourse(${c.id})" class="text-red-400 hover:text-red-600 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            `).join('');
-        }
-
-        window.toggleDropdown = function(index) {
-            const content = document.getElementById(`dropdown_content_${index}`);
-            if (content) content.classList.toggle('open');
-        };
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.multi-select-dropdown')) {
-                document.querySelectorAll('.multi-select-content').forEach(el => el.classList.remove('open'));
-            }
-        });
-
-        window.updateSelectedCourses = function(studentIndex, courseId, isChecked) {
-            const student = studentDataState[studentIndex];
-            if (!student.selectedCourses) student.selectedCourses = [];
-            if (isChecked) { if (!student.selectedCourses.includes(courseId)) student.selectedCourses.push(courseId); } 
-            else { student.selectedCourses = student.selectedCourses.filter(id => id !== courseId); }
-            updateCourseSummary(studentIndex);
-        }
-
-        function updateCourseSummary(index) {
-            const student = studentDataState[index];
-            const summaryDiv = document.getElementById(`course_summary_${index}`);
-            const triggerText = document.getElementById(`dropdown_trigger_text_${index}`);
-            
-            if (!student.selectedCourses || student.selectedCourses.length === 0) {
-                summaryDiv.innerHTML = '<span class="text-gray-400 text-xs">尚未選擇課程</span>';
-                triggerText.textContent = '請選擇課程...';
-                return;
-            }
-
-            const selectedObjs = courseListState.filter(c => student.selectedCourses.includes(c.id));
-            const totalCredits = selectedObjs.reduce((sum, c) => sum + c.credits, 0);
-            
-            triggerText.textContent = `已選 ${selectedObjs.length} 門 (${totalCredits} 學分)`;
-
-            summaryDiv.innerHTML = `
-                <div class="bg-gray-50 p-2 rounded border border-gray-200 text-xs">
-                    <div class="space-y-1 mb-2 border-b border-gray-200 pb-1">
-                        ${selectedObjs.map(c => `
-                            <div class="flex justify-between">
-                                <span>${c.year}-${c.semester} ${c.name}</span>
-                                <span class="font-mono text-gray-600">${c.credits}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="flex justify-between font-bold text-thuBlue">
-                        <span>總學分</span>
-                        <span>${totalCredits}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        window.toggleExpand = function(index) {
-            const body = document.getElementById(`proposal_body_${index}`);
-            const chevron = document.getElementById(`chevron_${index}`);
-            if (body.classList.contains('hidden')) {
-                body.classList.remove('hidden'); chevron.classList.add('rotate-180');
-            } else {
-                body.classList.add('hidden'); chevron.classList.remove('rotate-180');
-            }
-        }
+        function showPage(pageId) { document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden')); document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active')); document.getElementById(pageId).classList.remove('hidden'); document.querySelector(`[data-page="${pageId}"]`).classList.add('active'); if (pageId === 'page-4') { collectStudentDataFromPage2(); renderProposalList(); renderCourseList(); } }
         
-        function collectStudentDataFromPage2() {
-            const sCount = Number(document.getElementById('student_count').value) || 1;
-            const tempStudentData = [];
-            for (let i = 0; i < sCount; i++) {
-                const existingState = studentDataState.find(s => s.index === i) || {};
-                const gradeInput = document.getElementById(`s_grade_${i}`)?.value || "";
-                const gradeText = gradeInput.trim() ? `${gradeInput}年級` : "";
-
-                tempStudentData.push({
-                    index: i,
-                    name: document.getElementById(`s_name_${i}`)?.value || "",
-                    dept: document.getElementById(`s_dept_${i}`)?.value || "",
-                    grade: gradeText,
-                    raw_grade: gradeInput,
-                    id: document.getElementById(`s_id_${i}`)?.value || "",
-                    isSelected: existingState.isSelected === undefined ? true : existingState.isSelected,
-                    selectedCourses: existingState.selectedCourses || [], 
-                    teacher_name: existingState.teacher_name || "",
-                    teacher_contact: existingState.teacher_contact || "",
-                    industry_teacher: existingState.industry_teacher || "", 
-                    industry_contact: existingState.industry_contact || "", 
-                    hours_exceeded_desc: existingState.hours_exceeded_desc || "",
-                    intern_type_select: existingState.intern_type_select || "" 
-                });
-            }
-            studentDataState = tempStudentData;
-        }
-
-        function renderStudents() {
-            const count = Number(document.getElementById('student_count').value) || 1;
-            const c = document.getElementById('student_container');
-            collectStudentDataFromPage2();
-            while (c.children.length > count) c.removeChild(c.lastChild);
-            const currentChildren = c.children.length;
-            if (count > currentChildren) {
-                for (let i = currentChildren; i < count; i++) {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = "student-wrapper p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
-                    wrapper.setAttribute('data-index', i);
-                    wrapper.innerHTML = `
-                        <div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">學生 ${i+1}</div>
-                        <button type="button" onclick="deleteStudent(${i})" class="delete-student-btn" aria-label="刪除學生 ${i+1}"><i class="fa-solid fa-xmark text-sm"></i></button>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-4 mt-2">
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">姓名 <span class="text-red-500">*</span></label><input type="text" id="s_name_${i}" class="input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.name || ''}"></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">學號 <span class="text-red-500">*</span></label><input type="text" id="s_id_${i}" class="input-field" placeholder="例：S1181000" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.id || ''}"></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">系所 <span class="text-red-500">*</span></label><input type="text" id="s_dept_${i}" class="input-field" placeholder="例：法律系" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.dept || ''}"></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">年級 <span class="text-red-500">*</span></label><div class="grade-input-group w-full"><input type="text" id="s_grade_${i}" class="grade-input-field" placeholder="例：四" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.raw_grade || ''}"><span class="grade-suffix">年級</span></div></div>
-                        </div>`;
-                    c.appendChild(wrapper);
-                }
-            } 
-            const currentWrappers = c.querySelectorAll('.student-wrapper');
-            currentWrappers.forEach((wrapper, index) => {
-                wrapper.setAttribute('data-index', index);
-                wrapper.querySelector('.absolute').innerHTML = `學生 ${index + 1}`;
-                wrapper.querySelector('.delete-student-btn').setAttribute('onclick', `deleteStudent(${index})`);
-                document.getElementById(`s_name_${index}`).value = studentDataState[index]?.name || '';
-                document.getElementById(`s_id_${index}`).value = studentDataState[index]?.id || '';
-                document.getElementById(`s_dept_${index}`).value = studentDataState[index]?.dept || '';
-                document.getElementById(`s_grade_${index}`).value = studentDataState[index]?.raw_grade || '';
-            });
-            collectStudentDataFromPage2();
-        }
-
-        function changeStudentCount(delta) {
-            const input = document.getElementById('student_count'); let val = parseInt(input.value) || 1; val += delta; if (val < 1) val = 1; input.value = val; document.getElementById('student_count_display').innerText = val + " 人";
-            renderStudents(); renderProposalList();
-        }
-        
-        function deleteStudent(indexToDelete) {
-            let currentCount = Number(document.getElementById('student_count').value);
-            if (currentCount <= 1) { showModal("無法刪除", "至少需要保留一位學生。", 'warning'); return; }
-            studentDataState.splice(indexToDelete, 1); currentCount -= 1;
-            document.getElementById('student_count').value = currentCount; document.getElementById('student_count_display').innerText = currentCount + " 人";
-            renderStudents(); renderProposalList();
-        }
-
-        function downloadExcelTemplate() {
-            const data = [['姓名', '學號', '系所', '年級'], ['王小明', 'S1181000', '法律系', '四'], ['陳小華', 'S1181001', '社會系', '三']];
-            const ws = XLSX.utils.aoa_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "學生名單"); XLSX.writeFile(wb, "學生名單範本.xlsx");
-        }
-
-        function handleExcelUpload(event) {
-            const file = event.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-                    if (jsonData.length > 0) jsonData.shift();
-                    const validStudents = jsonData.filter(row => row.length > 0 && row[0]).map(row => ({ name: row[0] || "", id: row[1] || "", dept: row[2] || "", grade: row[3] || "" }));
-                    if (validStudents.length === 0) { showError("Excel 檔案中沒有有效的學生資料。"); return; }
-                    document.getElementById('student_count').value = validStudents.length; document.getElementById('student_count_display').innerText = validStudents.length + " 人";
-                    renderStudents();
-                    validStudents.forEach((s, i) => {
-                        document.getElementById(`s_name_${i}`).value = s.name; document.getElementById(`s_id_${i}`).value = s.id;
-                        document.getElementById(`s_dept_${i}`).value = s.dept; document.getElementById(`s_grade_${i}`).value = s.grade;
-                    });
-                    collectStudentDataFromPage2(); renderProposalList(); showMsg(`成功匯入 ${validStudents.length} 筆學生資料！`); event.target.value = '';
-                } catch (error) { showError("Excel 解析失敗，請確認格式是否正確。\n" + error.message); }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-        
-        function togglePayInputs() { 
-            try { const box = document.getElementById('learn_amt_box'); const sel = document.querySelector('input[name="pay_opt_learn"]:checked'); const v = sel ? sel.value : 'none'; if (box) box.classList.toggle('hidden', v === 'none'); } catch (e) { console.warn(e); }
-        }
-
+        // UI Toggles
         function toggleType() {
-            const tEl = document.querySelector('input[name="contract_type"]:checked'); const t = tEl ? tEl.value : null;
-            const panelInit = document.getElementById('panel_initial'); const panelLearn = document.getElementById('panel_learn'); const panelWork = document.getElementById('panel_work');
-            if (t === 'learn') { panelInit.classList.add('hidden'); panelLearn.classList.remove('hidden'); panelWork.classList.add('hidden'); }
-            else if (t === 'work') { panelInit.classList.add('hidden'); panelLearn.classList.add('hidden'); panelWork.classList.remove('hidden'); }
-            else { panelInit.classList.remove('hidden'); panelLearn.classList.add('hidden'); panelWork.classList.add('hidden'); }
-            togglePayInputs();
+            const t = document.querySelector('input[name="contract_type"]:checked')?.value;
+            const init = document.getElementById('panel_initial'), learn = document.getElementById('panel_learn'), work = document.getElementById('panel_work');
+            if (t === 'learn') { init.classList.add('hidden'); learn.classList.remove('hidden'); work.classList.add('hidden'); togglePayInputs(); }
+            else if (t === 'work') { init.classList.add('hidden'); learn.classList.add('hidden'); work.classList.remove('hidden'); toggleWorkWageType(); }
+            else { init.classList.remove('hidden'); learn.classList.add('hidden'); work.classList.add('hidden'); }
         }
 
-        function toggleCost(prefix) { 
-            try { const optEl = document.getElementById(prefix + '_opt'); const wrapperEl = document.getElementById(prefix + '_cost_wrapper'); const v = optEl ? optEl.value : 'none'; if (v === 'paid' || v === 'subsidy') wrapperEl.classList.remove('hidden'); else wrapperEl.classList.add('hidden'); } catch (e) { console.warn(e); }
+        function togglePayInputs() { 
+            try { 
+                const sel = document.querySelector('input[name="pay_opt_learn"]:checked'); 
+                const v = sel ? sel.value : 'none';
+                const payDetails = document.getElementById('learn_pay_details');
+                if (v === 'none') { payDetails.classList.add('hidden'); } 
+                else {
+                     payDetails.classList.remove('hidden');
+                     const subOpt = document.querySelector('input[name="pay_method_learn"]:checked')?.value;
+                     document.getElementById('learn_amt_label').innerText = subOpt === 'monthly' ? '給付金額 (按月)' : '給付金額 (總額)';
+                }
+            } catch (e) { console.warn(e); }
+        }
+
+        function toggleWorkWageType() {
+             const wageType = document.querySelector('input[name="wage_type_work"]:checked')?.value;
+             const label = document.getElementById('work_amt_label'), input = document.getElementById('work_amount');
+             if (wageType === 'hourly') { label.innerText = '薪資金額 (時薪)'; input.placeholder = '190'; } 
+             else { label.innerText = '薪資金額 (月薪)'; input.placeholder = '28590'; }
+        }
+
+        function toggleWelfare() {
+            const dorm = document.querySelector('input[name="dorm_opt"]:checked')?.value;
+            document.getElementById('dorm_cost_box').classList.toggle('hidden', dorm !== 'paid');
+            const food = document.querySelector('input[name="food_opt"]:checked')?.value;
+            document.getElementById('food_cost_box').classList.toggle('hidden', food !== 'paid');
+            const trans = document.querySelector('input[name="trans_opt"]:checked')?.value;
+            document.getElementById('trans_cost_box').classList.toggle('hidden', !(trans === 'paid' || trans === 'subsidy'));
+            if (trans) {
+                const hint = document.getElementById('trans_hint');
+                if (trans === 'paid') hint.innerText = '請輸入學生需負擔費用';
+                if (trans === 'subsidy') hint.innerText = '請輸入公司補助金額';
+            }
         }
 
         function toggleBranchFields() {
-            const isHeadOffice = document.getElementById('is_head_office').checked;
-            const wrapper = document.getElementById('branch_fields_wrapper'); const branchName = document.getElementById('branch_name'); const branchAddr = document.getElementById('branch_addr');
-            if (isHeadOffice) { wrapper.classList.add('opacity-50', 'pointer-events-none'); branchName.disabled = true; branchAddr.disabled = true; branchName.value = ''; branchAddr.value = ''; branchName.classList.remove('input-error'); branchAddr.classList.remove('input-error'); }
-            else { wrapper.classList.remove('opacity-50', 'pointer-events-none'); branchName.disabled = false; branchAddr.disabled = false; }
+            const isHead = document.getElementById('is_head_office').checked;
+            const wrap = document.getElementById('branch_fields_wrapper'), bn = document.getElementById('branch_name'), ba = document.getElementById('branch_addr');
+            if(isHead) { wrap.classList.add('opacity-50','pointer-events-none'); bn.disabled=true; ba.disabled=true; bn.value=''; ba.value=''; }
+            else { wrap.classList.remove('opacity-50','pointer-events-none'); bn.disabled=false; ba.disabled=false; }
         }
-
+        
         function toggleTaxIdFields() {
-            const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-            const taxIdInput = document.getElementById('company_tax_id'); const queryBtn = document.getElementById('queryBtn'); const inputGroup = document.getElementById('tax_id_input_group');
-            if (noTaxIdChecked) { inputGroup.classList.add('opacity-50', 'pointer-events-none'); taxIdInput.disabled = true; queryBtn.disabled = true; taxIdInput.value = ''; }
-            else { inputGroup.classList.remove('opacity-50', 'pointer-events-none'); taxIdInput.disabled = false; updateQueryButtonState(); }
+             const noTax = document.getElementById('no_tax_id').checked;
+             const taxIn = document.getElementById('company_tax_id'), qBtn = document.getElementById('queryBtn'), grp = document.getElementById('tax_id_input_group');
+             if(noTax) { grp.classList.add('opacity-50','pointer-events-none'); taxIn.disabled=true; qBtn.disabled=true; taxIn.value=''; }
+             else { grp.classList.remove('opacity-50','pointer-events-none'); taxIn.disabled=false; updateQueryButtonState(); }
         }
 
-        function toggleStudentSelection(index) {
-            if (studentDataState[index]) studentDataState[index].isSelected = !studentDataState[index].isSelected;
-            updateSelectAllCheckbox(); renderProposalList(false); 
+        function updateQueryButtonState() {
+            const tax = document.getElementById('company_tax_id').value.trim();
+            const btn = document.getElementById('queryBtn');
+            if(!document.getElementById('no_tax_id').checked && /^\d{8}$/.test(tax)) { btn.disabled=false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
+            else { btn.disabled=true; btn.classList.add('opacity-50','cursor-not-allowed'); }
+        }
+        
+        function handleTaxIdKey(e) { if (e.key === 'Enter') { e.preventDefault(); getCompanyInfo(); } }
+
+        async function getCompanyInfo() {
+            const taxId = document.getElementById('company_tax_id').value.trim();
+            const btn = document.getElementById('queryBtn'); const orgHtml = btn.innerHTML;
+            try {
+                btn.disabled=true; btn.classList.add('btn-query-loading'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> 查詢中...';
+                const res = await fetch(`https://corsproxy.io/?https://data.gcis.nat.gov.tw/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq ${taxId}&$skip=0&$top=1`);
+                if(!res.ok) throw new Error('API_ERR');
+                const data = await res.json();
+                if(!data || data.length===0) throw new Error('NO_DATA');
+                const c = data[0];
+                document.getElementById('company_name').value = c.Company_Name || "";
+                document.getElementById('company_rep').value = c.Responsible_Name || "";
+                document.getElementById('reg_address').value = c.Company_Location || "";
+                document.getElementById('branch_name').value = ""; document.getElementById('branch_addr').value = "";
+                document.getElementById('no_tax_id').checked = false; toggleTaxIdFields();
+                showMsg(`「 ${c.Company_Name} 」公司資料已自動填入。`);
+            } catch(e) {
+                showQueryInfo("查無資料，請手動填入相關欄位。");
+            } finally {
+                btn.classList.remove('btn-query-loading'); btn.innerHTML = orgHtml; updateQueryButtonState();
+            }
         }
 
-        function toggleSelectAll(checkbox) {
-            const isChecked = checkbox.checked; studentDataState = studentDataState.map(s => ({ ...s, isSelected: isChecked })); renderProposalList(false);
-        }
-
-        function updateSelectAllCheckbox() {
-            const selectAll = document.getElementById('select_all_proposals'); if (!selectAll) return;
-            const totalStudents = studentDataState.length; const selectedStudents = studentDataState.filter(s => s.isSelected).length;
-            if (totalStudents === 0) { selectAll.checked = false; selectAll.indeterminate = false; }
-            else if (selectedStudents === totalStudents) { selectAll.checked = true; selectAll.indeterminate = false; }
-            else if (selectedStudents > 0) { selectAll.checked = false; selectAll.indeterminate = true; }
-            else { selectAll.checked = false; selectAll.indeterminate = false; }
-        }
-
-        function copyPlanToSelected(sourceIndex) {
-            updateProposalDataState(); 
-            const source = studentDataState[sourceIndex];
-            const targets = studentDataState.filter(s => s.isSelected && s.index !== sourceIndex);
-            if (targets.length === 0) { showModal('操作提示', '請先勾選其他想要套用此資料的學生 (核取方塊)。', 'info'); return; }
-            
-            const msg = `確定要將「${source.name}」的計畫書資料 (選課、類別、老師等) 複製給勾選的 ${targets.length} 位同學嗎？\n\n注意：這將覆蓋他們原本的資料。`;
-            
-            showConfirm('資料複製確認', msg, () => {
-                targets.forEach(target => {
-                    target.selectedCourses = [...source.selectedCourses]; 
-                    target.teacher_name = source.teacher_name;
-                    target.teacher_contact = source.teacher_contact;
-                    target.industry_teacher = source.industry_teacher;
-                    target.industry_contact = source.industry_contact; 
-                    target.intern_type_select = source.intern_type_select;
-                    target.hours_exceeded_desc = source.hours_exceeded_desc;
+        function collectStudentDataFromPage2() {
+            const sCount = Number(document.getElementById('student_count').value) || 1;
+            const tempData = [];
+            for(let i=0; i<sCount; i++) {
+                const exist = studentDataState.find(s => s.index === i) || {};
+                const gIn = document.getElementById(`s_grade_${i}`)?.value || "";
+                tempData.push({
+                    index: i,
+                    name: document.getElementById(`s_name_${i}`)?.value || "",
+                    dept: document.getElementById(`s_dept_${i}`)?.value || "",
+                    grade: gIn.trim() ? `${gIn}年級` : "", raw_grade: gIn,
+                    id: document.getElementById(`s_id_${i}`)?.value || "",
+                    isSelected: exist.isSelected===undefined?true:exist.isSelected,
+                    selectedCourses: exist.selectedCourses||[],
+                    teacher_name: exist.teacher_name||"", teacher_contact: exist.teacher_contact||"",
+                    industry_teacher: exist.industry_teacher||"", industry_contact: exist.industry_contact||"",
+                    hours_exceeded_desc: exist.hours_exceeded_desc||"", intern_type_select: exist.intern_type_select||""
                 });
-                renderProposalList(false); 
-                showMsg(`已成功複製資料給 ${targets.length} 位學生！`);
+            }
+            studentDataState = tempData;
+        }
+        
+        function renderStudents() {
+            const count = Number(document.getElementById('student_count').value)||1;
+            const c = document.getElementById('student_container');
+            collectStudentDataFromPage2();
+            while(c.children.length > count) c.removeChild(c.lastChild);
+            if(count > c.children.length) {
+                for(let i=c.children.length; i<count; i++) {
+                    const d = document.createElement('div');
+                    d.className = "student-wrapper p-5 bg-gray-50 rounded-lg border border-gray-200 mb-4 relative fade-in";
+                    d.setAttribute('data-index', i);
+                    d.innerHTML = `<div class="absolute -top-3 -left-2 bg-white border border-gray-200 px-3 py-1 rounded text-xs font-bold text-thuBlue shadow-sm">學生 ${i+1}</div><button type="button" onclick="deleteStudent(${i})" class="delete-student-btn"><i class="fa-solid fa-xmark text-sm"></i></button><div class="grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-4 mt-2"><div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">姓名 *</label><input type="text" id="s_name_${i}" class="input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.name||''}"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">學號 *</label><input type="text" id="s_id_${i}" class="input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.id||''}"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">系所 *</label><input type="text" id="s_dept_${i}" class="input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.dept||''}"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">年級 *</label><div class="grade-input-group"><input type="text" id="s_grade_${i}" class="grade-input-field" oninput="collectStudentDataFromPage2()" value="${studentDataState[i]?.raw_grade||''}"><span class="grade-suffix">年級</span></div></div></div>`;
+                    c.appendChild(d);
+                }
+            }
+            Array.from(c.children).forEach((el, i) => {
+               el.querySelector('.absolute').innerText = `學生 ${i+1}`;
+               el.querySelector('.delete-student-btn').setAttribute('onclick', `deleteStudent(${i})`);
+               if(studentDataState[i]) {
+                   document.getElementById(`s_name_${i}`).value = studentDataState[i].name;
+                   document.getElementById(`s_id_${i}`).value = studentDataState[i].id;
+                   document.getElementById(`s_dept_${i}`).value = studentDataState[i].dept;
+                   document.getElementById(`s_grade_${i}`).value = studentDataState[i].raw_grade;
+               }
             });
         }
 
-        function renderProposalList(restoreSelection = true) {
-            const container = document.getElementById('proposal_list_container');
-            const studentCountDisplay = document.getElementById('proposal_student_count');
-            const emptyMsg = document.getElementById('proposal_empty_msg');
-            
-            if(restoreSelection) collectStudentDataFromPage2(); 
-            const students = studentDataState; const count = students.length; studentCountDisplay.textContent = count; container.innerHTML = '';
+        function changeStudentCount(delta) { const el=document.getElementById('student_count'); let v=parseInt(el.value)||1; v+=delta; if(v<1)v=1; el.value=v; document.getElementById('student_count_display').innerText=v+" 人"; renderStudents(); renderProposalList(); }
+        function deleteStudent(idx) { let v=parseInt(document.getElementById('student_count').value); if(v<=1) return showModal('提示', '至少需保留一位學生', 'warning'); studentDataState.splice(idx, 1); document.getElementById('student_count').value=v-1; document.getElementById('student_count_display').innerText=(v-1)+" 人"; renderStudents(); renderProposalList(); }
+        
+        function addCourse() {
+            const n = document.getElementById('new_course_name').value.trim();
+            const y = document.getElementById('new_course_year').value.trim();
+            const s = document.getElementById('new_course_sem').value;
+            const c = parseFloat(document.getElementById('new_course_credits').value);
+            if(!n||!y||!s||isNaN(c)) return showModal("欄位不完整", "請填寫完整課程資訊", 'warning');
+            courseListState.push({ id: Date.now(), name: n, year: y, semester: s, credits: c });
+            document.getElementById('new_course_name').value=''; document.getElementById('new_course_credits').value='';
+            renderCourseList(); renderProposalList(false);
+        }
+        function removeCourse(id) { courseListState = courseListState.filter(x => x.id !== id); studentDataState.forEach(s => { if(s.selectedCourses) s.selectedCourses = s.selectedCourses.filter(cid => cid !== id); }); renderCourseList(); renderProposalList(false); }
+        function renderCourseList() {
+            const div = document.getElementById('course_list_display');
+            if(courseListState.length === 0) { div.innerHTML = '<div class="text-center text-gray-400 text-xs py-4 border border-dashed border-gray-300 rounded">尚未建立任何課程</div>'; return; }
+            div.innerHTML = courseListState.map(c => `<div class="flex items-center justify-between bg-white p-2 border border-gray-200 rounded shadow-sm"><div class="text-xs"><span class="font-bold text-gray-700">${c.year}-${c.semester}</span><span class="mx-1 text-gray-300">|</span><span class="font-bold text-thuBlue">${c.name}</span><span class="mx-1 text-gray-300">|</span><span class="font-mono bg-yellow-100 px-1.5 py-0.5 rounded text-yellow-800">${c.credits}學分</span></div><button onclick="removeCourse(${c.id})" class="text-red-400 hover:text-red-600 text-xs px-1"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+        }
 
-            if (count === 0 || students.every(s => !s.name.trim() && !s.id.trim())) {
-                emptyMsg.classList.remove('hidden'); document.getElementById('select_all_proposals').disabled = true; return;
+        window.toggleDropdown = function(i) { document.getElementById(`dropdown_content_${i}`).classList.toggle('open'); }
+        document.addEventListener('click', e => { if(!e.target.closest('.multi-select-dropdown')) document.querySelectorAll('.multi-select-content').forEach(el => el.classList.remove('open')); });
+        window.updateSelectedCourses = function(idx, cid, chk) { const s = studentDataState[idx]; if(!s.selectedCourses) s.selectedCourses=[]; if(chk && !s.selectedCourses.includes(cid)) s.selectedCourses.push(cid); else if(!chk) s.selectedCourses = s.selectedCourses.filter(x => x !== cid); updateCourseSummary(idx); }
+        function updateCourseSummary(idx) {
+            const s = studentDataState[idx], div = document.getElementById(`course_summary_${idx}`), txt = document.getElementById(`dropdown_trigger_text_${idx}`);
+            if(!s.selectedCourses || s.selectedCourses.length === 0) { div.innerHTML = '<span class="text-gray-400 text-xs">尚未選擇課程</span>'; txt.textContent = '請選擇課程...'; return; }
+            const sels = courseListState.filter(c => s.selectedCourses.includes(c.id));
+            const tot = sels.reduce((a,b) => a + b.credits, 0);
+            txt.textContent = `已選 ${sels.length} 門 (${tot} 學分)`;
+            div.innerHTML = `<div class="bg-gray-50 p-2 rounded border border-gray-200 text-xs"><div class="space-y-1 mb-2 border-b border-gray-200 pb-1">${sels.map(c => `<div class="flex justify-between"><span>${c.year}-${c.semester} ${c.name}</span><span class="font-mono text-gray-600">${c.credits}</span></div>`).join('')}</div><div class="flex justify-between font-bold text-thuBlue"><span>總學分</span><span>${tot}</span></div></div>`;
+        }
+
+        window.toggleExpand = function(i) {
+            const b = document.getElementById(`proposal_body_${i}`), c = document.getElementById(`chevron_${i}`);
+            if(b.classList.contains('hidden')) { b.classList.remove('hidden'); c.classList.add('rotate-180'); } else { b.classList.add('hidden'); c.classList.remove('rotate-180'); }
+        }
+
+        function renderProposalList(restore=true) {
+            if(restore) collectStudentDataFromPage2();
+            const div = document.getElementById('proposal_list_container'); div.innerHTML = '';
+            const count = studentDataState.length;
+            document.getElementById('proposal_student_count').textContent = count;
+            if(count === 0 || studentDataState.every(s => !s.name.trim() && !s.id.trim())) {
+                document.getElementById('proposal_empty_msg').classList.remove('hidden'); document.getElementById('select_all_proposals').disabled = true; return;
             }
-            emptyMsg.classList.add('hidden'); document.getElementById('select_all_proposals').disabled = false;
+            document.getElementById('proposal_empty_msg').classList.add('hidden'); document.getElementById('select_all_proposals').disabled = false;
+            const selCount = studentDataState.filter(s => s.isSelected).length;
 
-            const selectedCount = students.filter(s => s.isSelected).length;
-
-            students.forEach((s, i) => {
-                const copyBtnText = selectedCount > 0 ? `複製給勾選的 ${s.isSelected ? selectedCount - 1 : selectedCount} 位` : `複製資料給...`;
+            studentDataState.forEach((s, i) => {
+                const copyTxt = selCount > 0 ? `複製給勾選的 ${s.isSelected ? selCount - 1 : selCount} 位` : `複製資料給...`;
+                let dd = courseListState.length > 0 ? courseListState.map(c => `<div class="course-checkbox-item" onclick="event.stopPropagation()"><input type="checkbox" id="c_${i}_${c.id}" ${s.selectedCourses?.includes(c.id)?'checked':''} onchange="updateSelectedCourses(${i}, ${c.id}, this.checked)"><label for="c_${i}_${c.id}" class="text-sm cursor-pointer w-full ml-2"><span class="font-bold text-gray-700">${c.year}-${c.semester}</span> | <span class="font-bold text-thuBlue">${c.name}</span> | ${c.credits}學分</label></div>`).join('') : '<div class="p-3 text-xs text-gray-400 text-center">請先在左側建立課程</div>';
+                
                 const card = document.createElement('div');
                 card.className = "student-proposal-card bg-white border border-gray-200 rounded-lg overflow-hidden mb-4";
-                card.id = `proposal_row_${i}`; 
-
-                let dropdownItems = '';
-                if (courseListState.length > 0) {
-                    dropdownItems = courseListState.map(c => `
-                        <div class="course-checkbox-item" onclick="event.stopPropagation()">
-                            <input type="checkbox" id="course_${i}_${c.id}" value="${c.id}" 
-                                   ${s.selectedCourses && s.selectedCourses.includes(c.id) ? 'checked' : ''}
-                                   onchange="updateSelectedCourses(${i}, ${c.id}, this.checked)">
-                            <label for="course_${i}_${c.id}" class="text-sm cursor-pointer w-full ml-2">
-                                <span class="font-bold text-gray-700">${c.year}-${c.semester}</span>
-                                <span class="mx-1">|</span>
-                                <span class="font-bold text-thuBlue">${c.name}</span>
-                                <span class="mx-1">|</span>
-                                <span class="text-gray-500">${c.credits}學分</span>
-                            </label>
-                        </div>
-                    `).join('');
-                } else {
-                    dropdownItems = '<div class="p-3 text-xs text-gray-400 text-center">請先在左側建立課程</div>';
-                }
-
+                card.id = `proposal_row_${i}`;
                 card.innerHTML = `
-                    <div class="flex items-center justify-between p-4 bg-gray-50 cursor-pointer select-none border-b border-transparent hover:bg-blue-50/30 transition-colors" onclick="toggleExpand(${i})">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 cursor-pointer select-none hover:bg-blue-50/30 transition-colors" onclick="toggleExpand(${i})">
                         <div class="flex items-center gap-4 flex-grow overflow-hidden">
-                            <div class="flex items-center justify-center w-8 shrink-0" onclick="event.stopPropagation()">
-                                <input type="checkbox" data-index="${i}" onchange="toggleStudentSelection(${i})" class="w-5 h-5 text-thuBlue bg-white border-gray-300 rounded focus:ring-thuBlue cursor-pointer" ${s.isSelected ? 'checked' : ''}>
-                            </div>
-                            <div class="flex flex-col truncate">
-                                <div class="text-base font-bold text-gray-800 flex items-center gap-2">
-                                    ${s.name || '<span class="text-gray-400 italic">未命名</span>'} 
-                                    <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-mono">${s.id}</span>
-                                </div>
-                                <div class="text-xs text-gray-500 truncate">${s.dept} | ${s.grade}</div>
-                            </div>
+                            <div class="flex items-center justify-center w-8 shrink-0" onclick="event.stopPropagation()"><input type="checkbox" onchange="toggleStudentSelection(${i})" class="w-5 h-5 text-thuBlue rounded focus:ring-thuBlue" ${s.isSelected?'checked':''}></div>
+                            <div class="flex flex-col truncate"><div class="text-base font-bold text-gray-800 flex items-center gap-2">${s.name||'<span class="text-gray-400 italic">未命名</span>'} <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-mono">${s.id}</span></div><div class="text-xs text-gray-500 truncate">${s.dept} | ${s.grade}</div></div>
                         </div>
-                        
                         <div class="flex items-center gap-2 shrink-0" onclick="event.stopPropagation()">
-                             <button type="button" onclick="copyPlanToSelected(${i})" class="hidden md:flex bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-indigo-200 transition items-center gap-1 border border-indigo-200" title="將此學生的資料複製給勾選的同學">
-                                <i class="fa-regular fa-copy"></i> ${copyBtnText}
-                             </button>
-                             <button type="button" onclick="downloadIndividualProposal(${i})" class="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-bold hover:bg-blue-700 transition shadow-sm flex items-center gap-1">
-                                <i class="fa-solid fa-file-word"></i> 下載
-                             </button>
-                             <!-- 箭頭獨立且可點擊 -->
-                             <div class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-thuBlue transition-colors cursor-pointer" onclick="toggleExpand(${i})">
-                                 <i class="fa-solid fa-chevron-down transition-transform duration-300" id="chevron_${i}"></i>
-                             </div>
+                             <button type="button" onclick="copyPlanToSelected(${i})" class="hidden md:flex bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-indigo-200 transition items-center gap-1 border border-indigo-200"><i class="fa-regular fa-copy"></i> ${copyTxt}</button>
+                             <div class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-thuBlue transition-colors cursor-pointer" onclick="toggleExpand(${i})"><i class="fa-solid fa-chevron-down transition-transform duration-300" id="chevron_${i}"></i></div>
                         </div>
                     </div>
-
                     <div id="proposal_body_${i}" class="hidden border-t border-gray-100 p-6 bg-white">
                         <div class="grid grid-cols-1 gap-6">
-                            
-                            <!-- 1. 選課 -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">實習課程選擇 (可複選) <span class="text-red-500">*</span></label>
-                                <div class="multi-select-dropdown">
-                                    <div class="multi-select-trigger" onclick="toggleDropdown(${i})">
-                                        <span id="dropdown_trigger_text_${i}" class="text-sm text-gray-700">請選擇課程...</span>
-                                        <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-                                    </div>
-                                    <div class="multi-select-content" id="dropdown_content_${i}">
-                                        ${dropdownItems}
-                                    </div>
-                                </div>
-                                <div id="course_summary_${i}" class="mt-2"></div>
-                            </div>
-
-                            <!-- 2. 類別與時數 -->
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1">實習課程選擇 (可複選) *</label><div class="multi-select-dropdown"><div class="multi-select-trigger" onclick="toggleDropdown(${i})"><span id="dropdown_trigger_text_${i}" class="text-sm text-gray-700">請選擇...</span><i class="fa-solid fa-chevron-down text-xs text-gray-400"></i></div><div class="multi-select-content" id="dropdown_content_${i}">${dd}</div></div><div id="course_summary_${i}" class="mt-2"></div></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 mb-1">實習類別 <span class="text-red-500">*</span></label>
-                                    <select id="p_intern_type_select_${i}" class="input-field text-sm h-[42px]">
-                                        <option value="" disabled selected>請選擇</option>
-                                        <option value="full" ${s.intern_type_select === 'full' ? 'selected' : ''}>整學年</option>
-                                        <option value="sem" ${s.intern_type_select === 'sem' ? 'selected' : ''}>整學期</option>
-                                        <option value="winter" ${s.intern_type_select === 'winter' ? 'selected' : ''}>寒假實習</option>
-                                        <option value="summer" ${s.intern_type_select === 'summer' ? 'selected' : ''}>暑假實習</option>
-                                        <option value="term" ${s.intern_type_select === 'term' ? 'selected' : ''}>學期期間實習</option>
-                                    </select>
-                                    <div class="text-red-500 font-bold text-xs mt-1" id="p_type_error_${i}"></div>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 mb-1">時數說明 (特殊情況)</label>
-                                    <input type="text" id="p_hours_exceeded_desc_${i}" class="input-field text-sm h-[42px]" placeholder="若時數有特殊安排請說明" value="${s.hours_exceeded_desc}">
-                                </div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">實習類別 *</label><select id="p_intern_type_select_${i}" class="input-field text-sm h-[42px]"><option value="" disabled selected>請選擇</option><option value="full" ${s.intern_type_select==='full'?'selected':''}>整學年</option><option value="sem" ${s.intern_type_select==='sem'?'selected':''}>整學期</option><option value="winter" ${s.intern_type_select==='winter'?'selected':''}>寒假實習</option><option value="summer" ${s.intern_type_select==='summer'?'selected':''}>暑假實習</option><option value="term" ${s.intern_type_select==='term'?'selected':''}>學期期間實習</option></select></div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">時數說明 (特殊情況)</label><input type="text" id="p_hours_exceeded_desc_${i}" class="input-field text-sm h-[42px]" value="${s.hours_exceeded_desc}" placeholder="若時數有特殊安排請說明"></div>
                             </div>
-
-                            <!-- 3. 老師資訊 -->
-                            <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-100">
-                                <h4 class="text-sm font-bold text-thuBlue mb-3 flex items-center gap-2"><span class="w-1 h-4 bg-thuBlue rounded-full"></span> 指導老師資訊</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">校方輔導老師姓名 <span class="text-red-500">*</span></label><input type="text" id="p_teacher_name_${i}" class="input-field text-sm" value="${s.teacher_name}" placeholder="姓名"></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">校方輔導老師聯絡方式</label><input type="text" id="p_teacher_contact_${i}" class="input-field text-sm" value="${s.teacher_contact}" placeholder="電話或分機"></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">業界老師姓名</label><input type="text" id="p_industry_teacher_${i}" class="input-field text-sm" value="${s.industry_teacher}" placeholder="姓名 (選填)"></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">業界老師聯絡方式</label><input type="text" id="p_industry_contact_${i}" class="input-field text-sm" value="${s.industry_contact}" placeholder="電話或分機 (選填)"></div>
-                                </div>
-                            </div>
+                            <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-100"><h4 class="text-sm font-bold text-thuBlue mb-3 flex items-center gap-2"><span class="w-1 h-4 bg-thuBlue rounded-full"></span> 指導老師資訊</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-gray-500 mb-1">校方輔導老師姓名 *</label><input type="text" id="p_teacher_name_${i}" class="input-field text-sm" value="${s.teacher_name}" placeholder="姓名"></div><div><label class="block text-xs font-bold text-gray-500 mb-1">校方輔導老師聯絡方式</label><input type="text" id="p_teacher_contact_${i}" class="input-field text-sm" value="${s.teacher_contact}" placeholder="電話或分機"></div><div><label class="block text-xs font-bold text-gray-500 mb-1">業界老師姓名</label><input type="text" id="p_industry_teacher_${i}" class="input-field text-sm" value="${s.industry_teacher}" placeholder="姓名 (選填)"></div><div><label class="block text-xs font-bold text-gray-500 mb-1">業界老師聯絡方式</label><input type="text" id="p_industry_contact_${i}" class="input-field text-sm" value="${s.industry_contact}" placeholder="電話或分機 (選填)"></div></div></div>
                         </div>
-                    </div>
-                `;
-                container.appendChild(card);
-
-                updateCourseSummary(i); 
-
-                document.getElementById(`p_teacher_name_${i}`)?.addEventListener('input', updateProposalDataState);
-                document.getElementById(`p_teacher_contact_${i}`)?.addEventListener('input', updateProposalDataState);
-                document.getElementById(`p_industry_teacher_${i}`)?.addEventListener('input', updateProposalDataState);
-                document.getElementById(`p_industry_contact_${i}`)?.addEventListener('input', updateProposalDataState);
+                    </div>`;
+                div.appendChild(card);
+                updateCourseSummary(i);
+                ['teacher_name','teacher_contact','industry_teacher','industry_contact','hours_exceeded_desc'].forEach(f => document.getElementById(`p_${f}_${i}`)?.addEventListener('input', updateProposalDataState));
                 document.getElementById(`p_intern_type_select_${i}`)?.addEventListener('change', updateProposalDataState);
-                document.getElementById(`p_hours_exceeded_desc_${i}`)?.addEventListener('input', updateProposalDataState);
             });
             updateSelectAllCheckbox();
         }
 
+        function toggleStudentSelection(i) { studentDataState[i].isSelected = !studentDataState[i].isSelected; updateSelectAllCheckbox(); renderProposalList(false); }
+        function toggleSelectAll(cb) { studentDataState.forEach(s => s.isSelected = cb.checked); renderProposalList(false); }
+        function updateSelectAllCheckbox() { const cb=document.getElementById('select_all_proposals'); if(!cb) return; const all=studentDataState.length, sel=studentDataState.filter(s=>s.isSelected).length; cb.checked = all>0 && all===sel; }
+
         function updateProposalDataState() {
             studentDataState.forEach((s, i) => {
-                const row = document.getElementById(`proposal_row_${i}`); if (!row) return; 
-                ['teacher_name', 'teacher_contact', 'industry_teacher', 'industry_contact', 'hours_exceeded_desc'].forEach(f => { const input = document.getElementById(`p_${f}_${i}`); if (input) s[f] = input.value; });
-                const selectEl = document.getElementById(`p_intern_type_select_${i}`); if (selectEl) s.intern_type_select = selectEl.value;
+                if(!document.getElementById(`proposal_row_${i}`)) return;
+                s.teacher_name = document.getElementById(`p_teacher_name_${i}`).value;
+                s.teacher_contact = document.getElementById(`p_teacher_contact_${i}`).value;
+                s.industry_teacher = document.getElementById(`p_industry_teacher_${i}`).value;
+                s.industry_contact = document.getElementById(`p_industry_contact_${i}`).value;
+                s.hours_exceeded_desc = document.getElementById(`p_hours_exceeded_desc_${i}`).value;
+                s.intern_type_select = document.getElementById(`p_intern_type_select_${i}`).value;
             });
         }
-        
-        function updateQueryButtonState() {
-            const taxIdInput = document.getElementById('company_tax_id'); const queryBtn = document.getElementById('queryBtn'); const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-            if (noTaxIdChecked) { queryBtn.disabled = true; queryBtn.classList.add('opacity-50', 'cursor-not-allowed'); return; }
-            const taxId = taxIdInput.value.trim(); const isTaxId = /^\d{8}$/.test(taxId);
-            if (isTaxId) { queryBtn.disabled = false; queryBtn.classList.remove('opacity-50', 'cursor-not-allowed'); } else { queryBtn.disabled = true; queryBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
+
+        function copyPlanToSelected(idx) {
+            updateProposalDataState(); const src = studentDataState[idx], targets = studentDataState.filter(s => s.isSelected && s.index !== idx);
+            if(targets.length===0) return showModal('提示', '請先勾選其他目標學生', 'info');
+            showConfirm('複製確認', `確定將「${src.name}」的資料複製給勾選的 ${targets.length} 位學生嗎？`, () => {
+                targets.forEach(t => { t.selectedCourses=[...src.selectedCourses]; t.teacher_name=src.teacher_name; t.teacher_contact=src.teacher_contact; t.industry_teacher=src.industry_teacher; t.industry_contact=src.industry_contact; t.intern_type_select=src.intern_type_select; t.hours_exceeded_desc=src.hours_exceeded_desc; });
+                renderProposalList(false); showMsg(`已複製給 ${targets.length} 位學生`);
+            });
         }
 
-        function validateForm(isProposal = false) {
-            let isValid = true; let errorMsg = "";
-            document.querySelectorAll('.bg-red-50').forEach(el => el.classList.remove('bg-red-50', 'border-red-200')); document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error')); document.querySelectorAll('.text-red-500.font-bold.text-xs').forEach(el => el.textContent = '');
+        function validateForm(isProp=false) {
+            let ok=true, err=""; document.querySelectorAll('.input-error').forEach(e=>e.classList.remove('input-error'));
+            const sl = studentDataState;
+            sl.forEach((s, i) => { if(!s.name || !s.id || !s.dept || !s.raw_grade) { ok=false; } }); // Simple check
+            if(!ok) err += "• 學生資料有缺漏\n";
             
-            const students = studentDataState; let studentErrorCount = 0;
-            students.forEach((s, i) => {
-                const prefix = `s_`; const fields = [{ id: `${prefix}name_${i}`, name: '姓名' }, { id: `${prefix}id_${i}`, name: '學號' }, { id: `${prefix}dept_${i}`, name: '系所' }, { id: `${prefix}grade_${i}`, name: '年級' }];
-                fields.forEach(field => { const el = document.getElementById(field.id); let value = el ? el.value.trim() : ''; if (!value) { el?.classList.add('input-error'); isValid = false; studentErrorCount++; } });
-            });
-            if (studentErrorCount > 0) errorMsg += `• 實習學生資料 (Page 2) 共有 ${studentErrorCount} 個必填欄位未填寫。\n`;
-
-            if (!isProposal) {
-                const requiredFields = [{ id: 'company_name', name: '機構全銜' }, { id: 'company_rep', name: '代表人姓名' }, { id: 'company_title', name: '代表人職稱' }, { id: 'reg_address', name: '公司登記地址' }];
-                requiredFields.forEach(field => { const el = document.getElementById(field.id); if (!el || !el.value.trim()) { el.classList.add('input-error'); isValid = false; errorMsg += `• 請填寫 ${field.name}\n`; } });
-                if (!document.getElementById('is_head_office').checked) { const branchFields = [{ id: 'branch_name', name: '實習單位/分公司名稱' }, { id: 'branch_addr', name: '實際實習地址' }]; branchFields.forEach(field => { const el = document.getElementById(field.id); if (!el || !el.value.trim()) { el.classList.add('input-error'); isValid = false; errorMsg += `• 請填寫 ${field.name}\n`; } }); }
-                const dateFields = ['start_y', 'start_m', 'start_d', 'end_y', 'end_m', 'end_d']; dateFields.forEach(id => { const el = document.getElementById(id); if (!el || !el.value.trim()) { el.classList.add('input-error'); isValid = false; errorMsg += `• 請填寫完整的實習期間\n`; } });
-                const contractType = document.querySelector('input[name="contract_type"]:checked');
-                if (!contractType) { document.getElementById('type-section').classList.add('bg-red-50', 'border-red-200'); isValid = false; errorMsg += "• 請選擇實習類型\n"; } else {
-                    if (contractType.value === 'learn') { const payOpt = document.querySelector('input[name="pay_opt_learn"]:checked'); if (!payOpt) { document.getElementById('pay-section').classList.add('bg-red-50', 'border-red-200'); isValid = false; errorMsg += "• 請選擇學習型給付項目\n"; } else if (payOpt.value !== 'none') { const amt = document.getElementById('learn_amount'); if (!amt.value || Number(amt.value) <= 0) { amt.classList.add('input-error'); isValid = false; errorMsg += "• 請輸入獎學金/津貼金額 (須大於 0)\n"; } } } else if (contractType.value === 'work') { const amt = document.getElementById('work_amount'); if (!amt.value || Number(amt.value) <= 0) { amt.classList.add('input-error'); isValid = false; errorMsg += "• 請輸入薪資金額 (須大於 0)\n"; } }
+            if(!isProp) {
+                if(!document.getElementById('company_name').value) { document.getElementById('company_name').classList.add('input-error'); ok=false; }
+                // Check Pay
+                const cType = document.querySelector('input[name="contract_type"]:checked');
+                if(!cType) { ok=false; err+="• 未選擇實習類型\n"; } else {
+                    if(cType.value==='learn') {
+                        const lOpt = document.querySelector('input[name="pay_opt_learn"]:checked');
+                        if(!lOpt) ok=false; else if(lOpt.value!=='none' && !document.getElementById('learn_amount').value) { document.getElementById('learn_amount').classList.add('input-error'); ok=false; }
+                    } else {
+                         if(!document.getElementById('work_amount').value) { document.getElementById('work_amount').classList.add('input-error'); ok=false; }
+                    }
                 }
-                ['dorm', 'food', 'trans'].forEach(p => { const val = document.getElementById(p + '_opt').value; if (!val) { document.getElementById('welfare-section').classList.add('bg-red-50', 'border-red-200'); isValid = false; errorMsg += `• 請選擇${p==='dorm'?'住宿':p==='food'?'膳食':'交通'}福利\n`; } });
+                // Check Welfare
+                ['dorm','food','trans'].forEach(k => { if(!document.querySelector(`input[name="${k}_opt"]:checked`)) ok=false; });
             }
-
-            if (isProposal && students.length > 0 && studentErrorCount === 0) {
-                let proposalErrorCount = 0; const selectedStudents = students.filter(s => s.isSelected);
-                selectedStudents.forEach((s, i) => {
-                    if (!s.selectedCourses || s.selectedCourses.length === 0) { document.getElementById(`dropdown_trigger_text_${i}`).parentElement.classList.add('input-error'); proposalErrorCount++; isValid = false; }
-                    if (!s.teacher_name) { document.getElementById(`p_teacher_name_${i}`).classList.add('input-error'); proposalErrorCount++; isValid = false; }
-                    const selectEl = document.getElementById(`p_intern_type_select_${s.index}`); if (!selectEl || !selectEl.value.trim()) { selectEl?.classList.add('input-error'); document.getElementById(`p_type_error_${s.index}`).textContent = '請選擇'; proposalErrorCount++; isValid = false; } else { document.getElementById(`p_type_error_${s.index}`).textContent = ''; }
+            if(isProp) {
+                sl.filter(s=>s.isSelected).forEach((s, i) => {
+                    if(!s.selectedCourses.length || !s.teacher_name || !s.intern_type_select) {
+                         if(!s.teacher_name) document.getElementById(`p_teacher_name_${i}`).classList.add('input-error');
+                         ok=false; 
+                    }
                 });
-                if (proposalErrorCount > 0) errorMsg += `• 學生實習計畫書 (Page 4) 共有選取的學生必填欄位未填寫。\n`;
+                if(!ok) err += "• 選取學生的計畫書資料有缺漏\n";
             }
-            if (!isValid) showError("請修正以下錯誤：\n" + errorMsg); return isValid;
-        }
-
-        // --- Data Extraction Logic ---
-        function getStudentCourseData(student) {
-            if (!student.selectedCourses || student.selectedCourses.length === 0) return { name: '', semester: '', credits: '' };
-            const courses = courseListState.filter(c => student.selectedCourses.includes(c.id));
-            
-            const courseNames = courses.map(c => c.name).join('、');
-            
-            // Semester: Unique values only
-            const uniqueSems = [...new Set(courses.map(c => `${c.year}-${c.semester}`))].join('、');
-            
-            const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
-            
-            return {
-                name: courseNames,
-                semester: uniqueSems,
-                credits: totalCredits
-            };
+            if(!ok && err) showError(err || "請檢查必填欄位");
+            return ok;
         }
 
         async function generateDoc() {
-            if (!validateForm(false)) return;
-            const btn = document.getElementById('genContractBtn');
+            if(!validateForm(false)) return;
+            const btn=document.getElementById('genContractBtn'); btn.disabled=true; btn.classList.add('opacity-50');
             try {
-                if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined' || typeof saveAs === 'undefined') { showError("核心元件未載入"); return; }
-                showMsg("處理中..."); btn.disabled = true; btn.classList.remove('btn-generate'); btn.classList.add('bg-gray-400', 'cursor-not-allowed'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
                 collectStudentDataFromPage2(); updateProposalDataState();
+                const buf = await getTemplateBuffer('contract');
+                const zip = new PizZip(buf);
+                const doc = new window.docxtemplater(zip, { paragraphLoop:true, linebreaks:true, nullGetter:()=>"" });
 
-                const data = {};
-                data.company_name = (document.getElementById('company_name')?.value || "未填寫");
-                data.company_rep = (document.getElementById('company_rep')?.value || "");
-                data.company_title = (document.getElementById('company_title')?.value || "");
-                const regAddr = document.getElementById('reg_address')?.value || "";
-                data.company_address = regAddr;
-                const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-                data.company_tax_id = noTaxIdChecked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "").trim();
-                const isHeadOffice = document.getElementById('is_head_office').checked;
-                const bname = isHeadOffice ? "" : document.getElementById('branch_name')?.value || "";
-                const baddr = isHeadOffice ? "" : document.getElementById('branch_addr')?.value || "";
-                data.intern_location = (bname && baddr) ? `${bname}（${baddr}）` : (baddr || regAddr);
+                // Prepare Data
+                const cType = document.querySelector('input[name="contract_type"]:checked').value;
+                const data = {
+                    company_name: document.getElementById('company_name').value,
+                    company_rep: document.getElementById('company_rep').value,
+                    company_title: document.getElementById('company_title').value,
+                    company_address: document.getElementById('reg_address').value,
+                    company_tax_id: document.getElementById('no_tax_id').checked ? "實習機構未申請設立字號" : document.getElementById('company_tax_id').value,
+                    intern_location: document.getElementById('is_head_office').checked ? document.getElementById('reg_address').value : document.getElementById('branch_addr').value,
+                    s_y: document.getElementById('start_y').value, s_m: document.getElementById('start_m').value, s_d: document.getElementById('start_d').value,
+                    e_y: document.getElementById('end_y').value, e_m: document.getElementById('end_m').value, e_d: document.getElementById('end_d').value,
+                    daily_start: document.getElementById('daily_start').value, daily_end: document.getElementById('daily_end').value, daily_hours: document.getElementById('daily_hours').value,
+                    
+                    type_learn_check: cType==='learn'?'■':'□', type_work_check: cType==='work'?'■':'□',
+                    chk_pay_none:'□', chk_pay_scholar:'□', chk_pay_allowance:'□', pay_learn_amount:'', pay_work_amount:''
+                };
 
-                data.s_y = document.getElementById('start_y')?.value || "   "; data.s_m = document.getElementById('start_m')?.value || "   "; data.s_d = document.getElementById('start_d')?.value || "   ";
-                data.e_y = document.getElementById('end_y')?.value || "   "; data.e_m = document.getElementById('end_m')?.value || "   "; data.e_d = document.getElementById('end_d')?.value || "   ";
-                data.daily_start = document.getElementById('daily_start')?.value || ""; data.daily_end = document.getElementById('daily_end')?.value || ""; data.daily_hours = document.getElementById('daily_hours')?.value || "";
-
-                const type = document.querySelector('input[name="contract_type"]:checked')?.value;
-                data.type_learn_check='□'; data.type_work_check='□'; data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□'; data.pay_learn_amount = ""; data.pay_work_amount = "";
-
-                if (type === 'learn') {
-                    data.type_learn_check = '■'; const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
-                    if (pOpt === 'none') { data.chk_pay_none = '■'; data.pay_learn_amount = "0"; }
+                if(cType==='learn') {
+                    const opt = document.querySelector('input[name="pay_opt_learn"]:checked').value;
+                    if(opt==='none') data.chk_pay_none='■';
                     else {
-                        if (pOpt === 'scholar') data.chk_pay_scholar = '■'; else data.chk_pay_allowance = '■';
-                        const lam = Number(document.getElementById('learn_amount')?.value || 0); data.pay_learn_amount = lam ? lam.toLocaleString() : "";
+                        data[opt==='scholar'?'chk_pay_scholar':'chk_pay_allowance'] = '■';
+                        const cycle = document.querySelector('input[name="pay_method_learn"]:checked').value;
+                        const amt = document.getElementById('learn_amount').value;
+                        data.pay_learn_amount = `${amt} ${cycle==='monthly'?'(按月給付) ':'(總額給付)'}`;
                     }
                 } else {
-                    data.type_work_check = '■'; const wam = Number(document.getElementById('work_amount')?.value || 0); data.pay_work_amount = wam ? wam.toLocaleString() : "";
+                    const wType = document.querySelector('input[name="wage_type_work"]:checked').value;
+                    const amt = document.getElementById('work_amount').value;
+                    data.pay_work_amount = `${amt} ${wType==='hourly'?'(時薪) ':''}`;
                 }
 
-                function setWelfare(prefix) {
-                    const opt = document.getElementById(prefix + '_opt')?.value || 'none';
-                    data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
-                    if (opt === 'none') data[`chk_${prefix}_none`] = '■'; else if (opt === 'free') data[`chk_${prefix}_free`] = '■';
-                    else if (prefix === 'trans' && opt === 'subsidy') {
-                         data.chk_trans_paid = '■'; const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
-                         data[`${prefix}_desc`] = val ? val.toLocaleString() : ""; data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
-                    } else {
-                        data[`chk_${prefix}_paid`] = '■'; const val = Number(document.getElementById(prefix + '_cost')?.value || 0);
-                        data[`${prefix}_desc`] = val ? val.toLocaleString() : ""; data[`${prefix}_cost`] = val ? val.toLocaleString() : "";
-                    }
-                    if (!data[`${prefix}_desc`]) data[`${prefix}_desc`] = "";
-                }
-                setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
+                // Welfare
+                ['dorm','food','trans'].forEach(k => {
+                    const v = document.querySelector(`input[name="${k}_opt"]:checked`)?.value;
+                    data[`chk_${k}_none`] = v==='none'?'■':'□';
+                    data[`chk_${k}_free`] = (v==='free'||v==='shuttle')?'■':'□';
+                    data[`chk_${k}_paid`] = (v==='paid'||v==='subsidy')?'■':'□';
+                    if(v==='paid'||v==='subsidy') data[`${k}_desc`] = document.getElementById(`${k}_cost`).value;
+                });
+                // Special handling for new trans types mapping to legacy template
+                const tOpt = document.querySelector('input[name="trans_opt"]:checked')?.value;
+                if(tOpt === 'free') { data.chk_trans_free='■'; data.chk_trans_paid='□'; }
+                else if(tOpt === 'paid') { data.chk_trans_free='□'; data.chk_trans_paid='■'; }
 
-                const sList = studentDataState.filter(s => s.name.trim());
-                data.student_name = sList[0]?.name + (sList.length > 1 ? " 等" : "");
-                const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-                
-                data.students = sList.map((s, index) => {
-                    const courseData = getStudentCourseData(s);
+                // Students
+                data.students = studentDataState.map((s, i) => {
+                    const cd = getStudentCourseData(s);
                     return {
-                        letter: alphabet[index] || (index + 1), name: s.name, dept: s.dept, grade: s.grade, raw_grade: s.raw_grade, id: s.id,
-                        teacher_name: s.teacher_name || "", 
-                        course_name: courseData.name, 
-                        semester: courseData.semester, 
-                        credits: courseData.credits, 
-                        hours_exceeded_desc: s.hours_exceeded_desc || "",
-                        intern_type_full: s.intern_type_select === 'full' ? '■' : '□', intern_type_sem: s.intern_type_select === 'sem' ? '■' : '□',
-                        intern_type_winter: s.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: s.intern_type_select === 'summer' ? '■' : '□', intern_type_term: s.intern_type_select === 'term' ? '■' : '□',
+                         letter: String.fromCharCode(65+i), name: s.name, dept: s.dept, grade: s.grade, id: s.id,
+                         teacher_name: s.teacher_name, course_name: cd.name, semester: cd.semester, credits: cd.credits, hours_exceeded_desc: s.hours_exceeded_desc,
+                         intern_type_full: s.intern_type_select==='full'?'■':'□', intern_type_sem: s.intern_type_select==='sem'?'■':'□',
+                         intern_type_winter: s.intern_type_select==='winter'?'■':'□', intern_type_summer: s.intern_type_select==='summer'?'■':'□', intern_type_term: s.intern_type_select==='term'?'■':'□'
                     };
                 });
-                data.s1_name = data.students[0]?.name || "";
+                data.student_name = data.students.map(s=>s.name).join('、');
 
-                const arrayBuffer = await getTemplateBuffer('contract');
-                let zip = new PizZip(arrayBuffer);
-                const docFile = zip.file("word/document.xml");
-                if (docFile) zip.file("word/document.xml", cleanXML(docFile.asText()));
-
-                const Docxtemplater = window.docxtemplater || docxtemplater;
-                const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
                 doc.render(data);
-                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-                saveAs(out, `東海大學實習合約_${(data.s1_name || '學生')}.docx`);
-                showMsg("下載成功！");
+                const out = doc.getZip().generate({type:"blob", mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+                saveAs(out, "實習合約書.docx"); showMsg("合約書產生成功");
 
-            } catch (error) {
-                if (error && error.properties && error.properties.errors) {
-                    const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n"); showError("標籤錯誤：" + msgs);
-                } else { showError("產生錯誤：" + (error.message || error)); }
-            } finally {
-                btn.disabled = false; btn.classList.remove('bg-gray-400', 'cursor-not-allowed'); btn.classList.add('btn-generate'); btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
-            }
-        }
-        
-        async function generateProposalDoc() { showModal("提示", "建議使用「打包下載」功能，可以一次下載所有選取學生的個別計畫書。", 'info'); }
-        
-        async function downloadIndividualProposal(index) {
-            if (!validateForm(true)) return;
-            const student = studentDataState[index];
-            if (!student || !student.name.trim()) { showModal("錯誤", "無法下載，該學生資料不完整或不存在。", 'error'); return; }
-            await generateProposalFile(student);
+            } catch(e) { showError(e.message); } finally { btn.disabled=false; btn.classList.remove('opacity-50'); }
         }
 
         async function downloadSelectedProposals() {
-            if (!validateForm(true)) return;
-            const selectedStudents = studentDataState.filter(s => s.isSelected && s.name.trim());
-            if (selectedStudents.length === 0) { showModal("提示", "請至少選取一位學生。", 'warning'); return; }
-            if (typeof JSZip === 'undefined') { showError("核心元件未載入"); return; }
-
-            const zip = new JSZip();
-            const bulkDownloadBtn = document.getElementById('bulkDownloadBtn');
-            const originalBtnHtml = bulkDownloadBtn.innerHTML;
-            bulkDownloadBtn.disabled = true; bulkDownloadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在打包 (${selectedStudents.length} 份)...`; showMsg("正在打包計畫書...");
-
+            if(!validateForm(true)) return;
+            const btn = document.getElementById('bulkDownloadBtn'); btn.disabled=true; btn.innerHTML='處理中...';
             try {
-                const arrayBuffer = await getTemplateBuffer('proposal');
-                const companyName = document.getElementById('company_name')?.value || "未填寫";
-                const regAddr = document.getElementById('reg_address')?.value || "";
-                const branchName = document.getElementById('branch_name')?.value || "";
-                const isHeadOffice = document.getElementById('is_head_office')?.checked;
-                let planLoc = companyName; if (!isHeadOffice && branchName) planLoc = `${companyName} (${branchName})`;
-
-                const s_y = document.getElementById('start_y')?.value || ""; const s_m = document.getElementById('start_m')?.value || ""; const s_d = document.getElementById('start_d')?.value || "";
-                const e_y = document.getElementById('end_y')?.value || ""; const e_m = document.getElementById('end_m')?.value || ""; const e_d = document.getElementById('end_d')?.value || "";
-
-                const commonData = {
-                    company_name: companyName, company_address: regAddr, plan_intern_location: planLoc,
-                    s_y, s_m, s_d, e_y, e_m, e_d,
-                    company_tax_id: document.getElementById('no_tax_id').checked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "未填寫"),
-                    company_rep: document.getElementById('company_rep')?.value || "未填寫", company_title: document.getElementById('company_title')?.value || "未填寫",
+                const buf = await getTemplateBuffer('proposal');
+                const zip = new JSZip();
+                const targets = studentDataState.filter(s => s.isSelected);
+                
+                const common = {
+                    company_name: document.getElementById('company_name').value,
+                    plan_intern_location: document.getElementById('is_head_office').checked ? document.getElementById('company_name').value : `${document.getElementById('company_name').value} (${document.getElementById('branch_name').value})`,
+                    s_y: document.getElementById('start_y').value, s_m: document.getElementById('start_m').value, s_d: document.getElementById('start_d').value,
+                    e_y: document.getElementById('end_y').value, e_m: document.getElementById('end_m').value, e_d: document.getElementById('end_d').value
                 };
 
-                const Docxtemplater = window.docxtemplater || docxtemplater;
-
-                for (const student of selectedStudents) {
-                    const courseData = getStudentCourseData(student);
-                    const data = { 
-                        ...commonData, 
-                        students: [{...student, letter: 'A'}], 
-                        student_name: student.name, s1_name: student.name, id: student.id, dept: student.dept, grade: student.grade,
-                        teacher_name: student.teacher_name, teacher_contact: student.teacher_contact, 
-                        industry_teacher: student.industry_teacher, industry_contact: student.industry_contact, 
-                        course_name: courseData.name, semester: courseData.semester, credits: courseData.credits, 
-                        hours_exceeded_desc: student.hours_exceeded_desc,
-                        intern_type_full: student.intern_type_select === 'full' ? '■' : '□', intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□', intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
+                for(const s of targets) {
+                    const cd = getStudentCourseData(s);
+                    const data = {
+                        ...common,
+                        student_name: s.name, id: s.id, dept: s.dept, grade: s.grade,
+                        teacher_name: s.teacher_name, teacher_contact: s.teacher_contact,
+                        industry_teacher: s.industry_teacher, industry_contact: s.industry_contact,
+                        course_name: cd.name, semester: cd.semester, credits: cd.credits,
+                        hours_exceeded_desc: s.hours_exceeded_desc,
+                        intern_type_full: s.intern_type_select==='full'?'■':'□', intern_type_sem: s.intern_type_select==='sem'?'■':'□',
+                        intern_type_winter: s.intern_type_select==='winter'?'■':'□', intern_type_summer: s.intern_type_select==='summer'?'■':'□', intern_type_term: s.intern_type_select==='term'?'■':'□'
                     };
-
-                    let docZip = new PizZip(arrayBuffer.slice(0));
-                    const docFile = docZip.file("word/document.xml");
-                    if (docFile) docZip.file("word/document.xml", cleanXML(docFile.asText()));
-
-                    const doc = new Docxtemplater(docZip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
+                    const pzip = new PizZip(buf);
+                    const doc = new window.docxtemplater(pzip, { paragraphLoop:true, linebreaks:true, nullGetter:()=>"" });
                     doc.render(data);
-                    const out = doc.getZip().generate({ type: "uint8array" });
-                    zip.file(`實習計畫書_${student.name}.docx`, out);
+                    zip.file(`實習計畫書_${s.name}.docx`, doc.getZip().generate({type:"uint8array"}));
                 }
+                const content = await zip.generateAsync({type:"blob"});
+                saveAs(content, "實習計畫書_打包.zip"); showMsg("打包下載成功");
 
-                zip.generateAsync({ type: "blob" }).then(function(content) { saveAs(content, "學生實習計畫書_打包.zip"); showMsg(`成功打包 ${selectedStudents.length} 份計畫書。`); });
-
-            } catch (error) {
-                if (error && error.properties && error.properties.errors) {
-                     const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n"); showError("打包計畫書時標籤錯誤：" + msgs);
-                } else { showError("打包計畫書時發生錯誤，請檢查範本或學生資料。" + (error.message || error)); }
-            } finally {
-                bulkDownloadBtn.disabled = false; bulkDownloadBtn.innerHTML = originalBtnHtml;
-            }
-        }
-
-        async function generateProposalFile(studentData) {
-            const tempBtn = document.getElementById('bulkDownloadBtn') || document.getElementById('genProposalBtn');
-            const originalBtnHtml = tempBtn ? tempBtn.innerHTML : '';
-            if(tempBtn) { tempBtn.disabled = true; tempBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 ${studentData.name}...`; }
-
-            try {
-                const arrayBuffer = await getTemplateBuffer('proposal');
-                const companyName = document.getElementById('company_name')?.value || "未填寫";
-                const regAddr = document.getElementById('reg_address')?.value || "";
-                const branchName = document.getElementById('branch_name')?.value || "";
-                const isHeadOffice = document.getElementById('is_head_office')?.checked;
-                let planLoc = companyName; if (!isHeadOffice && branchName) planLoc = `${companyName} (${branchName})`;
-                
-                const s_y = document.getElementById('start_y')?.value || ""; const s_m = document.getElementById('start_m')?.value || ""; const s_d = document.getElementById('start_d')?.value || "";
-                const e_y = document.getElementById('end_y')?.value || ""; const e_m = document.getElementById('end_m')?.value || ""; const e_d = document.getElementById('end_d')?.value || "";
-
-                const courseData = getStudentCourseData(studentData);
-
-                const data = {
-                    company_name: companyName, company_address: regAddr, plan_intern_location: planLoc,
-                    s_y, s_m, s_d, e_y, e_m, e_d,
-                    students: [studentData], student_name: studentData.name, s1_name: studentData.name, id: studentData.id, dept: studentData.dept, grade: studentData.grade,
-                    teacher_name: studentData.teacher_name, teacher_contact: studentData.teacher_contact,
-                    industry_teacher: studentData.industry_teacher, industry_contact: studentData.industry_contact,
-                    course_name: courseData.name, semester: courseData.semester, credits: courseData.credits, 
-                    hours_exceeded_desc: studentData.hours_exceeded_desc,
-                    intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□', intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□', intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
-                };
-                
-                let docZip = new PizZip(arrayBuffer);
-                const docFile = docZip.file("word/document.xml");
-                if (docFile) docZip.file("word/document.xml", cleanXML(docFile.asText()));
-
-                const Docxtemplater = window.docxtemplater || docxtemplater;
-                const doc = new Docxtemplater(docZip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
-                doc.render(data);
-                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-                saveAs(out, `實習計畫書_${studentData.name}.docx`);
-                showMsg(`成功生成 ${studentData.name} 的計畫書。`);
-
-            } catch (error) {
-                if (error && error.properties && error.properties.errors) {
-                    const msgs = error.properties.errors.map(e => `錯誤: ${e.properties?.explanation}`).join("\n"); showError("計畫書標籤錯誤：" + msgs);
-                } else { showError("生成個別計畫書錯誤：" + (error.message || error)); }
-            } finally {
-                if(tempBtn) { tempBtn.disabled = false; tempBtn.innerHTML = originalBtnHtml; }
-            }
+            } catch(e) { showError(e.message); } finally { btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-file-zipper"></i> 打包下載選取計畫書 (ZIP)'; }
         }
 
         window.onload = function() {
             renderStudents();
-            if (typeof PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
-                document.getElementById('lib-error').style.display = 'block'; document.getElementById('missing-lib').innerText = "核心元件";
-            } else {
-                const btn = document.getElementById('genContractBtn'); btn.disabled = false; btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-75'); btn.classList.add('btn-generate'); btn.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生合約文件 (Word)';
-                const btn2 = document.getElementById('genProposalBtn'); const bulkBtn = document.getElementById('bulkDownloadBtn');
-                btn2.disabled = false; btn2.classList.add('btn-generate'); btn2.innerHTML = '<i class="fa-regular fa-file-word"></i> 產生實習計畫書 (Word)';
-                bulkBtn.disabled = false; bulkBtn.classList.add('btn-generate');
-            }
-            toggleType(); togglePayInputs(); toggleCost('dorm'); toggleCost('food'); toggleCost('trans');
-            document.getElementById('is_head_office').checked = false; toggleBranchFields(); 
-            const taxIdInput = document.getElementById('company_tax_id'); if (taxIdInput) taxIdInput.addEventListener('input', updateQueryButtonState);
-            document.getElementById('no_tax_id').checked = false; toggleTaxIdFields(); 
-            const queryBtn = document.getElementById('queryBtn'); if (queryBtn) queryBtn.addEventListener('click', getCompanyInfo);
-            showPage('page-1');
+            toggleType(); toggleWelfare(); document.getElementById('is_head_office').checked=false; toggleBranchFields();
+            document.getElementById('no_tax_id').checked=false; toggleTaxIdFields();
+            document.getElementById('queryBtn').addEventListener('click', getCompanyInfo);
             document.getElementById('student_container').addEventListener('input', collectStudentDataFromPage2);
+            showPage('page-1');
         };
     </script>
 </body>
