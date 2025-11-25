@@ -355,6 +355,7 @@
                 <a href="./空白計畫書範本.docx" download="空白計畫書範本.docx" class="flex items-center gap-2 px-4 py-2 border border-thuGold text-thuGold rounded-full hover:bg-thuGold hover:text-thuBlue transition-all duration-200 font-medium">
                     <i class="fa-regular fa-file-lines"></i> 計劃書下載
                 </a>
+                <!-- 修正: 補回實習中心網頁連結 -->
                 <a href="https://aca.thu.edu.tw/web/isac/page.php?scid=112&sid=103" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-white text-thuBlue rounded-full hover:bg-gray-100 shadow-sm transition-all duration-200 font-medium">
                     <i class="fa-solid fa-link"></i> 實習中心網頁
                 </a>
@@ -692,9 +693,9 @@
                                         <select id="trans_opt" onchange="toggleCost('trans')" class="input-field welfare-select-field mb-2">
                                             <option value="" disabled selected>請選擇</option>
                                             <option value="none">無</option>
-                                            <option value="free">交通車 - 免費提供</option>
-                                            <option value="paid">交通車 - 付費提供</option>
-                                            <option value="subsidy">交通津貼 (每月補助)</option>
+                                            <option value="free">交通車（免費提供）</option>
+                                            <option value="paid">交通車（付費提供）</option>
+                                            <option value="subsidy">交通津貼</option>
                                         </select>
                                         <div id="trans_cost_wrapper" class="hidden relative mt-auto flex flex-col">
                                             <div class="cost-input-group">
@@ -1211,7 +1212,6 @@
             }
         }
 
-        // 修正: 更新下載範本，包含所有必要欄位
         function downloadProposalExcelTemplate() {
              try {
                  const header = ['姓名', '學號', '實習類別', '超時說明', '校方老師姓名', '校方老師聯絡方式', '業界老師姓名', '業界老師聯絡方式'];
@@ -1455,6 +1455,184 @@
             }
         }
 
+        // --- Data Collection Logic (統一資料收集函數) ---
+        function getContractRenderData() {
+             const data = {};
+             
+             // 1. 基本公司與日期資料
+             data.company_name = (document.getElementById('company_name')?.value || "未填寫");
+             data.company_rep = (document.getElementById('company_rep')?.value || "");
+             data.company_title = (document.getElementById('company_title')?.value || "");
+             const regAddr = document.getElementById('reg_address')?.value || "";
+             data.company_address = regAddr;
+             const noTaxIdChecked = document.getElementById('no_tax_id').checked;
+             data.company_tax_id = noTaxIdChecked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "").trim();
+             
+             const isHeadOffice = document.getElementById('is_head_office').checked;
+             const bname = isHeadOffice ? "" : document.getElementById('branch_name')?.value || "";
+             const baddr = isHeadOffice ? "" : document.getElementById('branch_addr')?.value || "";
+             data.intern_location = (bname && baddr) ? `${bname}（${baddr}）` : (baddr || regAddr);
+
+             data.s_y = ' ' + (document.getElementById('start_y')?.value || "　") + ' '; 
+             data.s_m = ' ' + (document.getElementById('start_m')?.value || "　") + ' '; 
+             data.s_d = ' ' + (document.getElementById('start_d')?.value || "　") + ' ';
+             data.e_y = ' ' + (document.getElementById('end_y')?.value || "　") + ' '; 
+             data.e_m = ' ' + (document.getElementById('end_m')?.value || "　") + ' '; 
+             data.e_d = ' ' + (document.getElementById('end_d')?.value || "　") + ' ';
+
+             // 2. 實習時間
+             const daily_start = document.getElementById('daily_start')?.value;
+             const daily_end = document.getElementById('daily_end')?.value;
+             const daily_hours = document.getElementById('daily_hours')?.value;
+             const type = document.querySelector('input[name="contract_type"]:checked')?.value;
+             
+             // 初始化 Checkbox 預設值
+             data.type_learn_check='□'; data.type_work_check='□';
+             
+             if (type === 'learn') {
+                 data.type_learn_check = '■';
+                 data.learn_start_time = formatTime(daily_start);
+                 data.learn_end_time = formatTime(daily_end);
+                 data.learn_daily_hours = formatTime(daily_hours, true);
+                 data.work_start_time = formatTime(null);
+                 data.work_end_time = formatTime(null);
+                 data.work_daily_hours = formatTime(null, true);
+             } else if (type === 'work') {
+                 data.type_work_check = '■';
+                 data.work_start_time = formatTime(daily_start);
+                 data.work_end_time = formatTime(daily_end);
+                 data.work_daily_hours = formatTime(daily_hours, true);
+                 data.learn_start_time = formatTime(null);
+                 data.learn_end_time = formatTime(null);
+                 data.learn_daily_hours = formatTime(null, true);
+             }
+             
+             // 3. 實習待遇
+             data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□'; 
+             data.chk_pay_total='□'; data.chk_pay_monthly='□';
+             data.pay_total_amount = fullWidthSpaceFive; 
+             data.pay_monthly_amount = fullWidthSpaceFive;
+             data.pay_amount_final = fullWidthSpaceFive;
+
+             data.chk_wage_monthly='□'; data.chk_wage_hourly='□';
+             data.wage_monthly_amount = fullWidthSpaceFive; 
+             data.wage_hourly_amount = fullWidthSpaceFive; 
+             data.wage_amount_final = fullWidthSpaceFive; 
+
+             const lam = document.getElementById('learn_amount')?.value || 0;
+             const wam = document.getElementById('work_amount')?.value || 0;
+
+             if (type === 'learn') {
+                 const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
+                 const payMethod = document.querySelector('input[name="pay_method_learn"]:checked')?.value;
+                 const formattedLam = formatAmount(lam);
+
+                 if (pOpt === 'none') {
+                     data.chk_pay_none = '■';
+                 } else {
+                     if (pOpt === 'scholar') data.chk_pay_scholar = '■'; else data.chk_pay_allowance = '■';
+                     
+                     if (payMethod === 'monthly') {
+                          data.chk_pay_monthly = '■';
+                          data.pay_amount_final = formattedLam; 
+                     } else {
+                          data.chk_pay_total = '■';
+                          data.pay_total_amount = formattedLam; // 舊版範本相容
+                          data.pay_amount_final = formattedLam; // 新版邏輯
+                     }
+                 }
+             } else if (type === 'work') {
+                 const formattedWam = formatAmount(wam);
+                 const wageType = document.querySelector('input[name="wage_type_work"]:checked')?.value;
+                 
+                 if (wageType === 'monthly') {
+                     data.chk_wage_monthly = '■';
+                     data.wage_amount_final = formattedWam;
+                 } else {
+                     data.chk_wage_hourly = '■';
+                     data.wage_amount_final = formattedWam;
+                 }
+             }
+
+             // 4. 福利
+             function setWelfare(prefix) {
+                 const opt = document.getElementById(prefix + '_opt')?.value || 'none';
+                 const costInput = document.getElementById(prefix + '_cost')?.value;
+                 const costVal = costInput ? Number(costInput.replace(/,/g, '')) : 0; 
+                 
+                 data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
+                 data[`${prefix}_desc`] = fullWidthSpaceFive; 
+                 
+                 data.chk_trans_subsidy = '□';
+                 data.trans_paid_desc = fullWidthSpaceFive;
+                 data.trans_subsidy_desc = fullWidthSpaceFive;
+                 
+                 if (opt === 'none') data[`chk_${prefix}_none`] = '■'; 
+                 else if (opt === 'free') { data[`chk_${prefix}_free`] = '■'; }
+                 else if (prefix === 'trans' && opt === 'subsidy') {
+                      data.chk_trans_subsidy = '■'; 
+                      if (costVal > 0) data.trans_subsidy_desc = ` ${costVal.toLocaleString()} `;
+                 } 
+                 else if (opt === 'paid') { 
+                     data[`chk_${prefix}_paid`] = '■'; 
+                     if (costVal > 0) {
+                          if (prefix === 'trans') { data.trans_paid_desc = ` ${costVal.toLocaleString()} `; }
+                          else { data[`${prefix}_desc`] = ` ${costVal.toLocaleString()} `; }
+                     }
+                 }
+             }
+             setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
+             
+             return data;
+        }
+        
+        function getProposalRenderData(student) {
+             // 取得基本合約資料 (與合約共用)
+             const baseData = getContractRenderData(); 
+             
+             // 覆蓋/增加個別學生資料
+             const courseData = getStudentCourseData(student);
+             
+             // 與 template_plan.docx 的標籤對應
+             return {
+                 ...baseData, // 包含公司名稱、地址、實習日期等
+                 plan_intern_location: baseData.intern_location, // 計畫書的標籤名稱可能不同
+                 s_y: document.getElementById('start_y').value,
+                 s_m: document.getElementById('start_m').value,
+                 s_d: document.getElementById('start_d').value,
+                 e_y: document.getElementById('end_y').value,
+                 e_m: document.getElementById('end_m').value,
+                 e_d: document.getElementById('end_d').value,
+                 
+                 student_name: student.name, 
+                 id: student.id, 
+                 dept: student.dept, 
+                 grade: student.grade,
+                 
+                 teacher_name: student.teacher_name, 
+                 teacher_contact: student.teacher_contact, 
+                 
+                 // 修正: 計畫書使用的是 industry_teacher_name 而非 industry_teacher
+                 industry_teacher_name: student.industry_teacher, 
+                 industry_teacher_contact: student.industry_contact,
+                 
+                 course_name: courseData.name, 
+                 semester: courseData.semester, 
+                 credits: courseData.credits, 
+                 
+                 hours_exceeded_desc: student.hours_exceeded_desc,
+                 
+                 intern_type_full: student.intern_type_select === 'full' ? '■' : '□', 
+                 intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□', 
+                 intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□', 
+                 intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□', 
+                 intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
+                 
+                 // 確保 students 陣列存在 (雖然計畫書通常是單人的，但若範本使用 Loop 則需要)
+                 students: [{...student}]
+             };
+        }
+
         function validateForm(isProposal = false) {
             let isValid = true; 
             let errorMsg = "";
@@ -1658,150 +1836,21 @@
             try {
                 const templateBuf = await getTemplateBuffer('contract');
                 const zip = new PizZip(templateBuf);
-                const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+                // 修正: 加上 delimiters 設定，確保可以讀取 %%% 標籤
+                const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' } });
 
-                // 收集資料 (與舊版邏輯相同)
-                collectStudentDataFromPage2(); updateProposalDataState();
+                // 收集資料
+                const data = getContractRenderData();
                 const sList = studentDataState.filter(s => s.name.trim());
-                
-                const data = {};
                 
                 // 1. 處理學生名稱與計數 (等X人)
                 data.s1_name = sList[0]?.name || "";
                 if (sList.length > 1) {
                     data.student_name_count = `${sList[0].name}　等${sList.length}人`; // 全形空格
                 } else {
-                    data.student_name_count = data.s1_name || "______________________"; // 至少有一位學生
-                }
-
-                // 2. 機構/地址/期間 (增加空格)
-                data.company_name = (document.getElementById('company_name')?.value || "未填寫");
-                data.company_rep = (document.getElementById('company_rep')?.value || "");
-                data.company_title = (document.getElementById('company_title')?.value || "");
-                const regAddr = document.getElementById('reg_address')?.value || "";
-                data.company_address = regAddr;
-                const noTaxIdChecked = document.getElementById('no_tax_id').checked;
-                data.company_tax_id = noTaxIdChecked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "").trim();
-                const isHeadOffice = document.getElementById('is_head_office').checked;
-                const bname = isHeadOffice ? "" : document.getElementById('branch_name')?.value || "";
-                const baddr = isHeadOffice ? "" : document.getElementById('branch_addr')?.value || "";
-                data.intern_location = (bname && baddr) ? `${bname}（${baddr}）` : (baddr || regAddr);
-
-                // 日期輸出 (前後增加空格)
-                data.s_y = ' ' + (document.getElementById('start_y')?.value || "　") + ' '; 
-                data.s_m = ' ' + (document.getElementById('start_m')?.value || "　") + ' '; 
-                data.s_d = ' ' + (document.getElementById('start_d')?.value || "　") + ' ';
-                data.e_y = ' ' + (document.getElementById('end_y')?.value || "　") + ' '; 
-                data.e_m = ' ' + (document.getElementById('end_m')?.value || "　") + ' '; 
-                data.e_d = ' ' + (document.getElementById('end_d')?.value || "　") + ' ';
-                
-                // 3. 每日實習時間 (處理未選類型時的「○○」)
-                const daily_start = document.getElementById('daily_start')?.value;
-                const daily_end = document.getElementById('daily_end')?.value;
-                const daily_hours = document.getElementById('daily_hours')?.value;
-                const type = document.querySelector('input[name="contract_type"]:checked')?.value;
-                
-                data.type_learn_check='□'; data.type_work_check='□'; 
-                
-                // 學習型時間輸出
-                if (type === 'learn') {
-                    data.type_learn_check = '■';
-                    data.learn_start_time = formatTime(daily_start);
-                    data.learn_end_time = formatTime(daily_end);
-                    data.learn_daily_hours = formatTime(daily_hours, true);
-                    data.work_start_time = formatTime(null);
-                    data.work_end_time = formatTime(null);
-                    data.work_daily_hours = formatTime(null, true);
-                } else if (type === 'work') {
-                    data.type_work_check = '■';
-                    data.work_start_time = formatTime(daily_start);
-                    data.work_end_time = formatTime(daily_end);
-                    data.work_daily_hours = formatTime(daily_hours, true);
-                    data.learn_start_time = formatTime(null);
-                    data.learn_end_time = formatTime(null);
-                    data.learn_daily_hours = formatTime(null, true);
+                    data.student_name_count = data.s1_name || "______________________"; 
                 }
                 
-                // 4. 實習待遇 (集中輸出邏輯)
-                data.chk_pay_none='□'; data.chk_pay_scholar='□'; data.chk_pay_allowance='□'; 
-                data.chk_pay_total='□'; data.chk_pay_monthly='□';
-                
-                const lam = document.getElementById('learn_amount')?.value || 0;
-                const payMethod = document.querySelector('input[name="pay_method_learn"]:checked')?.value;
-                data.pay_total_amount = fullWidthSpaceFive; 
-                data.pay_monthly_amount = fullWidthSpaceFive;
-                data.pay_amount_final = fullWidthSpaceFive; // 最終金額欄位
-
-                if (type === 'learn') {
-                    const pOpt = document.querySelector('input[name="pay_opt_learn"]:checked')?.value;
-                    const formattedLam = formatAmount(lam);
-
-                    if (pOpt === 'none') {
-                        data.chk_pay_none = '■';
-                    } else {
-                        if (pOpt === 'scholar') data.chk_pay_scholar = '■'; else data.chk_pay_allowance = '■';
-                        if (payMethod === 'monthly') {
-                             data.chk_pay_monthly = '■';
-                             data.pay_monthly_amount = formattedLam; 
-                             data.pay_amount_final = formattedLam; 
-                        } else {
-                             data.chk_pay_total = '■';
-                             data.pay_total_amount = formattedLam; 
-                             data.pay_amount_final = formattedLam; 
-                        }
-                    }
-                } 
-                
-                // 勞資型集中輸出
-                data.chk_wage_monthly='□'; data.chk_wage_hourly='□';
-                const wam = document.getElementById('work_amount')?.value || 0;
-                const wageType = document.querySelector('input[name="wage_type_work"]:checked')?.value;
-                data.wage_monthly_amount = fullWidthSpaceFive; 
-                data.wage_hourly_amount = fullWidthSpaceFive; 
-                data.wage_amount_final = fullWidthSpaceFive; 
-
-                if (type === 'work') {
-                    const formattedWam = formatAmount(wam);
-                    if (wageType === 'monthly') {
-                        data.chk_wage_monthly = '■';
-                        data.wage_monthly_amount = formattedWam;
-                        data.wage_amount_final = formattedWam;
-                    } else if (wageType === 'hourly') {
-                        data.chk_wage_hourly = '■';
-                        data.wage_hourly_amount = formattedWam;
-                        data.wage_amount_final = formattedWam;
-                    }
-                }
-
-                // 5. 福利輸出
-                function setWelfare(prefix) {
-                    const opt = document.getElementById(prefix + '_opt')?.value || 'none';
-                    const costInput = document.getElementById(prefix + '_cost')?.value;
-                    const costVal = costInput ? Number(costInput.replace(/,/g, '')) : 0; 
-                    
-                    data[`chk_${prefix}_none`] = '□'; data[`chk_${prefix}_free`] = '□'; data[`chk_${prefix}_paid`] = '□';
-                    data[`${prefix}_desc`] = fullWidthSpaceFive; 
-                    
-                    data.chk_trans_subsidy = '□';
-                    data.trans_paid_desc = fullWidthSpaceFive;
-                    data.trans_subsidy_desc = fullWidthSpaceFive;
-                    
-                    if (opt === 'none') data[`chk_${prefix}_none`] = '■'; 
-                    else if (opt === 'free') { data[`chk_${prefix}_free`] = '■'; }
-                    else if (prefix === 'trans' && opt === 'subsidy') {
-                         data.chk_trans_subsidy = '■'; 
-                         if (costVal > 0) data.trans_subsidy_desc = ` ${costVal.toLocaleString()} `;
-                    } 
-                    else if (opt === 'paid') { 
-                        data[`chk_${prefix}_paid`] = '■'; 
-                        if (costVal > 0) {
-                             if (prefix === 'trans') { data.trans_paid_desc = ` ${costVal.toLocaleString()} `; }
-                             else { data[`${prefix}_desc`] = ` ${costVal.toLocaleString()} `; }
-                        }
-                    }
-                }
-                setWelfare('dorm'); setWelfare('food'); setWelfare('trans');
-
                 // 學生列表
                 const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
                 data.students = sList.map((s, index) => {
@@ -1827,11 +1876,13 @@
                 
                 const docFile = zip.file("word/document.xml");
                 if (docFile) zip.file("word/document.xml", cleanXML(docFile.asText()));
-
-                doc.render(data);
-                const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                
+                // 重新建構 doc 因為 zip 可能被修改過，並確保 delimiters 設定存在
+                const docFinal = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' } });
+                docFinal.render(data);
+                const out = docFinal.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                 saveAs(out, `東海大學實習合約_${(data.s1_name || '學生')}.docx`);
-                showMsg("下載成功！");
+                showMsg("合約書產生成功！");
 
             } catch (error) {
                 showError("產生失敗", error.message);
@@ -2191,43 +2242,20 @@
         async function performZipGeneration(students, zip, btn, originalHtml) {
             try {
                 const arrayBuffer = await getTemplateBuffer('proposal');
-                // 簡單獲取共用資料
-                const companyName = document.getElementById('company_name')?.value || "未填寫";
-                const regAddr = document.getElementById('reg_address')?.value || "";
-                const branchName = document.getElementById('branch_name')?.value || "";
-                const isHeadOffice = document.getElementById('is_head_office')?.checked;
-                let planLoc = companyName; if (!isHeadOffice && branchName) planLoc = `${companyName} (${branchName})`;
-                
-                const s_y = document.getElementById('start_y')?.value || ""; const s_m = document.getElementById('start_m')?.value || ""; const s_d = document.getElementById('start_d')?.value || "";
-                const e_y = document.getElementById('end_y')?.value || ""; const e_m = document.getElementById('end_m')?.value || ""; const e_d = document.getElementById('end_d')?.value || "";
-
-                const commonData = {
-                    company_name: companyName, company_address: regAddr, plan_intern_location: planLoc,
-                    s_y, s_m, s_d, e_y, e_m, e_d,
-                    company_tax_id: document.getElementById('no_tax_id').checked ? "實習機構未申請設立字號" : (document.getElementById('company_tax_id')?.value || "未填寫"),
-                    company_rep: document.getElementById('company_rep')?.value || "未填寫", company_title: document.getElementById('company_title')?.value || "未填寫",
-                };
+                const commonData = getContractRenderData(); // 使用共用資料綁定
 
                 const Docxtemplater = window.docxtemplater || docxtemplater;
 
                 for (const student of students) {
-                    const courseData = getStudentCourseData(student);
-                    const data = { 
-                        ...commonData, 
-                        student_name: student.name, id: student.id, dept: student.dept, grade: student.grade,
-                        teacher_name: student.teacher_name, teacher_contact: student.teacher_contact, 
-                        industry_teacher_name: student.industry_teacher, industry_teacher_contact: student.industry_contact,
-                        course_name: courseData.name, semester: courseData.semester, credits: courseData.credits, 
-                        hours_exceeded_desc: student.hours_exceeded_desc,
-                        intern_type_full: student.intern_type_select === 'full' ? '■' : '□', intern_type_sem: student.intern_type_select === 'sem' ? '■' : '□', intern_type_winter: student.intern_type_select === 'winter' ? '■' : '□', intern_type_summer: student.intern_type_select === 'summer' ? '■' : '□', intern_type_term: student.intern_type_select === 'term' ? '■' : '□',
-                    };
-
+                    const renderData = getProposalRenderData(student);
+                    // 重新載入 ZIP 以避免汙染
                     let docZip = new PizZip(arrayBuffer.slice(0));
                     const docFile = docZip.file("word/document.xml");
                     if (docFile) docZip.file("word/document.xml", cleanXML(docFile.asText()));
 
+                    // 修正: 加上 delimiters 設定，確保可以讀取 %%% 標籤
                     const doc = new Docxtemplater(docZip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
-                    doc.render(data);
+                    doc.render(renderData);
                     const out = doc.getZip().generate({ type: "uint8array" });
                     zip.file(`實習計畫書_${student.name}.docx`, out);
                 }
@@ -2338,30 +2366,12 @@
             try {
                 const templateBuf = await getTemplateBuffer('proposal');
                 const zip = new PizZip(templateBuf);
-                const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                 
-                const courseData = getStudentCourseData(studentData);
+                // 修正: 加上 delimiters 設定，確保可以讀取 %%% 標籤
+                const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '%%%', end: '%%%' }, nullGetter: function(part) { return ""; } });
                 
-                // 確保取得公司資料 (Page 3)
-                const companyName = document.getElementById('company_name')?.value || "未填寫";
-                const regAddr = document.getElementById('reg_address')?.value || "";
-                
-                // 合併資料，確保 docxtemplater 有資料可填
-                const renderData = {
-                    ...studentData,
-                    company_name: companyName,
-                    company_address: regAddr,
-                    course_name: courseData.name,
-                    semester: courseData.semester, // 修正: 補上學期
-                    credits: courseData.credits, // 修正: 補上學分
-                    student_name: studentData.name, // 確保有正確的 key
-                    // 補上勾選狀態
-                    intern_type_full: studentData.intern_type_select === 'full' ? '■' : '□', 
-                    intern_type_sem: studentData.intern_type_select === 'sem' ? '■' : '□', 
-                    intern_type_winter: studentData.intern_type_select === 'winter' ? '■' : '□', 
-                    intern_type_summer: studentData.intern_type_select === 'summer' ? '■' : '□', 
-                    intern_type_term: studentData.intern_type_select === 'term' ? '■' : '□',
-                };
+                // 使用統一的資料收集邏輯
+                const renderData = getProposalRenderData(studentData);
                 
                 doc.render(renderData);
                 
