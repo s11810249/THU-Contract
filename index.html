@@ -1871,7 +1871,7 @@
                     const targetRegex = /甲方%%%letter%%%學生：,\(%%%name%%%\)簽章/g;
                     const replacement = '甲方學生：,(%%%name%%%)簽章';
                     xmlContent = xmlContent.replace(targetRegex, replacement);
-                    zip = new PizZip(xmlContent); 
+                    zip.file("word/document.xml", xmlContent); 
                 }
                 
                 const docFile = zip.file("word/document.xml");
